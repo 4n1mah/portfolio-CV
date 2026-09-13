@@ -68,7 +68,7 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
   fonts.script = css.getPropertyValue("--font-script").trim() || fonts.script;
   await Promise.all([
     document.fonts.load(`700 24px ${fonts.sans}`),
-    document.fonts.load(`400 12px ${fonts.script}`),
+    document.fonts.load(`700 14px ${fonts.script}`),
     loadAssets(),
   ]).catch(() => undefined);
 

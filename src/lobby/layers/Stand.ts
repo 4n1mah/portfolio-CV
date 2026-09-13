@@ -158,29 +158,34 @@ export class Stand extends Container {
 
     // --- side wall face (runs along gy) ---
     const side = new Container();
-    const so = iso(gx, gy + d - 0.3);
+    // start past the corner plant so it never covers the lettering
+    const plantGap = 1.1;
+    const so = iso(gx, gy + d - plantGap);
     side.position.set(so.x + 4, so.y);
     side.skew.y = -WALL_SKEW;
     const dark = luminance(this.cfg.sideWall) < 0.3;
+    const script = this.cfg.id === "about";
+    const lineGap = script ? 17 : 13;
     this.cfg.sideText.forEach((line, i) => {
       const t = label(line, {
-        fontSize: this.cfg.id === "about" ? 10 : 8,
-        fontFamily: this.cfg.id === "about" ? fonts.script : fonts.sans,
-        fontWeight: this.cfg.id === "about" ? "400" : "700",
+        // the handwritten About line needs size and weight to read on the sand wall
+        fontSize: script ? 14 : 8,
+        fontFamily: script ? fonts.script : fonts.sans,
+        fontWeight: "700",
         fill: dark ? 0xffffff : PALETTE.ink,
-        letterSpacing: this.cfg.id === "about" ? 0 : 1,
+        letterSpacing: script ? 0.2 : 1,
       });
-      t.position.set(8, -WALL_H + 18 + i * 13);
+      t.position.set(8, -WALL_H + 16 + i * lineGap);
       side.addChild(t);
     });
     const sideW = Math.max(...side.children.map((t) => t.x + t.width));
-    const flatD = (d * TILE_W) / 2 / Math.cos(WALL_SKEW) - 0.3 * TILE_W;
+    const flatD = ((d - plantGap) * TILE_W) / 2 / Math.cos(WALL_SKEW) - 12;
     if (sideW > flatD) {
       // scale around the text block top-left so it stays anchored to the wall edge
       const k = flatD / sideW;
       side.children.forEach((t) => {
         t.scale.set(k);
-        t.position.set(8, -WALL_H + 18 + (t.y + WALL_H - 18) * k);
+        t.position.set(8, -WALL_H + 16 + (t.y + WALL_H - 16) * k);
       });
     }
     booth.addChild(side);

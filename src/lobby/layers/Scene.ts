@@ -8,6 +8,13 @@ import { seat } from "./Npc";
 
 /** Static floor: marble tiles, plaza rings, entrance mat. Drawn below everything. */
 export function buildFloor(text: Content["lobby"]): Container {
+  const floor = new Container();
+  floor.addChild(floorArt(), matLettering(text));
+  return floor;
+}
+
+/** Floor art (image from assets or vector placeholder). Contains no text, so it works in any language. */
+function floorArt(): Container {
   return piece("lobby-floor", () => {
     const c = new Container();
     const g = new Graphics();
@@ -42,23 +49,26 @@ export function buildFloor(text: Content["lobby"]): Container {
     box(g, 22.6, 22.6, 3.4, 3.4, 2, 0x2b2f38);
     g.poly(rectPoly(22.9, 22.9, 2.8, 2.8, 2)).stroke({ width: 1, color: 0x555a66 });
     c.addChild(g);
-
-    const mat = iso(24.3, 24.3);
-    const welcome = new Container();
-    const t1 = label(text.mat[0], { fontSize: 13, fill: 0xf2ede4, fontWeight: "500" });
-    const t2 = label(text.mat[1], { fontSize: 6, fill: 0xb9b3a8, letterSpacing: 1.5 });
-    t1.anchor.set(0.5);
-    t2.anchor.set(0.5);
-    t2.y = 16;
-    t2.label = DETAIL;
-    welcome.addChild(t1, t2);
-    welcome.position.set(mat.x, mat.y - 6);
-    // keep both lines inside the mat whatever the language
-    const fit = Math.min(1, 150 / Math.max(t1.width, t2.width));
-    welcome.scale.set(fit, fit * 0.62);
-    c.addChild(welcome);
     return c;
   });
+}
+
+/** Mat lettering drawn over the floor art, in the current language. */
+function matLettering(text: Content["lobby"]): Container {
+  const mat = iso(24.3, 24.3);
+  const welcome = new Container();
+  const t1 = label(text.mat[0], { fontSize: 13, fill: 0xf2ede4, fontWeight: "500" });
+  const t2 = label(text.mat[1], { fontSize: 6, fill: 0xb9b3a8, letterSpacing: 1.5 });
+  t1.anchor.set(0.5);
+  t2.anchor.set(0.5);
+  t2.y = 16;
+  t2.label = DETAIL;
+  welcome.addChild(t1, t2);
+  welcome.position.set(mat.x, mat.y - 6);
+  // keep both lines inside the mat whatever the language
+  const fit = Math.min(1, 150 / Math.max(t1.width, t2.width));
+  welcome.scale.set(fit, fit * 0.62);
+  return welcome;
 }
 
 function place(target: Container, obj: Container, gx: number, gy: number) {

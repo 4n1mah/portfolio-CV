@@ -20,7 +20,7 @@ La lógica (hover, zoom, NPCs) no cambia: solo cambia lo que se ve.
 
 | Key (`assets.ts`) | Qué es | Tamaño sugerido | Anchor |
 |---|---|---|---|
-| `lobby-floor` | Suelo completo del lobby, vacío (mármol, anillos de la plaza, alfombra "BIENVENIDO") | 1800 × 950 | x 0.5, y 0 (esquina superior del rombo) |
+| `lobby-floor` | Suelo completo del lobby, vacío (mármol, anillos de la plaza, alfombra **sin texto**; el texto lo pone el código en el idioma activo) | Rombo 2:1, recortado al borde (≈ 2000 × 1020) | x 0.5, y 0 (esquina superior del rombo). Se escala solo a 1984 px de ancho |
 | `planter-center` | Jardinera circular con árbol y bancas integradas opcionales | 420 × 420 | 0.5, 0.8 |
 | `stand-about` | Stand "Sobre mí": paredes en L, letrero, cuadro, suelo del stand, **sin recepcionista ni escritorio** | 460 × 380 | 0.5, 0.75 |
 | `stand-portfolio` | Stand "Portafolio" con pantallas en la pared | 460 × 380 | 0.5, 0.75 |

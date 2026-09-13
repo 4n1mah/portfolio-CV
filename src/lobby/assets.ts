@@ -10,10 +10,13 @@ export interface AssetEntry {
   anchor: { x: number; y: number };
   /** Optional scale applied to the sprite. */
   scale?: number;
+  /** Optional on-screen width in world pixels; the height follows the image ratio (overrides scale). */
+  width?: number;
 }
 
 export const ASSETS = {
-  "lobby-floor": { src: null, anchor: { x: 0.5, y: 0 } },
+  // Island: 31 x 31 tiles = 1984 px wide. Crop the image to the diamond so its top corner is at y = 0.
+  "lobby-floor": { src: null, anchor: { x: 0.5, y: 0 }, width: 1984 },
   "planter-center": { src: null, anchor: { x: 0.5, y: 0.8 } },
   "stand-about": { src: null, anchor: { x: 0.5, y: 0.75 } },
   "stand-portfolio": { src: null, anchor: { x: 0.5, y: 0.75 } },
@@ -41,6 +44,7 @@ export function piece(key: AssetKey, fallback: () => Container): Container {
     const sprite = new Sprite(Assets.get<Texture>(key));
     sprite.anchor.set(entry.anchor.x, entry.anchor.y);
     if (entry.scale) sprite.scale.set(entry.scale);
+    if (entry.width) sprite.scale.set(entry.width / sprite.texture.width);
     return sprite;
   }
   return fallback();
