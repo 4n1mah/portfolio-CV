@@ -37,13 +37,14 @@ export const ASSETS = {
   // Booth walls + floor only (no text, desk, people or plants: those are drawn on top).
   // Anchor = the far corner where both walls meet the floor. Made from art/reference/stand-*.png.
   // Anchor and width come from the template mapping (3.5 px per world px, far corner at 681.8, 398).
-  "stand-about": { src: "/lobby/stand-about.webp", anchor: { x: 0.4297, y: 0.3733 }, width: 350.29 },
-  "stand-portfolio": { src: "/lobby/stand-portfolio.webp", anchor: { x: 0.429, y: 0.3719 }, width: 350.86 },
-  "stand-skills": { src: "/lobby/stand-skills.webp", anchor: { x: 0.4293, y: 0.3723 }, width: 350.57 },
-  "stand-experience": { src: "/lobby/stand-experience.webp", anchor: { x: 0.4292, y: 0.3741 }, width: 350 },
+  // The generated booth floor is cut away when the image is prepared, so the walls rise from the lobby floor.
+  "stand-about": { src: "/lobby/stand-about.webp", anchor: { x: 0.4297, y: 0.5156 }, width: 350.29 },
+  "stand-portfolio": { src: "/lobby/stand-portfolio.webp", anchor: { x: 0.429, y: 0.5149 }, width: 350.86 },
+  "stand-skills": { src: "/lobby/stand-skills.webp", anchor: { x: 0.4293, y: 0.5149 }, width: 350.57 },
+  "stand-experience": { src: "/lobby/stand-experience.webp", anchor: { x: 0.4292, y: 0.5176 }, width: 350 },
   // Reception desk shared by the four booths, anchored at the centre of its footprint. Made from art/reference/desk.png
   // (9 px per world px, footprint centre at 768, 635.3).
-  "desk": { src: "/lobby/desk.webp", anchor: { x: 0.4995, y: 0.6515 }, width: 119.22 },
+  "desk": { src: "/lobby/desk.webp", anchor: { x: 0.4995, y: 0.6515 }, width: 119.22, footprint: { w: 2.8, d: 0.9, alpha: 0.14 } },
   // Potted plants (two varieties). Crop tight; width is the widest leaf span at size 1.
   "plant-a": { src: "/lobby/plant-a.webp", anchor: { x: 0.508, y: 1 }, width: 42, groundOffset: 6.2, shadow: { rx: 14, ry: 6 } },
   "plant-b": { src: "/lobby/plant-b.webp", anchor: { x: 0.5, y: 1 }, width: 48, groundOffset: 3.4, shadow: { rx: 12, ry: 5 } },

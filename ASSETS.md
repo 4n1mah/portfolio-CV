@@ -31,6 +31,8 @@ La lógica (hover, zoom, NPCs) no cambia: solo cambia lo que se ve.
 | `desk` | Mostrador de recepción (el mismo en los cuatro stands), **sin laptop**. Plantilla: `art/reference/desk.png` | ✅ `desk.webp`, 640 px de ancho | Centro de la base del mostrador |
 
 Las plantillas de `art/reference/` las genera el código con la geometría exacta del lobby: se suben a ChatGPT para que respete la forma y solo cambie los materiales.
+
+Al preparar las imágenes de los stands se recorta el suelo que trae la imagen (queda solo lo que está por encima de la base de las paredes), para que las paredes nazcan del suelo del lobby. La sombra al pie de las paredes y la línea de latón que marca el stand las dibuja el código. Si se regeneran, pueden venir con suelo: se vuelve a recortar igual.
 | `plant-a` | Planta frondosa y redonda en maceta oscura | ✅ `plant-a.webp`, 360 px de ancho | Ancho 42 px × tamaño, apoyada en el centro de la maceta |
 | `plant-b` | Planta alta de hojas grandes en maceta oscura | ✅ `plant-b.webp`, 360 px de ancho | Ancho 48 px × tamaño, apoyada en el centro de la maceta |
 | `bench` | Banca de madera sin respaldo, lado largo de arriba-izquierda a abajo-derecha | ✅ `bench.webp`, 480 px de ancho | Ancho 73 px, apoyada en el centro de su huella; se refleja en código para las bancas en la otra diagonal |
