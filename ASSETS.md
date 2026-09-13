@@ -21,12 +21,13 @@ La lógica (hover, zoom, NPCs) no cambia: solo cambia lo que se ve.
 | Key (`assets.ts`) | Qué es | Tamaño sugerido | Anchor |
 |---|---|---|---|
 | `lobby-floor` | Suelo completo del lobby, vacío (mármol, anillos de la plaza, alfombra **sin texto**; el texto lo pone el código en el idioma activo) | Rombo 2:1, recortado al borde (≈ 2000 × 1020) | x 0.5, y 0 (esquina superior del rombo). Se escala solo a 1984 px de ancho |
-| `planter-center` | Jardinera circular con árbol y bancas integradas opcionales | 420 × 420 | 0.5, 0.8 |
+| `planter-center` | Jardinera redonda de la plaza con su árbol, **sin bancas ni placa** (las pone el código) | ~1024 × 1024, recortada al borde de la jardinera | Automático: ancho 200 px, se apoya en el centro de la base |
 | `stand-about` | Stand "Sobre mí": paredes en L, letrero, cuadro, suelo del stand, **sin recepcionista ni escritorio** | 460 × 380 | 0.5, 0.75 |
 | `stand-portfolio` | Stand "Portafolio" con pantallas en la pared | 460 × 380 | 0.5, 0.75 |
 | `stand-skills` | Stand "Habilidades" con iconos Ps/Ai/Figma/código | 460 × 380 | 0.5, 0.75 |
 | `stand-experience` | Stand "Experiencias" con timeline en la pared | 460 × 380 | 0.5, 0.75 |
-| `plant-a` | Planta en maceta oscura | 90 × 130 | 0.5, 0.95 |
+| `plant-a` | Planta frondosa y redonda en maceta oscura | ~768 × 1024, recortada al borde | Automático: ancho 46 px × tamaño |
+| `plant-b` | Planta alta de hojas grandes en maceta oscura | ~768 × 1024, recortada al borde | Automático: ancho 40 px × tamaño |
 | `bench` | Banca de madera | 140 × 80 | 0.5, 0.7 |
 | `lamp` | Poste de luz con bombilla cálida | 40 × 110 | 0.5, 0.97 |
 

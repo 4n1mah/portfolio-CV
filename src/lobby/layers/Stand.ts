@@ -82,10 +82,10 @@ export class Stand extends Container {
     this.addChild(this.glow);
 
     // plants at the open corners
-    const p1 = plant(0.9, 0);
+    const p1 = piece("plant-a", () => plant(0.9, 0), 0.9);
     const pp1 = iso(gx + w - 0.4, gy + 0.5);
     p1.position.set(pp1.x, pp1.y);
-    const p2 = plant(0.8, 1);
+    const p2 = piece("plant-b", () => plant(0.8, 1), 0.8);
     const pp2 = iso(gx + 0.5, gy + d - 0.4);
     p2.position.set(pp2.x, pp2.y);
     this.addChild(p1, p2);
