@@ -86,7 +86,7 @@ export function lamp(): Container {
   return c;
 }
 
-export function planter(radius: number, plaqueLines: string[]): Container {
+export function planter(radius: number): Container {
   const c = new Container();
   const g = new Graphics();
   const { rx, ry } = isoCircle(radius);
@@ -109,16 +109,6 @@ export function planter(radius: number, plaqueLines: string[]): Container {
   const crown = [[-26, -110, 26], [24, -112, 26], [0, -132, 30], [-14, -150, 20], [16, -146, 20], [0, -96, 22]];
   crown.forEach(([x, y, r], i) => g.circle(x, y - h + 34, r).fill(i % 2 ? PALETTE.leafDark : PALETTE.leaf));
   c.addChild(g);
-
-  const plaque = new Container();
-  plaqueLines.forEach((line, i) => {
-    const t = label(line, { fontSize: 7, fill: 0x6a6158, letterSpacing: 1.5, fontWeight: "600" });
-    t.anchor.set(0.5, 0);
-    t.y = i * 9;
-    plaque.addChild(t);
-  });
-  plaque.y = ry - h + 6;
-  c.addChild(plaque);
   return c;
 }
 

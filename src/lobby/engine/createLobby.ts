@@ -1,6 +1,6 @@
 import { Application, Container, type FederatedPointerEvent } from "pixi.js";
 import gsap from "gsap";
-import { content, type Locale } from "@/content/sections";
+import { content, profile, type Locale } from "@/content/sections";
 import { PALETTE, SITTERS, VISITORS, WAYPOINTS, standsFor } from "../config";
 import { loadAssets } from "../assets";
 import { lobbyStore, type StandId } from "../store";
@@ -8,8 +8,9 @@ import { fonts } from "../layers/draw";
 import { buildDecor, buildFloor } from "../layers/Scene";
 import { Stand } from "../layers/Stand";
 import { Sitter, Visitor } from "../layers/Npc";
+import { NameSign } from "../layers/NameSign";
 import { Camera } from "./camera";
-import { TILE_H, TILE_W } from "./iso";
+import { depth, iso, TILE_H, TILE_W } from "./iso";
 
 export const PANEL = { breakpoint: 768, width: 480, widthVw: 0.44, sheetVh: 0.64 };
 
@@ -84,6 +85,13 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     entities.addChild(stand);
   }
 
+  // golden sign with the owner name, right in front of the central planter
+  const nameSign = new NameSign(profile.name, content[locale].ui.role);
+  const signSpot = iso(14.7, 14.7);
+  nameSign.position.set(signSpot.x, signSpot.y);
+  nameSign.zIndex = depth(14.7, 14.7);
+  entities.addChild(nameSign);
+
   const starts = Object.keys(WAYPOINTS).filter((k) => k.startsWith("r"));
   const visitors = VISITORS.map((look, i) => {
     const v = new Visitor(look, starts[i % starts.length], reducedMotion, bubbles, text.visitorLines);
@@ -109,6 +117,7 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
   };
   camera.resize(app.screen.width, app.screen.height);
   const start = home();
+  let homeView = start;
   if (reducedMotion) {
     camera.view = start;
     camera.apply();
@@ -122,8 +131,8 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     camera.resize(app.screen.width, app.screen.height);
     const { active } = store.getState();
     if (active) focus(active, 0);
-    else if (camera.userMoved) home();
-    else camera.flyTo(home(), reducedMotion ? 0 : 0.4);
+    else if (camera.userMoved) homeView = home();
+    else camera.flyTo((homeView = home()), reducedMotion ? 0 : 0.4);
   };
   app.renderer.on("resize", onResize);
 
@@ -144,8 +153,22 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
   app.stage.on("pointertap", (e: FederatedPointerEvent) => {
     if (e.target !== app.stage || camera.wasDrag) return;
     const s = store.getState();
+    if (s.nameLinksOpen) s.setNameLinks(false);
     if (s.active) s.close();
     else if (s.hovered) s.setHovered(null);
+  });
+
+  nameSign.on("pointerover", (e: FederatedPointerEvent) => {
+    const s = store.getState();
+    if (e.pointerType === "mouse" && !s.active) s.setNameLinks(true);
+  });
+  nameSign.on("pointerout", (e: FederatedPointerEvent) => {
+    if (e.pointerType === "mouse") store.getState().closeNameLinksSoon();
+  });
+  nameSign.on("pointertap", () => {
+    const s = store.getState();
+    if (camera.wasDrag || s.active) return;
+    s.setNameLinks(!s.nameLinksOpen || s.pointer === "mouse");
   });
 
   for (const [id, stand] of stands) {
@@ -186,6 +209,10 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
 
   const unsubscribe = store.subscribe((state, prev) => {
     const dur = reducedMotion ? 0 : 0.35;
+    if (state.nameLinksOpen !== prev.nameLinksOpen) {
+      nameSign.setOpen(state.nameLinksOpen, reducedMotion);
+      if (state.nameLinksOpen) placeNameLinks();
+    }
     if (state.hovered !== prev.hovered) {
       if (prev.hovered) stands.get(prev.hovered)!.setHover(false, reducedMotion);
       if (state.hovered) {
@@ -221,6 +248,23 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     dimAll(openAtStart, 0.55, 0);
   }
 
+  // The link popover is HTML; keep it pinned above the sign while the camera moves.
+  const stage = host.parentElement ?? host;
+  const placeNameLinks = () => {
+    const p = nameSign.toGlobal({ x: 0, y: nameSign.anchorY });
+    stage.style.setProperty("--name-links-x", `${p.x}px`);
+    stage.style.setProperty("--name-links-y", `${p.y}px`);
+  };
+
+  // "Exploring" = zoomed in or panned away from the overview; the HUD header shrinks meanwhile.
+  const updateExploring = () => {
+    const { x, y, scale } = camera.view;
+    const away = Math.hypot(x - homeView.x, y - homeView.y) * scale > 90;
+    // only after a manual pan/zoom, so the intro fly-in doesn't flicker the header
+    const exploring = camera.userMoved && (scale > homeView.scale * 1.12 || away);
+    if (store.getState().exploring !== exploring) store.getState().setExploring(exploring);
+  };
+
   // --- loop ---
   app.ticker.add((ticker) => {
     const dt = Math.min(ticker.deltaMS, 50);
@@ -231,6 +275,8 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     // keep speech bubbles legible when zoomed out
     const bubbleScale = Math.min(2.4, Math.max(1, 0.8 / world.scale.x));
     for (const b of bubbles.children) b.scale.set(bubbleScale);
+    if (store.getState().nameLinksOpen) placeNameLinks();
+    if (!camera.locked) updateExploring();
   });
 
   const onVisibility = () => (document.hidden ? app.ticker.stop() : app.ticker.start());

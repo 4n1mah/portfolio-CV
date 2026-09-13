@@ -69,7 +69,7 @@ function place(target: Container, obj: Container, gx: number, gy: number) {
 
 /** Depth-sorted props: planter, plants, lamps, benches, signs. */
 export function buildDecor(entities: Container, text: Content["lobby"]) {
-  place(entities, piece("planter-center", () => planter(2.2, text.plaque)), PLAZA_CENTER.gx, PLAZA_CENTER.gy);
+  place(entities, piece("planter-center", () => planter(2.2)), PLAZA_CENTER.gx, PLAZA_CENTER.gy);
 
   const plants: [number, number, number, number][] = [
     [1, 9.5, 1.1, 0], [1, 12, 1.2, 1], [9.5, 1, 1.1, 1], [12.5, 1, 1.2, 0],
@@ -85,7 +85,6 @@ export function buildDecor(entities: Container, text: Content["lobby"]) {
   lamps.forEach(([gx, gy]) => place(entities, piece("lamp", () => lamp()), gx, gy));
 
   place(entities, piece("bench", () => bench(true)), 13, 10.1);
-  place(entities, piece("bench", () => bench(true)), 13, 16);
 
   // seats under seated visitors
   place(entities, seat(false), 10.1, 13.4);

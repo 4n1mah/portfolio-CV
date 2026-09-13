@@ -10,14 +10,16 @@ export default function Hud() {
   const active = useLobby((s) => s.active);
   const pointer = useLobby((s) => s.pointer);
   const locale = useLobby((s) => s.locale);
+  const exploring = useLobby((s) => s.exploring);
+  const nameLinksOpen = useLobby((s) => s.nameLinksOpen);
   const c = useContent();
-  const { open, setSimpleMode, setLocale } = lobbyStore.getState();
+  const { open, setSimpleMode, setLocale, setNameLinks, closeNameLinksSoon } = lobbyStore.getState();
   const preview = hovered ? c[hovered] : null;
   const touch = pointer === "touch";
 
   return (
     <div className={styles.hud} data-dimmed={!!active}>
-      <header className={styles.brand}>
+      <header className={styles.brand} data-compact={exploring}>
         <p className={styles.brandTitle}>
           {c.ui.tagline[0]}
           <br />
@@ -28,6 +30,25 @@ export default function Hud() {
         </p>
         <p className={styles.brandScript}>{c.ui.welcome}</p>
       </header>
+
+      {nameLinksOpen && !active && (
+        <div
+          className={styles.nameLinks}
+          role="menu"
+          aria-label={c.ui.findMe}
+          onPointerEnter={() => setNameLinks(true)}
+          onPointerLeave={(e) => e.pointerType === "mouse" && closeNameLinksSoon()}
+        >
+          <span className={styles.nameLinksLabel}>{c.ui.findMe}</span>
+          <div className={styles.nameLinksRow}>
+            {profile.links.map((l) => (
+              <a key={l.label} role="menuitem" href={l.href} target="_blank" rel="noreferrer">
+                {l.label} ↗
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       {preview && !touch && (
         <aside className={styles.preview} key={hovered}>

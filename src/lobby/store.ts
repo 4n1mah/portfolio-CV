@@ -12,6 +12,10 @@ export interface LobbyState {
   pointer: PointerKind;
   simpleMode: boolean;
   locale: Locale;
+  /** Link popover on the golden name sign. */
+  nameLinksOpen: boolean;
+  /** True while the camera is zoomed in or panned away from the overview. */
+  exploring: boolean;
   setReady: (ready: boolean) => void;
   setHovered: (id: StandId | null) => void;
   open: (id: StandId) => void;
@@ -19,7 +23,12 @@ export interface LobbyState {
   setPointer: (pointer: PointerKind) => void;
   setSimpleMode: (simple: boolean) => void;
   setLocale: (locale: Locale) => void;
+  setNameLinks: (open: boolean) => void;
+  closeNameLinksSoon: () => void;
+  setExploring: (exploring: boolean) => void;
 }
+
+let nameLinksTimer: ReturnType<typeof setTimeout> | undefined;
 
 /** Shared between the Pixi engine (vanilla subscribe) and React (hook). */
 export const lobbyStore = createStore<LobbyState>((set) => ({
@@ -29,9 +38,11 @@ export const lobbyStore = createStore<LobbyState>((set) => ({
   pointer: "mouse",
   simpleMode: false,
   locale: "es",
+  nameLinksOpen: false,
+  exploring: false,
   setReady: (ready) => set({ ready }),
   setHovered: (hovered) => set({ hovered }),
-  open: (active) => set({ active, hovered: null }),
+  open: (active) => set({ active, hovered: null, nameLinksOpen: false }),
   close: () => set({ active: null }),
   setPointer: (pointer) => set({ pointer }),
   setSimpleMode: (simpleMode) => set({ simpleMode, active: null, hovered: null }),
@@ -41,6 +52,16 @@ export const lobbyStore = createStore<LobbyState>((set) => ({
     } catch {}
     set({ locale });
   },
+  setNameLinks: (nameLinksOpen) => {
+    clearTimeout(nameLinksTimer);
+    set({ nameLinksOpen });
+  },
+  // small grace period so the pointer can travel from the sign to the popover
+  closeNameLinksSoon: () => {
+    clearTimeout(nameLinksTimer);
+    nameLinksTimer = setTimeout(() => set({ nameLinksOpen: false }), 350);
+  },
+  setExploring: (exploring) => set({ exploring }),
 }));
 
 export const LOCALE_KEY = "portfolio-locale";

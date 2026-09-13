@@ -56,6 +56,7 @@ const es = {
     switchLanguage: "English",
     contactTitle: "¿Hablamos?",
     writeMe: "Escríbeme",
+    findMe: "Encuéntrame en",
     headings: {
       story: "Mi historia",
       values: "Lo que me mueve",
@@ -261,7 +262,6 @@ const es = {
     signLeft: ["TU PRÓXIMO", "GRAN PROYECTO", "TAMBIÉN", "EMPIEZA AQUÍ →"],
     signRight: ["EXPLORA", "CONECTA", "INSPÍRATE", "CREA →"],
     mat: ["B I E N V E N I D O", "EXPLORA · HAZ CLICK · DESCUBRE"],
-    plaque: ["BUENAS IDEAS", "MEJORES PERSONAS", "UN MISMO LUGAR"],
   },
 };
 
@@ -287,6 +287,7 @@ const en: Content = {
     switchLanguage: "Español",
     contactTitle: "Let's talk?",
     writeMe: "Email me",
+    findMe: "Find me on",
     headings: {
       story: "My story",
       values: "What drives me",
@@ -492,7 +493,6 @@ const en: Content = {
     signLeft: ["YOUR NEXT", "BIG PROJECT", "ALSO", "STARTS HERE →"],
     signRight: ["EXPLORE", "CONNECT", "GET INSPIRED", "CREATE →"],
     mat: ["W E L C O M E", "EXPLORE · CLICK · DISCOVER"],
-    plaque: ["GOOD IDEAS", "BETTER PEOPLE", "ONE PLACE"],
   },
 };
 
