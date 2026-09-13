@@ -9,6 +9,15 @@ import { box, fonts, label, plant, wallX, wallY } from "./draw";
 
 const WALL_H = 100;
 
+/** Relative luminance (0..1) to pick light or dark lettering on a colored wall. */
+function luminance(color: number) {
+  const [r, g, b] = [(color >> 16) & 255, (color >> 8) & 255, color & 255].map((c) => {
+    const v = c / 255;
+    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
 /** One interactive booth: walls, signage, receptionist, desk and glow. */
 export class Stand extends Container {
   readonly receptionist: Chibi;
@@ -112,7 +121,7 @@ export class Stand extends Container {
     const booth = new Container();
     const g = new Graphics();
     box(g, gx, gy, w, d, 6, 0xf7f2ea);
-    wallY(g, gx, gy, d, WALL_H, accent === PALETTE.navy ? 0x2a3657 : PALETTE.wallShade);
+    wallY(g, gx, gy, d, WALL_H, this.cfg.sideWall);
     wallX(g, gx, gy, w, WALL_H, PALETTE.wall);
     // accent band on the main wall
     wallX(g, gx, gy - 0.02, w, 10, accent, 0.2);
@@ -152,7 +161,7 @@ export class Stand extends Container {
     const so = iso(gx, gy + d - 0.3);
     side.position.set(so.x + 4, so.y);
     side.skew.y = -WALL_SKEW;
-    const dark = accent === PALETTE.navy;
+    const dark = luminance(this.cfg.sideWall) < 0.3;
     this.cfg.sideText.forEach((line, i) => {
       const t = label(line, {
         fontSize: this.cfg.id === "about" ? 10 : 8,

@@ -38,6 +38,8 @@ export interface StandLayout {
   w: number;
   d: number;
   accent: number;
+  /** Left (side) wall color: each booth’s theme, picked from the island palette. */
+  sideWall: number;
   icon: "person" | "folder" | "gear" | "briefcase";
   receptionist: { hair: number; shirt: number; glasses?: boolean };
 }
@@ -45,12 +47,14 @@ export interface StandLayout {
 /** Layout plus the signage/greetings in the current language (texts live in src/content). */
 export type StandConfig = StandLayout & StandText;
 
+// Side walls by theme: About = warm sand (personal), Portfolio = navy (work),
+// Skills = sage (growth), Experience = walnut (career path).
 // Walls sit on each booth’s far edges (gx and gy), so visitor routes stay on the open (near) sides.
 const STAND_LAYOUT: StandLayout[] = [
-  { id: "about", gx: 3.5, gy: 4, w: 6, d: 4.5, accent: 0xc9a27a, icon: "person", receptionist: { hair: 0x2d2420, shirt: 0x2f3b5c } },
-  { id: "portfolio", gx: 4, gy: 18, w: 6, d: 4.5, accent: 0x1f2a44, icon: "folder", receptionist: { hair: 0x3b2a22, shirt: 0x1f2a44 } },
-  { id: "skills", gx: 18, gy: 4, w: 6, d: 4.5, accent: 0x4f6b62, icon: "gear", receptionist: { hair: 0x4a3226, shirt: 0x4f6b62, glasses: true } },
-  { id: "experience", gx: 22.5, gy: 16, w: 6, d: 4.5, accent: 0x8a6a52, icon: "briefcase", receptionist: { hair: 0x5a3b2a, shirt: 0x2f3b5c } },
+  { id: "about", gx: 3.5, gy: 4, w: 6, d: 4.5, accent: 0xc9a27a, sideWall: 0xdcb68c, icon: "person", receptionist: { hair: 0x2d2420, shirt: 0x2f3b5c } },
+  { id: "portfolio", gx: 4, gy: 18, w: 6, d: 4.5, accent: 0x1f2a44, sideWall: 0x2a3657, icon: "folder", receptionist: { hair: 0x3b2a22, shirt: 0x1f2a44 } },
+  { id: "skills", gx: 18, gy: 4, w: 6, d: 4.5, accent: 0x4f6b62, sideWall: 0x5f7f6f, icon: "gear", receptionist: { hair: 0x4a3226, shirt: 0x4f6b62, glasses: true } },
+  { id: "experience", gx: 22.5, gy: 16, w: 6, d: 4.5, accent: 0x8a6a52, sideWall: 0x8a6448, icon: "briefcase", receptionist: { hair: 0x5a3b2a, shirt: 0x2f3b5c } },
 ];
 
 export function standsFor(text: Content["lobby"]): StandConfig[] {
