@@ -60,13 +60,9 @@ export class Stand extends Container {
     this.halo.alpha = 0;
     this.addChild(this.halo);
 
-    // walls (art or placeholder) rising straight from the lobby floor, anchored at the booth's far corner
-    const corner = iso(gx, gy);
-    const floorDecor = this.buildFloorDecor();
-    floorDecor.position.set(corner.x, corner.y);
-    floorDecor.zIndex = -1;
-    this.addChild(floorDecor);
+    // walls + floor (art or placeholder), anchored at the booth's far corner on the floor
     const shell = piece(`stand-${cfg.id}` as const, () => this.buildShell());
+    const corner = iso(gx, gy);
     shell.position.set(corner.x, corner.y);
     this.addChild(shell);
     // signage, wall graphics and side-wall lettering are always drawn by code, in the current language
@@ -95,7 +91,7 @@ export class Stand extends Container {
 
     // glow outline (animated on hover)
     const g = new Graphics();
-    g.poly(rectPoly(gx, gy, w, d)).fill({ color: PALETTE.glow, alpha: 0.12 }).stroke({ width: 3, color: PALETTE.glow });
+    g.poly(rectPoly(gx, gy, w, d, 6)).fill({ color: PALETTE.glow, alpha: 0.12 }).stroke({ width: 3, color: PALETTE.glow });
     const a = iso(gx, gy + d);
     const b = iso(gx, gy);
     const e = iso(gx + w, gy);
@@ -140,30 +136,12 @@ export class Stand extends Container {
     bubbleLayer.addChild(this.bubble);
   }
 
-  /**
-   * What ties the booth into the lobby floor, relative to the far corner (0, 0):
-   * soft contact shadow at the foot of both walls and a brass inlay along the open edges.
-   */
-  private buildFloorDecor(): Container {
-    const { w, d } = this.cfg;
-    const g = new Graphics();
-    // stacked bands fake a soft gradient, darkest right at the wall base
-    [0.5, 0.25, 0.1].forEach((t) => {
-      g.poly(rectPoly(0, 0, t, d)).fill({ color: 0x3a2a1a, alpha: 0.045 });
-      g.poly(rectPoly(0, 0, w, t)).fill({ color: 0x3a2a1a, alpha: 0.045 });
-    });
-    const a = iso(w, 0);
-    const b = iso(w, d);
-    const c = iso(0, d);
-    g.moveTo(a.x, a.y).lineTo(b.x, b.y).lineTo(c.x, c.y).stroke({ width: 2, color: 0xc9ab7c, alpha: 0.75, cap: "round", join: "round" });
-    return g;
-  }
-
-  /** Placeholder walls, drawn relative to the far corner (0, 0). */
+  /** Placeholder walls + floor, drawn relative to the far corner (0, 0). */
   private buildShell(): Container {
     const { w, d, accent } = this.cfg;
     const shell = new Container();
     const g = new Graphics();
+    box(g, 0, 0, w, d, 6, 0xf7f2ea);
     wallY(g, 0, 0, d, WALL_H, this.cfg.sideWall);
     wallX(g, 0, 0, w, WALL_H, PALETTE.wall);
     // accent band on the main wall
