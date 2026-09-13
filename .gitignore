@@ -42,3 +42,6 @@ next-env.d.ts
 
 # local tooling
 /.claude/
+
+# full-size generated art (optimized copies live in public/lobby)
+/art/

@@ -6,6 +6,8 @@ Ahora mismo todo se dibuja con placeholders vectoriales. Para reemplazarlos por 
 2. Guárdala en `public/lobby/` (por ejemplo `public/lobby/stand-about.png`).
 3. En `src/lobby/assets.ts`, cambia `src: null` por `src: "/lobby/stand-about.png"` y ajusta `anchor`/`scale` si hace falta.
 
+Las imágenes generadas suelen pesar 1–2 MB. Antes de publicarlas conviene recortarlas al objeto, bajarlas al tamaño máximo que muestra la cámara (zoom 2.6 × pantalla retina) y convertirlas a WebP. El original a tamaño completo se guarda en `art/lobby/` (no se sube a git ni se publica).
+
 La lógica (hover, zoom, NPCs) no cambia: solo cambia lo que se ve.
 
 ## Reglas de consistencia (muy importante)
@@ -21,13 +23,13 @@ La lógica (hover, zoom, NPCs) no cambia: solo cambia lo que se ve.
 | Key (`assets.ts`) | Qué es | Tamaño sugerido | Anchor |
 |---|---|---|---|
 | `lobby-floor` | Suelo completo del lobby, vacío (mármol, anillos de la plaza, alfombra **sin texto**; el texto lo pone el código en el idioma activo) | Rombo 2:1, recortado al borde (≈ 2000 × 1020) | x 0.5, y 0 (esquina superior del rombo). Se escala solo a 1984 px de ancho |
-| `planter-center` | Jardinera redonda de la plaza con su árbol, **sin bancas ni placa** (las pone el código) | ~1024 × 1024, recortada al borde de la jardinera | Automático: ancho 200 px, se apoya en el centro de la base |
+| `planter-center` | Jardinera redonda de la plaza con su árbol, **sin bancas ni placa** (las pone el código) | ✅ `planter-center.webp`, 1100 × 1056 | Ancho 200 px, se apoya en el centro de la base (45 px sobre el borde inferior); la placa va en la banda frontal |
 | `stand-about` | Stand "Sobre mí": paredes en L, letrero, cuadro, suelo del stand, **sin recepcionista ni escritorio** | 460 × 380 | 0.5, 0.75 |
 | `stand-portfolio` | Stand "Portafolio" con pantallas en la pared | 460 × 380 | 0.5, 0.75 |
 | `stand-skills` | Stand "Habilidades" con iconos Ps/Ai/Figma/código | 460 × 380 | 0.5, 0.75 |
 | `stand-experience` | Stand "Experiencias" con timeline en la pared | 460 × 380 | 0.5, 0.75 |
-| `plant-a` | Planta frondosa y redonda en maceta oscura | ~768 × 1024, recortada al borde | Automático: ancho 46 px × tamaño |
-| `plant-b` | Planta alta de hojas grandes en maceta oscura | ~768 × 1024, recortada al borde | Automático: ancho 40 px × tamaño |
+| `plant-a` | Planta frondosa y redonda en maceta oscura | ✅ `plant-a.webp`, 360 px de ancho | Ancho 42 px × tamaño, apoyada en el centro de la maceta |
+| `plant-b` | Planta alta de hojas grandes en maceta oscura | ✅ `plant-b.webp`, 360 px de ancho | Ancho 48 px × tamaño, apoyada en el centro de la maceta |
 | `bench` | Banca de madera | 140 × 80 | 0.5, 0.7 |
 | `lamp` | Poste de luz con bombilla cálida | 40 × 110 | 0.5, 0.97 |
 

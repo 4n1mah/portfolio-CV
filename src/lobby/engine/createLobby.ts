@@ -2,7 +2,7 @@ import { Application, Container, type FederatedPointerEvent } from "pixi.js";
 import gsap from "gsap";
 import { content, type Locale } from "@/content/sections";
 import { ENTRANCE_MAT, PALETTE, PLAZA_CENTER, SITTERS, VISITORS, WAYPOINTS, WORLD_SIZE, standsFor } from "../config";
-import { loadAssets } from "../assets";
+import { ASSETS, loadAssets } from "../assets";
 import { lobbyStore, type StandId } from "../store";
 import { DETAIL, fonts } from "../layers/draw";
 import { buildDecor, buildFloor } from "../layers/Scene";
@@ -90,10 +90,10 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     entities.addChild(stand);
   }
 
-  // "Sadiel’s Plaza" plate on the front of the central planter (planter band is 34px tall)
+  // "Sadiel’s Plaza" plate centred on the front band of the central planter, above its light strip
   const nameSign = new NameSign(text.plazaSign);
   const plaza = iso(PLAZA_CENTER.gx, PLAZA_CENTER.gy);
-  nameSign.position.set(plaza.x, plaza.y + isoCircle(2.2).ry - 17);
+  nameSign.position.set(plaza.x, plaza.y + (ASSETS["planter-center"].src ? 12 : isoCircle(2.2).ry - 17));
   nameSign.zIndex = depth(PLAZA_CENTER.gx, PLAZA_CENTER.gy) + 1;
   entities.addChild(nameSign);
 

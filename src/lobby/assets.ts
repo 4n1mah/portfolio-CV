@@ -25,14 +25,14 @@ export const ASSETS = {
   // Island: 31 x 31 tiles = 1984 px wide. Crop the image to the diamond so its top corner is at y = 0.
   "lobby-floor": { src: "/lobby/lobby-floor.png", anchor: { x: 0.5, y: 0 }, width: 1984 },
   // Round planter with the plaza tree. Radius 2.2 tiles → 200 px wide; crop so the planter rim touches both sides.
-  "planter-center": { src: null, anchor: { x: 0.5, y: 1 }, width: 200, groundOffset: 50, shadow: { rx: 112, ry: 58, alpha: 0.12 } },
+  "planter-center": { src: "/lobby/planter-center.webp", anchor: { x: 0.5, y: 1 }, width: 200, groundOffset: 45, shadow: { rx: 108, ry: 50, alpha: 0.12 } },
   "stand-about": { src: null, anchor: { x: 0.5, y: 0.75 } },
   "stand-portfolio": { src: null, anchor: { x: 0.5, y: 0.75 } },
   "stand-skills": { src: null, anchor: { x: 0.5, y: 0.75 } },
   "stand-experience": { src: null, anchor: { x: 0.5, y: 0.75 } },
   // Potted plants (two varieties). Crop tight; width is the widest leaf span at size 1.
-  "plant-a": { src: null, anchor: { x: 0.5, y: 1 }, width: 46, groundOffset: 3, shadow: { rx: 15, ry: 6 } },
-  "plant-b": { src: null, anchor: { x: 0.5, y: 1 }, width: 40, groundOffset: 3, shadow: { rx: 14, ry: 6 } },
+  "plant-a": { src: "/lobby/plant-a.webp", anchor: { x: 0.508, y: 1 }, width: 42, groundOffset: 6.2, shadow: { rx: 14, ry: 6 } },
+  "plant-b": { src: "/lobby/plant-b.webp", anchor: { x: 0.5, y: 1 }, width: 48, groundOffset: 3.4, shadow: { rx: 12, ry: 5 } },
   "bench": { src: null, anchor: { x: 0.5, y: 0.7 } },
   "lamp": { src: null, anchor: { x: 0.5, y: 0.97 } },
 } satisfies Record<string, AssetEntry>;
@@ -41,7 +41,8 @@ export type AssetKey = keyof typeof ASSETS;
 
 export async function loadAssets(): Promise<void> {
   const entries = Object.entries(ASSETS as Record<string, AssetEntry>).filter(([, a]) => a.src);
-  await Promise.all(entries.map(([key, a]) => Assets.load({ alias: key, src: a.src! })));
+  // mipmaps keep big images crisp instead of grainy when the camera zooms out
+  await Promise.all(entries.map(([key, a]) => Assets.load({ alias: key, src: a.src!, data: { autoGenerateMipmaps: true } })));
 }
 
 /**
