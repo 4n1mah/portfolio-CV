@@ -99,10 +99,10 @@ export function buildDecor(entities: Container, text: Content["lobby"]) {
   place(entities, piece("bench", () => bench(true)), 15, 12.1);
   place(entities, piece("bench", () => bench(true)), 15, 18);
 
-  // seats under seated visitors
-  place(entities, seat(false), 12.1, 15.4);
-  place(entities, seat(false), 17.8, 14.6);
-  place(entities, seat(true, true), 15.2, 24);
+  // seats under seated visitors: shorter benches along gy (the bench image mirrored) and the lounge sofa
+  place(entities, piece("bench", () => seat(false), 0.9, true), 12.1, 15.4);
+  place(entities, piece("bench", () => seat(false), 0.9, true), 17.8, 14.6);
+  place(entities, piece("sofa", () => seat(true, true)), 15.2, 24);
 
   place(entities, sign(text.signLeft), 19.8, 25.6);
   place(entities, sign(text.signRight, { dark: true }), 27.4, 23.6);
