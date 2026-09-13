@@ -1,5 +1,6 @@
 import { Assets, Container, Graphics, Sprite, Texture } from "pixi.js";
 import { PALETTE } from "./config";
+import { iso } from "./engine/iso";
 
 // Asset manifest. Every visual piece has a key. While `src` is null the engine
 // draws a vector placeholder; drop a PNG into /public/lobby and set `src`
@@ -22,6 +23,10 @@ export interface AssetEntry {
   shadow?: { rx: number; ry: number; alpha?: number };
   /** Warm light halo drawn by code `y` px above the ground point (generated glows bake a muddy haze into the image). */
   glow?: { y: number; r: number; alpha?: number };
+  /** Vertical factor applied after sizing: flattens art rendered from a higher camera than the lobby's 2:1 view. */
+  squashY?: number;
+  /** Soft shadow shaped like the piece's footprint (w × d tiles along gx; mirrored with flipX), for long diagonal pieces. */
+  footprint?: { w: number; d: number; alpha?: number };
 }
 
 export const ASSETS = {
@@ -37,9 +42,10 @@ export const ASSETS = {
   "plant-a": { src: "/lobby/plant-a.webp", anchor: { x: 0.508, y: 1 }, width: 42, groundOffset: 6.2, shadow: { rx: 14, ry: 6 } },
   "plant-b": { src: "/lobby/plant-b.webp", anchor: { x: 0.5, y: 1 }, width: 48, groundOffset: 3.4, shadow: { rx: 12, ry: 5 } },
   // Backless wooden bench whose long side runs down-right (along gx); mirrored for benches along gy.
-  "bench": { src: "/lobby/bench.webp", anchor: { x: 0.5, y: 1 }, width: 73, groundOffset: 25, shadow: { rx: 40, ry: 13, alpha: 0.1 } },
+  // The art was rendered from a ~42° camera (the lobby is 30°), so it is squashed to sit flat on the tiles.
+  "bench": { src: "/lobby/bench.webp", anchor: { x: 0.5, y: 1 }, width: 73, groundOffset: 18.75, squashY: 0.75, footprint: { w: 1.8, d: 0.5 } },
   // Lounge sofa, backrest on the back-right side (along gx).
-  "sofa": { src: "/lobby/sofa.webp", anchor: { x: 0.502, y: 1 }, width: 78, groundOffset: 17, shadow: { rx: 42, ry: 14, alpha: 0.1 } },
+  "sofa": { src: "/lobby/sofa.webp", anchor: { x: 0.502, y: 1 }, width: 78, groundOffset: 17, footprint: { w: 1.6, d: 0.7 } },
   // Street lamp; the halo around the bulb is drawn by code.
   "lamp": { src: "/lobby/lamp.webp", anchor: { x: 0.498, y: 1 }, width: 10.5, groundOffset: 1.8, shadow: { rx: 7, ry: 3, alpha: 0.15 }, glow: { y: 54, r: 13 } },
 } satisfies Record<string, AssetEntry>;
@@ -66,15 +72,31 @@ export function piece(key: AssetKey, fallback: () => Container, size = 1, flipX 
   const tex = sprite.texture;
   let scale = entry.width ? entry.width / tex.width : (entry.scale ?? 1);
   scale *= size;
-  sprite.scale.set(flipX ? -scale : scale, scale);
-  const anchorY = entry.groundOffset !== undefined ? 1 - (entry.groundOffset * size) / scale / tex.height : entry.anchor.y;
+  const scaleY = scale * (entry.squashY ?? 1);
+  sprite.scale.set(flipX ? -scale : scale, scaleY);
+  const anchorY = entry.groundOffset !== undefined ? 1 - (entry.groundOffset * size) / scaleY / tex.height : entry.anchor.y;
   sprite.anchor.set(entry.anchor.x, anchorY);
-  if (!entry.shadow && !entry.glow) return sprite;
+  if (!entry.shadow && !entry.glow && !entry.footprint) return sprite;
 
   const holder = new Container();
   if (entry.shadow) {
     const { rx, ry, alpha = 0.16 } = entry.shadow;
     holder.addChild(new Graphics().ellipse(0, 0, rx * size, ry * size).fill({ color: 0x000000, alpha }));
+  }
+  if (entry.footprint) {
+    // two stacked parallelograms fake a soft edge without a blur filter
+    const { w, d, alpha = 0.12 } = entry.footprint;
+    const g = new Graphics();
+    [[0.35, alpha * 0.5], [0.1, alpha]].forEach(([grow, a]) => {
+      const hw = ((w + grow) * size) / 2;
+      const hd = ((d + grow) * size) / 2;
+      const pts = [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]].flatMap(([x, y]) => {
+        const p = iso(x, y);
+        return [flipX ? -p.x : p.x, p.y];
+      });
+      g.poly(pts).fill({ color: 0x000000, alpha: a });
+    });
+    holder.addChild(g);
   }
   holder.addChild(sprite);
   if (entry.glow) {

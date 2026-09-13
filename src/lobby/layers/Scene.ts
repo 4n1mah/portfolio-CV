@@ -92,7 +92,8 @@ export function buildDecor(entities: Container, text: Content["lobby"]) {
   plants.forEach(([gx, gy, s, v]) => place(entities, piece(v === 0 ? "plant-a" : "plant-b", () => plant(s, v), s), gx, gy));
 
   const lamps: [number, number][] = [
-    [11.2, 13.6], [18.8, 16.4], [13.6, 11.2], [16.4, 18.8], [21.8, 21.8], [24.2, 29.8], [29.8, 24.2],
+    // the two front lamps stand clear of the bench ends
+    [11.2, 13.6], [18.8, 17.4], [13.6, 11.2], [17.4, 18.8], [21.8, 21.8], [24.2, 29.8], [29.8, 24.2],
   ];
   lamps.forEach(([gx, gy]) => place(entities, piece("lamp", () => lamp()), gx, gy));
 
