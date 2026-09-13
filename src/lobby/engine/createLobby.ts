@@ -1,7 +1,7 @@
 import { Application, Container, type FederatedPointerEvent } from "pixi.js";
 import gsap from "gsap";
 import { content, type Locale } from "@/content/sections";
-import { PALETTE, PLAZA_CENTER, SITTERS, VISITORS, WAYPOINTS, WORLD_SIZE, standsFor } from "../config";
+import { ENTRANCE_MAT, PALETTE, PLAZA_CENTER, SITTERS, VISITORS, WAYPOINTS, WORLD_SIZE, standsFor } from "../config";
 import { loadAssets } from "../assets";
 import { lobbyStore, type StandId } from "../store";
 import { DETAIL, fonts } from "../layers/draw";
@@ -124,7 +124,7 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
       xs.push(iso(cfg.gx, cfg.gy + cfg.d).x, iso(cfg.gx + cfg.w, cfg.gy).x);
       ys.push(far.y - 110, iso(cfg.gx + cfg.w, cfg.gy + cfg.d).y);
     }
-    ys.push(iso(26, 26).y); // entrance mat
+    ys.push(iso(ENTRANCE_MAT.gx + ENTRANCE_MAT.size / 2, ENTRANCE_MAT.gy + ENTRANCE_MAT.size / 2).y); // entrance mat
     return { minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) };
   })();
   const home = () => {
@@ -136,11 +136,16 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     // ~18% closer than "whole island" so booths read better; the empty floor tips may crop,
     // but never a booth or the entrance
     const margin = 40;
-    const contentFit = Math.min(width / (booths.maxX - booths.minX + margin * 2), height / (booths.maxY - booths.minY + margin * 2));
+    const hintBar = 36; // bottom hint pill: keep the entrance mat lettering above it
+    const contentFit = Math.min(
+      width / (booths.maxX - booths.minX + margin * 2),
+      (height - hintBar) / (booths.maxY - booths.minY + margin * 2),
+    );
+    const scale = Math.min(fit * 1.18, contentFit);
     return {
       x: (booths.minX + booths.maxX) / 2,
-      y: (booths.minY + booths.maxY) / 2,
-      scale: Math.min(fit * 1.18, contentFit),
+      y: (booths.minY + booths.maxY) / 2 + hintBar / 2 / scale,
+      scale,
     };
   };
   camera.resize(app.screen.width, app.screen.height);

@@ -1,7 +1,7 @@
 import { Container, Graphics } from "pixi.js";
 import type { Content } from "@/content/sections";
-import { PALETTE, PLAZA_CENTER, WORLD_SIZE } from "../config";
-import { depth, iso, isoCircle, rectPoly } from "../engine/iso";
+import { ENTRANCE_MAT, PALETTE, PLAZA_CENTER, WORLD_SIZE } from "../config";
+import { depth, iso, isoCircle, rectPoly, TILE_W } from "../engine/iso";
 import { piece } from "../assets";
 import { bench, box, DETAIL, label, lamp, planter, plant, sign } from "./draw";
 import { seat } from "./Npc";
@@ -46,8 +46,9 @@ function floorArt(): Container {
     });
 
     // entrance mat
-    box(g, 22.6, 22.6, 3.4, 3.4, 2, 0x2b2f38);
-    g.poly(rectPoly(22.9, 22.9, 2.8, 2.8, 2)).stroke({ width: 1, color: 0x555a66 });
+    const { gx: mx, gy: my, size } = ENTRANCE_MAT;
+    box(g, mx - size / 2, my - size / 2, size, size, 2, 0x2b2f38);
+    g.poly(rectPoly(mx - size / 2 + 0.3, my - size / 2 + 0.3, size - 0.6, size - 0.6, 2)).stroke({ width: 1, color: 0x555a66 });
     c.addChild(g);
     return c;
   });
@@ -55,7 +56,7 @@ function floorArt(): Container {
 
 /** Mat lettering drawn over the floor art, in the current language. */
 function matLettering(text: Content["lobby"]): Container {
-  const mat = iso(24.3, 24.3);
+  const mat = iso(ENTRANCE_MAT.gx, ENTRANCE_MAT.gy);
   const welcome = new Container();
   const t1 = label(text.mat[0], { fontSize: 13, fill: 0xf2ede4, fontWeight: "500" });
   const t2 = label(text.mat[1], { fontSize: 6, fill: 0xb9b3a8, letterSpacing: 1.5 });
@@ -66,7 +67,7 @@ function matLettering(text: Content["lobby"]): Container {
   welcome.addChild(t1, t2);
   welcome.position.set(mat.x, mat.y - 6);
   // keep both lines inside the mat whatever the language
-  const fit = Math.min(1, 150 / Math.max(t1.width, t2.width));
+  const fit = Math.min(1, (ENTRANCE_MAT.size * TILE_W * 0.7) / Math.max(t1.width, t2.width));
   welcome.scale.set(fit, fit * 0.62);
   return welcome;
 }
@@ -86,12 +87,12 @@ export function buildDecor(entities: Container, text: Content["lobby"]) {
     [3, 11.5, 1.1, 0], [3, 14, 1.2, 1], [11.5, 3, 1.1, 1], [14.5, 3, 1.2, 0],
     [3, 24, 1.2, 0], [24, 3, 1.2, 1], [3.2, 27.5, 1, 1], [27.5, 3.2, 1, 0],
     [12.4, 22.3, 1, 0], [21.8, 12.8, 1, 1], [11.6, 25.8, 1.1, 1], [25.8, 11.8, 1.1, 0],
-    [22.2, 27.6, 1, 0], [29.6, 22.6, 1, 1], [17.2, 27.6, 0.9, 1],
+    [21, 28.2, 1, 0], [30, 21.4, 1, 1], [17.2, 27.6, 0.9, 1],
   ];
   plants.forEach(([gx, gy, s, v]) => place(entities, piece("plant-a", () => plant(s, v)), gx, gy));
 
   const lamps: [number, number][] = [
-    [11.2, 13.6], [18.8, 16.4], [13.6, 11.2], [16.4, 18.8], [21.8, 21.8], [27.4, 27.4],
+    [11.2, 13.6], [18.8, 16.4], [13.6, 11.2], [16.4, 18.8], [21.8, 21.8], [24.2, 29.8], [29.8, 24.2],
   ];
   lamps.forEach(([gx, gy]) => place(entities, piece("lamp", () => lamp()), gx, gy));
 

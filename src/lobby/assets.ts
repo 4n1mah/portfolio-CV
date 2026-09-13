@@ -16,7 +16,7 @@ export interface AssetEntry {
 
 export const ASSETS = {
   // Island: 31 x 31 tiles = 1984 px wide. Crop the image to the diamond so its top corner is at y = 0.
-  "lobby-floor": { src: null, anchor: { x: 0.5, y: 0 }, width: 1984 },
+  "lobby-floor": { src: "/lobby/lobby-floor.png", anchor: { x: 0.5, y: 0 }, width: 1984 },
   "planter-center": { src: null, anchor: { x: 0.5, y: 0.8 } },
   "stand-about": { src: null, anchor: { x: 0.5, y: 0.75 } },
   "stand-portfolio": { src: null, anchor: { x: 0.5, y: 0.75 } },

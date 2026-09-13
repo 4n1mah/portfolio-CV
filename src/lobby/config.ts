@@ -6,6 +6,8 @@ import type { StandId } from "./store";
 
 export const WORLD_SIZE = 31;
 export const PLAZA_CENTER = { gx: 15, gy: 15 };
+/** Entrance mat: center and side length in tiles. Matches public/lobby/lobby-floor.png. */
+export const ENTRANCE_MAT = { gx: 27.1, gy: 27.1, size: 4 };
 
 export const PALETTE = {
   background: 0x1c2231,
