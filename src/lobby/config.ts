@@ -49,19 +49,14 @@ export interface StandLayout {
 /** Layout plus the signage/greetings in the current language (texts live in src/content). */
 export type StandConfig = StandLayout & StandText;
 
-/** Side of one marble tile of the floor art (8 tiles per side). */
-export const FLOOR_TILE = WORLD_SIZE / 8;
-
 // Side walls by theme: About = warm sand (personal), Portfolio = navy (work),
 // Skills = sage (growth), Experience = walnut (career path).
 // Walls sit on each booth’s far edges (gx and gy), so visitor routes stay on the open (near) sides.
-// Booths with their far corner on a tile corner have both walls running along the tile joints.
-const T = FLOOR_TILE;
 const STAND_LAYOUT: StandLayout[] = [
-  { id: "about", gx: 0, gy: 0, w: 6, d: 4.5, accent: 0xc9a27a, sideWall: 0xdcb68c, icon: "person", receptionist: { hair: 0x2d2420, shirt: 0x2f3b5c } },
-  { id: "portfolio", gx: 0, gy: 4 * T, w: 6, d: 4.5, accent: 0x1f2a44, sideWall: 0x2a3657, icon: "folder", receptionist: { hair: 0x3b2a22, shirt: 0x1f2a44 } },
-  { id: "skills", gx: 4 * T, gy: 0, w: 6, d: 4.5, accent: 0x4f6b62, sideWall: 0x5f7f6f, icon: "gear", receptionist: { hair: 0x4a3226, shirt: 0x4f6b62, glasses: true } },
-  { id: "experience", gx: 6 * T, gy: 3 * T, w: 6, d: 4.5, accent: 0x8a6a52, sideWall: 0x8a6448, icon: "briefcase", receptionist: { hair: 0x5a3b2a, shirt: 0x2f3b5c } },
+  { id: "about", gx: 3.5, gy: 4, w: 6, d: 4.5, accent: 0xc9a27a, sideWall: 0xdcb68c, icon: "person", receptionist: { hair: 0x2d2420, shirt: 0x2f3b5c } },
+  { id: "portfolio", gx: 4, gy: 18, w: 6, d: 4.5, accent: 0x1f2a44, sideWall: 0x2a3657, icon: "folder", receptionist: { hair: 0x3b2a22, shirt: 0x1f2a44 } },
+  { id: "skills", gx: 18, gy: 4, w: 6, d: 4.5, accent: 0x4f6b62, sideWall: 0x5f7f6f, icon: "gear", receptionist: { hair: 0x4a3226, shirt: 0x4f6b62, glasses: true } },
+  { id: "experience", gx: 22.5, gy: 16, w: 6, d: 4.5, accent: 0x8a6a52, sideWall: 0x8a6448, icon: "briefcase", receptionist: { hair: 0x5a3b2a, shirt: 0x2f3b5c } },
 ];
 
 export function standsFor(text: Content["lobby"]): StandConfig[] {
@@ -78,10 +73,10 @@ export const WAYPOINTS: Record<string, { gx: number; gy: number; links: string[]
   r5: { gx: 11, gy: 11, links: ["r4", "r6", "about"] },
   r6: { gx: 15, gy: 9.4, links: ["r5", "r7", "about", "skill"] },
   r7: { gx: 19, gy: 11, links: ["r6", "r0", "skill"] },
-  about: { gx: 7.6, gy: 6.4, links: ["r5", "r6"], faces: "about" },
-  port: { gx: 8, gy: 18, links: ["r3", "r4"], faces: "portfolio" },
-  skill: { gx: 18.4, gy: 6.8, links: ["r6", "r7"], faces: "skills" },
-  exp: { gx: 26, gy: 17.6, links: ["gate"], faces: "experience" },
+  about: { gx: 10.4, gy: 10, links: ["r5", "r6"], faces: "about" },
+  port: { gx: 11.2, gy: 20.4, links: ["r3", "r4"], faces: "portfolio" },
+  skill: { gx: 19.5, gy: 9.8, links: ["r6", "r7"], faces: "skills" },
+  exp: { gx: 25, gy: 21.8, links: ["gate"], faces: "experience" },
   gate: { gx: 22.3, gy: 22.3, links: ["r1", "exp"] },
   lounge: { gx: 17, gy: 22.2, links: ["r2"] },
 };

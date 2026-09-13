@@ -85,9 +85,9 @@ export function buildDecor(entities: Container, text: Content["lobby"]) {
   place(entities, piece("planter-center", () => planter(2.2)), PLAZA_CENTER.gx, PLAZA_CENTER.gy);
 
   const plants: [number, number, number, number][] = [
-    [3, 11.5, 1.1, 0], [7.2, 13.2, 1.2, 1], [11.5, 3, 1.1, 1], [13.2, 7.2, 1.2, 0],
+    [3, 11.5, 1.1, 0], [3, 14, 1.2, 1], [11.5, 3, 1.1, 1], [14.5, 3, 1.2, 0],
     [3, 24, 1.2, 0], [24, 3, 1.2, 1], [3.2, 27.5, 1, 1], [27.5, 3.2, 1, 0],
-    [12.4, 22.3, 1, 0], [24.4, 20.2, 1, 1], [11.6, 25.8, 1.1, 1], [29.6, 18.6, 1.1, 0],
+    [12.4, 22.3, 1, 0], [21.8, 12.8, 1, 1], [11.6, 25.8, 1.1, 1], [25.8, 11.8, 1.1, 0],
     [21, 28.2, 1, 0], [30, 21.4, 1, 1], [17.2, 27.6, 0.9, 1],
   ];
   plants.forEach(([gx, gy, s, v]) => place(entities, piece(v === 0 ? "plant-a" : "plant-b", () => plant(s, v), s), gx, gy));
