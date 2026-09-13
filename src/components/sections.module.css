@@ -1,0 +1,281 @@
+.lead {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin: 0 0 8px;
+}
+
+.p {
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin: 6px 0;
+  font-size: 0.94rem;
+}
+
+.h3 {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 26px 0 10px;
+}
+
+.cards {
+  display: grid;
+  gap: 10px;
+}
+
+.card {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--paper-2);
+  font-size: 0.92rem;
+}
+
+.card span {
+  color: var(--ink-soft);
+}
+
+.quote {
+  margin: 0;
+  padding: 4px 0 4px 16px;
+  border-left: 3px solid var(--glow);
+  font-family: var(--font-script), cursive;
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+
+.chips,
+.tags {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chips li {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--paper-2);
+  font-size: 0.85rem;
+}
+
+.chips .chipAccent {
+  background: var(--ink);
+  color: #fff;
+}
+
+.tags {
+  margin: 8px 0;
+}
+
+.tags li {
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.projects {
+  display: grid;
+  gap: 18px;
+}
+
+.project {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.thumb {
+  aspect-ratio: 1;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.meta {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.projectTitle {
+  margin: 2px 0 0;
+  font-size: 1.05rem;
+}
+
+.result {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #4f6b62;
+}
+
+.inlineLink {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--glow);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.projectLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.projectLinks a {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.projectLinks a:hover {
+  background: #2f3b5c;
+}
+
+.bars {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.barLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  margin-bottom: 5px;
+}
+
+.barLabel span:last-child {
+  color: var(--ink-soft);
+}
+
+.bar {
+  height: 8px;
+  border-radius: 99px;
+  background: var(--paper-2);
+  overflow: hidden;
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--ink), #4f6b62);
+  animation: grow 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transform-origin: left;
+}
+
+@keyframes grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 22px;
+  border-left: 2px solid var(--line);
+}
+
+.entry {
+  position: relative;
+  padding: 0 0 26px 6px;
+}
+
+.entry::before {
+  content: "";
+  position: absolute;
+  left: -30px;
+  top: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+}
+
+.entry:first-child::before {
+  background: var(--glow);
+}
+
+.period {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #8a6a52;
+}
+
+.achievements {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.contact {
+  margin-top: 32px;
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--ink);
+  color: #fff;
+}
+
+.contact p {
+  margin: 0 0 10px;
+  font-family: var(--font-script), cursive;
+  font-size: 1.5rem;
+}
+
+.cta {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--glow);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.links {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 0.85rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar span {
+    animation: none;
+  }
+}

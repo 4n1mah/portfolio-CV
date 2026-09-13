@@ -1,0 +1,289 @@
+import { Container, Graphics, Polygon } from "pixi.js";
+import gsap from "gsap";
+import { PALETTE, type StandConfig } from "../config";
+import { depth, iso, rectPoly, TILE_W, WALL_SKEW, type Point } from "../engine/iso";
+import { piece } from "../assets";
+import { Bubble } from "./Bubble";
+import { Chibi } from "./Chibi";
+import { box, fonts, label, plant, wallX, wallY } from "./draw";
+
+const WALL_H = 100;
+
+/** One interactive booth: walls, signage, receptionist, desk and glow. */
+export class Stand extends Container {
+  readonly receptionist: Chibi;
+  readonly bubble = new Bubble(true);
+  private glow = new Container();
+  private halo = new Graphics();
+  private sign = new Container();
+  private signScale = 1;
+  private highlights: Container[] = [];
+  private greetIndex = 0;
+  private hovered = false;
+  private t = Math.random() * 10;
+
+  constructor(readonly cfg: StandConfig, bubbleLayer: Container) {
+    super();
+    const { gx, gy, w, d } = cfg;
+    this.sortableChildren = true;
+    this.zIndex = depth(gx, gy);
+
+    // halo under everything
+    const c = iso(gx + w / 2, gy + d / 2);
+    this.halo.ellipse(c.x, c.y, w * 30, d * 20).fill({ color: PALETTE.glow, alpha: 0.22 });
+    this.halo.alpha = 0;
+    this.addChild(this.halo);
+
+    this.addChild(piece(`stand-${cfg.id}` as const, () => this.buildBooth()));
+
+    // receptionist + desk
+    const rx = gx + w * 0.5;
+    const ry = gy + d * 0.42;
+    this.receptionist = new Chibi({ ...cfg.receptionist, backpack: false });
+    const rp = iso(rx, ry);
+    this.receptionist.position.set(rp.x, rp.y);
+    this.addChild(this.receptionist);
+
+    const desk = new Graphics();
+    box(desk, rx - 1.3, ry + 0.45, 2.6, 0.8, 22, PALETTE.wood);
+    box(desk, rx - 1.4, ry + 0.4, 2.8, 0.9, 3, PALETTE.wall, 22);
+    // laptop
+    const lp = iso(rx + 0.4, ry + 0.8);
+    desk.poly([lp.x - 8, lp.y - 26, lp.x + 6, lp.y - 33, lp.x + 6, lp.y - 45, lp.x - 8, lp.y - 38]).fill(0x3b4150);
+    // front light strip
+    const s1 = iso(rx - 1.3, ry + 1.25);
+    const s2 = iso(rx + 1.3, ry + 1.25);
+    desk.moveTo(s1.x, s1.y - 4).lineTo(s2.x, s2.y - 4).stroke({ width: 2, color: PALETTE.glow, alpha: 0.8 });
+    this.addChild(desk);
+
+    // glow outline (animated on hover)
+    const g = new Graphics();
+    g.poly(rectPoly(gx, gy, w, d, 6)).fill({ color: PALETTE.glow, alpha: 0.12 }).stroke({ width: 3, color: PALETTE.glow });
+    const a = iso(gx, gy + d);
+    const b = iso(gx, gy);
+    const e = iso(gx + w, gy);
+    g.moveTo(a.x, a.y - WALL_H).lineTo(b.x, b.y - WALL_H).lineTo(e.x, e.y - WALL_H).stroke({ width: 4, color: PALETTE.glow });
+    g.blendMode = "add";
+    this.glow.addChild(g);
+    this.glow.alpha = 0;
+    this.glow.zIndex = 5;
+    this.addChild(this.glow);
+
+    // plants at the open corners
+    const p1 = plant(0.9, 0);
+    const pp1 = iso(gx + w - 0.4, gy + 0.5);
+    p1.position.set(pp1.x, pp1.y);
+    const p2 = plant(0.8, 1);
+    const pp2 = iso(gx + 0.5, gy + d - 0.4);
+    p2.position.set(pp2.x, pp2.y);
+    this.addChild(p1, p2);
+    this.receptionist.zIndex = 1;
+    desk.zIndex = 2;
+    p1.zIndex = 3;
+    p2.zIndex = 3;
+
+    // hit area covers floor + walls
+    const top = WALL_H;
+    const q = (x: number, y: number, z: number) => {
+      const p = iso(x, y);
+      return [p.x, p.y - z];
+    };
+    this.hitArea = new Polygon([
+      ...q(gx, gy, top),
+      ...q(gx + w, gy, top),
+      ...q(gx + w, gy, 0),
+      ...q(gx + w, gy + d, 0),
+      ...q(gx, gy + d, 0),
+      ...q(gx, gy + d, top),
+    ]);
+    this.eventMode = "static";
+    this.cursor = "pointer";
+
+    this.bubble.position.set(rp.x, rp.y + this.receptionist.headY - 6);
+    bubbleLayer.addChild(this.bubble);
+  }
+
+  /** Placeholder booth: L-shaped walls with skewed signage. */
+  private buildBooth(): Container {
+    const { gx, gy, w, d, accent } = this.cfg;
+    const booth = new Container();
+    const g = new Graphics();
+    box(g, gx, gy, w, d, 6, 0xf7f2ea);
+    wallY(g, gx, gy, d, WALL_H, accent === PALETTE.navy ? 0x2a3657 : PALETTE.wallShade);
+    wallX(g, gx, gy, w, WALL_H, PALETTE.wall);
+    // accent band on the main wall
+    wallX(g, gx, gy - 0.02, w, 10, accent, 0.2);
+    booth.addChild(g);
+
+    // --- main wall face (runs along gx) ---
+    const face = new Container();
+    const origin = iso(gx, gy);
+    face.position.set(origin.x, origin.y);
+    face.skew.y = WALL_SKEW;
+    const flatW = (w * TILE_W) / 2 / Math.cos(WALL_SKEW);
+    booth.addChild(face);
+
+    const icon = this.drawIcon();
+    const title = label(this.cfg.title, { fontSize: 24, fontWeight: "800", fill: PALETTE.ink });
+    title.position.set(30, -4);
+    const subtitle = label(this.cfg.subtitle, { fontSize: 6.5, fontWeight: "600", fill: 0x6f6a64, letterSpacing: 1.2 });
+    subtitle.position.set(2, 26);
+    this.sign.addChild(icon, title, subtitle);
+    // shrink long titles/subtitles (e.g. per language) so they stay on the wall, leaving room for the hover pop
+    const signW = Math.max(title.x + title.width, subtitle.x + subtitle.width);
+    this.signScale = Math.min(1, (flatW - 40) / signW);
+    this.sign.pivot.set(signW / 2, 12);
+    this.sign.scale.set(this.signScale);
+    this.sign.position.set(16 + (signW * this.signScale) / 2, -WALL_H + 14 + 12 * this.signScale);
+    face.addChild(this.sign);
+
+    const decor = new Container();
+    decor.position.set(flatW * 0.42, -WALL_H + 60);
+    face.addChild(decor);
+    this.drawWallDecor(decor, flatW);
+
+    // --- side wall face (runs along gy) ---
+    const side = new Container();
+    const so = iso(gx, gy + d - 0.3);
+    side.position.set(so.x + 4, so.y);
+    side.skew.y = -WALL_SKEW;
+    const dark = accent === PALETTE.navy;
+    this.cfg.sideText.forEach((line, i) => {
+      const t = label(line, {
+        fontSize: this.cfg.id === "about" ? 10 : 8,
+        fontFamily: this.cfg.id === "about" ? fonts.script : fonts.sans,
+        fontWeight: this.cfg.id === "about" ? "400" : "700",
+        fill: dark ? 0xffffff : PALETTE.ink,
+        letterSpacing: this.cfg.id === "about" ? 0 : 1,
+      });
+      t.position.set(8, -WALL_H + 18 + i * 13);
+      side.addChild(t);
+    });
+    const sideW = Math.max(...side.children.map((t) => t.x + t.width));
+    const flatD = (d * TILE_W) / 2 / Math.cos(WALL_SKEW) - 0.3 * TILE_W;
+    if (sideW > flatD) {
+      // scale around the text block top-left so it stays anchored to the wall edge
+      const k = flatD / sideW;
+      side.children.forEach((t) => {
+        t.scale.set(k);
+        t.position.set(8, -WALL_H + 18 + (t.y + WALL_H - 18) * k);
+      });
+    }
+    booth.addChild(side);
+    return booth;
+  }
+
+  private drawIcon(): Graphics {
+    const g = new Graphics();
+    const c = PALETTE.ink;
+    switch (this.cfg.icon) {
+      case "person":
+        g.circle(10, 4, 6).fill(c).roundRect(2, 11, 16, 10, 5).fill(c);
+        break;
+      case "folder":
+        g.roundRect(0, 2, 9, 5, 1).fill(c).roundRect(0, 5, 20, 15, 2).fill(c);
+        break;
+      case "gear":
+        for (let i = 0; i < 8; i++) {
+          const a = (i / 8) * Math.PI * 2;
+          g.circle(10 + Math.cos(a) * 9, 11 + Math.sin(a) * 9, 3).fill(c);
+        }
+        g.circle(10, 11, 8).fill(c).circle(10, 11, 3.5).fill(PALETTE.wall);
+        break;
+      case "briefcase":
+        g.roundRect(6, 1, 8, 6, 2).stroke({ width: 2, color: c }).roundRect(0, 6, 20, 14, 2).fill(c);
+        break;
+    }
+    return g;
+  }
+
+  private drawWallDecor(decor: Container, flatW: number) {
+    const id = this.cfg.id;
+    const mk = (draw: (g: Graphics) => void, x: number) => {
+      const holder = new Container();
+      const g = new Graphics();
+      draw(g);
+      holder.addChild(g);
+      holder.x = x;
+      decor.addChild(holder);
+      this.highlights.push(holder);
+    };
+    if (id === "skills") {
+      const tiles: [number, string, number][] = [
+        [0x306998, "Py", 0xffd43b],
+        [0x05998b, "API", 0xffffff],
+        [0x000000, "N", 0xffffff],
+        [0x336791, "SQL", 0xffffff],
+        [0x1f2a44, "</>", 0xffd27a],
+      ];
+      tiles.forEach(([bg, txt, fill], i) => {
+        mk((g) => g.roundRect(0, 0, 22, 22, 4).fill(bg), -flatW * 0.36 + i * 28);
+        const t = label(txt, { fontSize: txt.length > 2 ? 7 : 9, fontWeight: "800", fill });
+        t.anchor.set(0.5);
+        t.position.set(11, 11);
+        this.highlights[i].addChild(t);
+      });
+    } else if (id === "portfolio") {
+      for (let i = 0; i < 3; i++) {
+        mk((g) => {
+          g.roundRect(0, 0, 36, 26, 2).fill(0x222a3a);
+          g.poly([3, 23, 14, 9, 22, 18, 27, 12, 33, 23]).fill(0x7f9ccf);
+          g.circle(27, 6, 3).fill(0xffe1a8);
+        }, -flatW * 0.36 + i * 42);
+      }
+    } else if (id === "experience") {
+      mk((g) => g.roundRect(0, 8, flatW * 0.5, 2, 1).fill(0xb7ab9a), -flatW * 0.3);
+      for (let i = 0; i < 5; i++) {
+        mk((g) => {
+          g.circle(0, 9, 4).fill(PALETTE.navy);
+          g.roundRect(-8, 16, 16, 12, 2).fill(0xe9e2d7);
+        }, -flatW * 0.28 + i * (flatW * 0.12));
+      }
+    } else {
+      mk((g) => {
+        g.roundRect(0, 0, 34, 26, 2).fill(PALETTE.woodDark);
+        g.rect(3, 3, 28, 20).fill(0xcfe0d8);
+        g.poly([3, 23, 12, 12, 20, 19, 31, 9, 31, 23]).fill(0x8fb9a8);
+      }, -flatW * 0.4);
+    }
+  }
+
+  /** World point the camera centers on when zooming into this stand. */
+  get focusPoint(): Point {
+    const { gx, gy, w, d } = this.cfg;
+    const p = iso(gx + w / 2, gy + d / 2);
+    return { x: p.x, y: p.y - 40 };
+  }
+
+  setHover(on: boolean, reducedMotion: boolean, message?: string) {
+    if (on === this.hovered) {
+      if (on && message) this.bubble.show(message, 0);
+      return;
+    }
+    this.hovered = on;
+    const dur = reducedMotion ? 0 : 0.35;
+    gsap.to(this.glow, { alpha: on ? 1 : 0, duration: dur });
+    gsap.to(this.halo, { alpha: on ? 1 : 0, duration: dur });
+    const pop = this.signScale * (on ? 1.08 : 1);
+    gsap.to(this.sign.scale, { x: pop, y: pop, duration: dur, ease: "back.out(2)" });
+    if (on) {
+      this.receptionist.setFacing(1, true);
+      if (!reducedMotion) this.receptionist.wave(true);
+      this.bubble.show(message ?? this.cfg.greeting[this.greetIndex++ % this.cfg.greeting.length], 0);
+      if (!reducedMotion) {
+        this.highlights.forEach((h, i) =>
+          gsap.fromTo(h, { y: 0 }, { y: -6, duration: 0.18, delay: i * 0.05, yoyo: true, repeat: 1, ease: "power2.out" }),
+        );
+      }
+    } else {
+      this.receptionist.wave(false);
+      this.bubble.hide();
+    }
+  }
+
+  update(dt: number) {
+    this.t += dt * 0.004;
+    this.receptionist.update(dt, false);
+    if (this.hovered) this.glow.children[0].alpha = 0.75 + Math.sin(this.t * 2) * 0.25;
+  }
+}

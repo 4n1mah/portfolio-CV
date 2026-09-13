@@ -1,0 +1,499 @@
+// Contenido del portafolio en español e inglés.
+// Todo el sitio (lobby, vista previa, paneles y modo simple) lee de aquí.
+
+import type { StandId } from "@/lobby/store";
+
+export type Locale = "es" | "en";
+
+export const profile = {
+  name: "Sadiel Rojas Padilla",
+  email: "sadielrojas08@gmail.com",
+  // Solo se usa para el enlace de WhatsApp; no se muestra en la página.
+  whatsapp: "18095195688",
+  links: [
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/sadielrojaspadilla" },
+    { label: "GitHub", href: "https://github.com/4n1mah" },
+  ],
+};
+
+const REPO = "https://github.com/4n1mah";
+
+interface Project {
+  title: string;
+  category: string;
+  color: string;
+  description: string;
+  tags: string[];
+  result: string;
+  links: { label: string; href: string }[];
+}
+
+interface StandText {
+  title: string;
+  subtitle: string;
+  sideText: string[];
+  greeting: string[];
+  npcLine?: string;
+}
+
+const es = {
+  ui: {
+    role: "Desarrollador de Software",
+    tagline: ["La imaginación", "es el límite"],
+    welcome: "Bienvenido/a a mi espacio profesional",
+    metaDescription:
+      "Portafolio interactivo de Sadiel Rojas Padilla, desarrollador de software enfocado en backend con Python, FastAPI y Next.js.",
+    loading: "Abriendo el lobby…",
+    hintMouse: "Pasa el mouse sobre un stand · Haz click para entrar",
+    hintTouch: "Arrastra para explorar · Toca un stand",
+    enter: "Entrar a",
+    preview: "Vista previa",
+    clickToEnter: "Click para entrar →",
+    simpleMode: "Modo simple",
+    backToLobby: "← Volver al lobby",
+    backToInteractive: "Volver al lobby interactivo",
+    sections: "Secciones",
+    switchLanguage: "English",
+    contactTitle: "¿Hablamos?",
+    writeMe: "Escríbeme",
+    headings: {
+      story: "Mi historia",
+      values: "Lo que me mueve",
+      drivers: "Mi motivación",
+      funFacts: "Datos curiosos",
+      soft: "Habilidades interpersonales",
+      languages: "Idiomas",
+      learning: "Aprendiendo ahora",
+      education: "Educación",
+    },
+  },
+  about: {
+    title: "Sobre mí",
+    kicker: "Persona · Historia · Motivación",
+    preview: ["Mi historia", "Lo que me mueve", "Mi motivación", "Datos curiosos"],
+    intro:
+      "Soy desarrollador de software enfocado en backend, con Python y FastAPI como herramientas principales. Vengo del mundo de las operaciones y la analítica, y eso me dio algo que valoro mucho: entender cómo los sistemas impactan a las personas que los usan todos los días.",
+    story: [
+      "Empecé como técnico en informática, pasé por la mecatrónica y luego trabajé en soporte, ventas y análisis en tiempo real para empresas de Estados Unidos. En cada rol terminaba haciendo lo mismo: automatizar lo repetitivo y convertir datos en herramientas útiles.",
+    ],
+    storyCta: {
+      text: "Actualmente estudiando Desarrollo de Software en el ITLA mientras trabajo en proyectos que puedan elevar mi conocimiento y mi carrera profesional. ¡Puedes verlos en el ",
+      link: "salón de proyectos",
+      after: "!",
+    },
+    values: [
+      { title: "Automatizar lo repetitivo", text: "Si una tarea se hace a mano todos los días, merece un sistema." },
+      { title: "Pensar en el usuario final", text: "Mi experiencia en operaciones me enseñó a construir para quien usa la herramienta." },
+      { title: "Aprender construyendo", text: "Cada proyecto es una oportunidad para crecer técnicamente." },
+    ],
+    drivers: "Me mueve crear sistemas que ahorran tiempo, ordenan procesos y hacen la vida más fácil a las personas.",
+    funFacts: [
+      "Bilingüe: español nativo e inglés avanzado",
+      "Técnico en Mecatrónica",
+      "Siempre encuentro formas de optimizar el tiempo",
+      "Me encanta crear cosas",
+    ],
+  },
+  portfolio: {
+    title: "Portafolio",
+    kicker: "Proyectos · Casos · Resultados",
+    preview: ["Kan-M: sitio web y panel", "Kan-M: bot de WhatsApp", "Bot de finanzas", "Tracker de SLA"],
+    projects: [
+      {
+        title: "Kan-M — Sitio web y panel administrativo",
+        category: "Full-stack · En producción",
+        color: "#8a6a52",
+        description:
+          "Sitio público para una repostería y catering de la Zona Colonial: catálogo con carrito, cotizaciones de eventos con fotos, seguimiento de pedidos y versión bilingüe. Incluye un panel administrativo con calendario de carga de trabajo, gestión de productos, reportes de ventas, roles de usuario y notificaciones push.",
+        tags: ["Next.js", "TypeScript", "Prisma", "PostgreSQL (Neon)", "Firebase", "Vercel"],
+        result: "Sitio vivo usado por un negocio real",
+        links: [
+          { label: "Ver sitio", href: "https://kanmreposteriaycatering.com/" },
+          { label: "Repositorio", href: `${REPO}/kan-m-web` },
+        ],
+      },
+      {
+        title: "Kan-M — Bot de WhatsApp",
+        category: "Backend · IA · Proyecto para cliente",
+        color: "#4f6b62",
+        description:
+          "Chatbot de atención al cliente que resuelve lo repetitivo (horario, ubicación, delivery, preguntas frecuentes y datos para cotizaciones) y escala a una persona lo que requiere criterio. Combina respuestas fijas con una capa de IA y convive con la app de WhatsApp Business en el mismo número.",
+        tags: ["Python", "FastAPI", "PostgreSQL", "Gemini API", "WhatsApp Cloud API", "Railway"],
+        result: "Líder técnico y arquitecto · 100% de casos de prueba cubiertos antes del despliegue",
+        links: [{ label: "Repositorio", href: `${REPO}/Kan-m-bot` }],
+      },
+      {
+        title: "Finance Bot",
+        category: "Backend · IA · Proyecto personal",
+        color: "#1f2a44",
+        description:
+          'Registro de gastos por WhatsApp en lenguaje natural: escribes "Gasté 350 en uber" y el bot extrae monto, categoría y descripción. Permite consultar gastos por período o categoría y lleva el control de pagos fijos con su próxima fecha.',
+        tags: ["Python", "FastAPI", "Groq (Llama 3.3)", "SQLAlchemy", "Pydantic", "pytest"],
+        result: "Desplegado en producción en Railway",
+        links: [{ label: "Repositorio", href: `${REPO}/finance-bot` }],
+      },
+      {
+        title: "Tracker automatizado de SLA",
+        category: "Automatización · Datos",
+        color: "#c9a27a",
+        description:
+          "Reporte en Excel con Power Query y Power Pivot que consolida más de 10 departamentos en un dashboard que se actualiza solo, reemplazando un proceso manual diario.",
+        tags: ["Power Query", "Power Pivot", "Dashboards"],
+        result: "Adoptado en toda la empresa · ahorra más de 13 horas por semana",
+        links: [],
+      },
+    ] as Project[],
+  },
+  skills: {
+    title: "Habilidades",
+    kicker: "Herramientas · Conocimientos · Crecimiento",
+    preview: ["Backend", "Bases de datos", "Integraciones e IA", "Datos y automatización"],
+    groups: [
+      { name: "Backend y desarrollo", items: ["Python", "FastAPI", "Pydantic", "Next.js", "TypeScript", "JavaScript", "HTML", "Git"] },
+      { name: "Bases de datos", items: ["SQL", "PostgreSQL", "SQLAlchemy", "Prisma", "Modelado de datos"] },
+      { name: "Integraciones e IA", items: ["APIs REST", "JSON", "XML", "WhatsApp Business API", "Gemini API", "Groq", "Firebase"] },
+      { name: "Pruebas y despliegue", items: ["pytest", "Vitest", "Railway", "Vercel"] },
+      {
+        name: "Datos y automatización",
+        items: ["Pandas", "NumPy", "Excel avanzado (Power Query, Power Pivot)", "Sigma Computing", "Google Sheets", "Tableau"],
+      },
+      { name: "Herramientas", items: ["Salesforce CRM", "AWS", "Aspect WFM", "Slack", "Microsoft Teams"] },
+    ],
+    soft: ["Liderazgo técnico", "Levantamiento de requerimientos", "QA y pruebas", "Comunicación con clientes", "Trabajo multifuncional"],
+    languages: ["Español (nativo)", "Inglés (avanzado)"],
+    learning: ["Desarrollo de Software enfocado al Backend", "Power BI"],
+  },
+  experience: {
+    title: "Experiencias",
+    kicker: "Trayectoria · Colaboraciones · Logros",
+    preview: ["Proyecto Kan-M", "National Debt Relief", "Alorica · Verizon", "Educación"],
+    timeline: [
+      {
+        role: "Líder Técnico y Arquitecto",
+        company: "Kan-M Repostería y Catering · Proyecto para cliente",
+        period: "Mar 2026 — Actualidad",
+        description: "Diseño y liderazgo de un sistema de automatización por WhatsApp: API en FastAPI, panel web en Next.js y app Android.",
+        achievements: [
+          "Definí la arquitectura de tres repositorios integrados con PostgreSQL",
+          "Lideré requerimientos, pruebas funcionales y auditoría previa al despliegue",
+          "100% de cobertura de casos de prueba antes de producción",
+        ],
+      },
+      {
+        role: "Analista de Enrutamiento de Leads",
+        company: "National Debt Relief / Broadway Support Services",
+        period: "Feb 2026 — Jul 2026",
+        description: "Distribución de leads en tiempo real vía Salesforce y AWS para más de 500 agentes y más de 20,000 leads diarios.",
+        achievements: [
+          "Diagnostiqué fallas en configuraciones de CRM y dialer junto a Tecnología",
+          "Validé cambios antes de producción para evitar interrupciones",
+          "Reportes diarios, semanales y ad-hoc para liderazgo",
+        ],
+      },
+      {
+        role: "Analista de Tiempo Real (RTA)",
+        company: "National Debt Relief / Broadway Support Services",
+        period: "Oct 2025 — Feb 2026",
+        description: "Monitoreo de SLA, adherencia y ocupación en 5–6 campañas usando Aspect WFM.",
+        achievements: [
+          "Creé un tracker de SLA automatizado adoptado en toda la empresa",
+          "Ahorro de más de 13 horas semanales de trabajo manual",
+          "SLA por encima del 90% en todos los departamentos",
+          "Gestión de ~60 tickets diarios hasta su cierre",
+        ],
+      },
+      {
+        role: "Ejecutivo de Cuentas de Ventas",
+        company: "National Debt Relief / Broadway Support Services",
+        period: "May 2025 — Oct 2025",
+        description: "Venta consultiva de programas de alivio de deudas para el mercado de EE. UU.",
+        achievements: ["Desempeño constante en o por encima del promedio del equipo"],
+      },
+      {
+        role: "Coach de Soporte",
+        company: "Alorica · Cuenta Verizon",
+        period: "Ene 2023 — May 2025",
+        description: "Soporte técnico y coaching en inglés a agentes de primera línea para clientes de Verizon en EE. UU.",
+        achievements: [
+          "Construí una automatización en Slack que enviaba métricas individuales a cada agente",
+          "Dashboards en Google Sheets con flujos automatizados para un equipo de 15 agentes",
+        ],
+      },
+    ],
+    education: [
+      { title: "Tecnólogo en Desarrollo de Software (Backend)", place: "Instituto Tecnológico de las Américas (ITLA)", period: "2023 — Actualidad" },
+      { title: "Técnico en Mecatrónica", place: "INFOTEP", period: "2022 — 2023" },
+      { title: "Técnico en Informática", place: "Centro de Tecnología Universal (CENTU)", period: "2018 — 2019" },
+    ],
+  },
+  lobby: {
+    stands: {
+      about: {
+        title: "Sobre mí",
+        subtitle: "PERSONA · HISTORIA · MOTIVACIÓN",
+        sideText: ["Más que un CV,", "una historia", "de pasión."],
+        greeting: ["¡Hola! Aquí te cuento un poco sobre mí.", "¡Hola! Haz click para conocer más."],
+      },
+      portfolio: {
+        title: "Portafolio",
+        subtitle: "PROYECTOS · CASOS · RESULTADOS",
+        sideText: ["IDEAS", "PROYECTOS", "SOLUCIONES", "REALES"],
+        greeting: ["Aquí están mis proyectos reales.", "Haz click para ver los casos."],
+        npcLine: "¡Mira este proyecto! 😍",
+      },
+      skills: {
+        title: "Habilidades",
+        subtitle: "HERRAMIENTAS · CONOCIMIENTOS · CRECIMIENTO",
+        sideText: ["APRENDER", "CREAR", "MEJORAR", "REPETIR"],
+        greeting: ["Aquí están mis habilidades 🙂", "Haz click para ver más."],
+        npcLine: "¡Python y FastAPI! 🐍",
+      },
+      experience: {
+        title: "Experiencias",
+        subtitle: "TRAYECTORIA · COLABORACIONES · LOGROS",
+        sideText: ["EXPERIENCIAS", "QUE CONSTRUYEN", "EL MAÑANA"],
+        greeting: ["Puedes ver mi experiencia aquí.", "Haz click para ver mi trayectoria."],
+      },
+    } as Record<StandId, StandText>,
+    activeGreeting: "¡Bienvenida/o! Aquí tienes todo 👉",
+    visitorLines: ["Qué interesante 👏", "¡Mira este proyecto! 😍", "Me encanta este lugar", "¿Ya viste Habilidades?", "Qué buena idea 💡", "Voy a Experiencias"],
+    sitterLines: [["Qué interesante 👏"], ["Mira este proyecto 😍"], ["Buenas ideas ✨", "Me quedo un rato más"]],
+    signLeft: ["TU PRÓXIMO", "GRAN PROYECTO", "TAMBIÉN", "EMPIEZA AQUÍ →"],
+    signRight: ["EXPLORA", "CONECTA", "INSPÍRATE", "CREA →"],
+    mat: ["B I E N V E N I D O", "EXPLORA · HAZ CLICK · DESCUBRE"],
+    plaque: ["BUENAS IDEAS", "MEJORES PERSONAS", "UN MISMO LUGAR"],
+  },
+};
+
+export type Content = typeof es;
+
+const en: Content = {
+  ui: {
+    role: "Software Developer",
+    tagline: ["Imagination", "is the limit"],
+    welcome: "Welcome to my professional space",
+    metaDescription:
+      "Interactive portfolio of Sadiel Rojas Padilla, a software developer focused on backend with Python, FastAPI and Next.js.",
+    loading: "Opening the lobby…",
+    hintMouse: "Hover over a booth · Click to enter",
+    hintTouch: "Drag to explore · Tap a booth",
+    enter: "Enter",
+    preview: "Preview",
+    clickToEnter: "Click to enter →",
+    simpleMode: "Simple mode",
+    backToLobby: "← Back to the lobby",
+    backToInteractive: "Back to the interactive lobby",
+    sections: "Sections",
+    switchLanguage: "Español",
+    contactTitle: "Let's talk?",
+    writeMe: "Email me",
+    headings: {
+      story: "My story",
+      values: "What drives me",
+      drivers: "My motivation",
+      funFacts: "Fun facts",
+      soft: "Interpersonal skills",
+      languages: "Languages",
+      learning: "Currently learning",
+      education: "Education",
+    },
+  },
+  about: {
+    title: "About me",
+    kicker: "Person · Story · Motivation",
+    preview: ["My story", "What drives me", "My motivation", "Fun facts"],
+    intro:
+      "I'm a software developer focused on backend, with Python and FastAPI as my main tools. I come from the world of operations and analytics, which gave me something I value a lot: understanding how systems affect the people who use them every day.",
+    story: [
+      "I started as an IT technician, studied mechatronics, and then worked in support, sales and real-time analytics for U.S. companies. In every role I ended up doing the same thing: automating repetitive work and turning data into useful tools.",
+    ],
+    storyCta: {
+      text: "I'm currently studying Software Development at ITLA while working on projects that push my knowledge and my professional career forward. You can see them in the ",
+      link: "projects hall",
+      after: "!",
+    },
+    values: [
+      { title: "Automate the repetitive", text: "If a task is done by hand every day, it deserves a system." },
+      { title: "Think about the end user", text: "Operations taught me to build for the person who actually uses the tool." },
+      { title: "Learn by building", text: "Every project is a chance to grow technically." },
+    ],
+    drivers: "I'm driven by building systems that save time, organize processes and make people's lives easier.",
+    funFacts: [
+      "Bilingual: native Spanish, advanced English",
+      "Mechatronics technician",
+      "I always find ways to optimize time",
+      "I love creating things",
+    ],
+  },
+  portfolio: {
+    title: "Portfolio",
+    kicker: "Projects · Cases · Results",
+    preview: ["Kan-M: website & admin", "Kan-M: WhatsApp bot", "Finance bot", "SLA tracker"],
+    projects: [
+      {
+        title: "Kan-M — Website & admin panel",
+        category: "Full-stack · Live in production",
+        color: "#8a6a52",
+        description:
+          "Public website for a bakery and catering business in Santo Domingo's Colonial Zone: catalog with cart, event quotes with photo uploads, order tracking and a bilingual interface. Includes an admin panel with a workload calendar, product management, sales reports, user roles and push notifications.",
+        tags: ["Next.js", "TypeScript", "Prisma", "PostgreSQL (Neon)", "Firebase", "Vercel"],
+        result: "Live site used by a real business",
+        links: [
+          { label: "Visit site", href: "https://kanmreposteriaycatering.com/" },
+          { label: "Repository", href: `${REPO}/kan-m-web` },
+        ],
+      },
+      {
+        title: "Kan-M — WhatsApp bot",
+        category: "Backend · AI · Client project",
+        color: "#4f6b62",
+        description:
+          "Customer service chatbot that handles the repetitive work (hours, location, delivery, FAQs and quote details) and escalates anything that needs judgment to a person. It combines fixed answers with an AI layer and runs alongside the WhatsApp Business app on the same number.",
+        tags: ["Python", "FastAPI", "PostgreSQL", "Gemini API", "WhatsApp Cloud API", "Railway"],
+        result: "Technical lead & architect · 100% test case coverage before deployment",
+        links: [{ label: "Repository", href: `${REPO}/Kan-m-bot` }],
+      },
+      {
+        title: "Finance Bot",
+        category: "Backend · AI · Personal project",
+        color: "#1f2a44",
+        description:
+          'Expense tracking over WhatsApp in natural language: write "I spent 350 on uber" and the bot extracts the amount, category and description. You can query spending by period or category, and it tracks fixed payments with their next due date.',
+        tags: ["Python", "FastAPI", "Groq (Llama 3.3)", "SQLAlchemy", "Pydantic", "pytest"],
+        result: "Deployed to production on Railway",
+        links: [{ label: "Repository", href: `${REPO}/finance-bot` }],
+      },
+      {
+        title: "Automated SLA tracker",
+        category: "Automation · Data",
+        color: "#c9a27a",
+        description:
+          "Excel report built with Power Query and Power Pivot that consolidates 10+ departments into a self-updating dashboard, replacing a daily manual process.",
+        tags: ["Power Query", "Power Pivot", "Dashboards"],
+        result: "Adopted company-wide · saves 13+ hours per week",
+        links: [],
+      },
+    ],
+  },
+  skills: {
+    title: "Skills",
+    kicker: "Tools · Knowledge · Growth",
+    preview: ["Backend", "Databases", "Integrations & AI", "Data & automation"],
+    groups: [
+      { name: "Backend & development", items: ["Python", "FastAPI", "Pydantic", "Next.js", "TypeScript", "JavaScript", "HTML", "Git"] },
+      { name: "Databases", items: ["SQL", "PostgreSQL", "SQLAlchemy", "Prisma", "Data modeling"] },
+      { name: "Integrations & AI", items: ["REST APIs", "JSON", "XML", "WhatsApp Business API", "Gemini API", "Groq", "Firebase"] },
+      { name: "Testing & deployment", items: ["pytest", "Vitest", "Railway", "Vercel"] },
+      {
+        name: "Data & automation",
+        items: ["Pandas", "NumPy", "Advanced Excel (Power Query, Power Pivot)", "Sigma Computing", "Google Sheets", "Tableau"],
+      },
+      { name: "Tools", items: ["Salesforce CRM", "AWS", "Aspect WFM", "Slack", "Microsoft Teams"] },
+    ],
+    soft: ["Technical leadership", "Requirements gathering", "QA & testing", "Client communication", "Cross-functional teamwork"],
+    languages: ["Spanish (native)", "English (advanced)"],
+    learning: ["Software Development focused on Backend", "Power BI"],
+  },
+  experience: {
+    title: "Experience",
+    kicker: "Career · Collaborations · Achievements",
+    preview: ["Kan-M project", "National Debt Relief", "Alorica · Verizon", "Education"],
+    timeline: [
+      {
+        role: "Technical Lead & Architect",
+        company: "Kan-M Repostería y Catering · Client project",
+        period: "Mar 2026 — Present",
+        description: "Designed and led a WhatsApp automation system: FastAPI backend, Next.js web panel and Android app.",
+        achievements: [
+          "Defined the architecture across three integrated repositories with PostgreSQL",
+          "Led requirements gathering, functional testing and the pre-deployment audit",
+          "100% test case coverage before production",
+        ],
+      },
+      {
+        role: "Lead Routing Analyst",
+        company: "National Debt Relief / Broadway Support Services",
+        period: "Feb 2026 — Jul 2026",
+        description: "Real-time lead distribution through Salesforce and AWS for 500+ agents and 20,000+ leads per day.",
+        achievements: [
+          "Diagnosed CRM and dialer configuration issues together with the Technology team",
+          "Validated changes before production to prevent disruptions",
+          "Daily, weekly and ad-hoc reports for leadership",
+        ],
+      },
+      {
+        role: "Real-Time Analyst (RTA)",
+        company: "National Debt Relief / Broadway Support Services",
+        period: "Oct 2025 — Feb 2026",
+        description: "Monitored SLA, adherence and occupancy across 5–6 campaigns using Aspect WFM.",
+        achievements: [
+          "Built an automated SLA tracker adopted company-wide",
+          "Saved 13+ hours of manual work per week",
+          "Kept SLA above 90% in every department",
+          "Handled ~60 tickets per day through to resolution",
+        ],
+      },
+      {
+        role: "Sales Account Executive",
+        company: "National Debt Relief / Broadway Support Services",
+        period: "May 2025 — Oct 2025",
+        description: "Consultative sales of debt relief programs for the U.S. market.",
+        achievements: ["Consistently performed at or above the team average"],
+      },
+      {
+        role: "Support Coach",
+        company: "Alorica · Verizon Account",
+        period: "Jan 2023 — May 2025",
+        description: "Technical support and coaching in English for frontline agents serving Verizon customers in the U.S.",
+        achievements: [
+          "Built a Slack automation that delivered individual metrics to each agent",
+          "Google Sheets dashboards with automated workflows for a team of 15 agents",
+        ],
+      },
+    ],
+    education: [
+      { title: "Software Development Technologist (Backend)", place: "Instituto Tecnológico de las Américas (ITLA)", period: "2023 — Present" },
+      { title: "Mechatronics Technician", place: "INFOTEP", period: "2022 — 2023" },
+      { title: "IT Technician", place: "Centro de Tecnología Universal (CENTU)", period: "2018 — 2019" },
+    ],
+  },
+  lobby: {
+    stands: {
+      about: {
+        title: "About me",
+        subtitle: "PERSON · STORY · MOTIVATION",
+        sideText: ["More than a CV,", "a story", "of passion."],
+        greeting: ["Hi! Here's a little about me.", "Hi! Click to learn more."],
+      },
+      portfolio: {
+        title: "Portfolio",
+        subtitle: "PROJECTS · CASES · RESULTS",
+        sideText: ["IDEAS", "PROJECTS", "REAL", "SOLUTIONS"],
+        greeting: ["Here are my real projects.", "Click to see the cases."],
+        npcLine: "Check out this project! 😍",
+      },
+      skills: {
+        title: "Skills",
+        subtitle: "TOOLS · KNOWLEDGE · GROWTH",
+        sideText: ["LEARN", "BUILD", "IMPROVE", "REPEAT"],
+        greeting: ["Here are my skills 🙂", "Click to see more."],
+        npcLine: "Python and FastAPI! 🐍",
+      },
+      experience: {
+        title: "Experience",
+        subtitle: "CAREER · COLLABORATIONS · ACHIEVEMENTS",
+        sideText: ["EXPERIENCES", "THAT BUILD", "TOMORROW"],
+        greeting: ["You can see my experience here.", "Click to see my career."],
+      },
+    },
+    activeGreeting: "Welcome! Here's everything 👉",
+    visitorLines: ["How interesting 👏", "Check out this project! 😍", "I love this place", "Seen the Skills booth?", "Great idea 💡", "Heading to Experience"],
+    sitterLines: [["How interesting 👏"], ["Look at this project 😍"], ["Good ideas ✨", "I'll stay a bit longer"]],
+    signLeft: ["YOUR NEXT", "BIG PROJECT", "ALSO", "STARTS HERE →"],
+    signRight: ["EXPLORE", "CONNECT", "GET INSPIRED", "CREATE →"],
+    mat: ["W E L C O M E", "EXPLORE · CLICK · DISCOVER"],
+    plaque: ["GOOD IDEAS", "BETTER PEOPLE", "ONE PLACE"],
+  },
+};
+
+export const content: Record<Locale, Content> = { es, en };
