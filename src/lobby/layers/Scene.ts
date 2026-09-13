@@ -3,7 +3,7 @@ import type { Content } from "@/content/sections";
 import { PALETTE, PLAZA_CENTER, WORLD_SIZE } from "../config";
 import { depth, iso, isoCircle, rectPoly } from "../engine/iso";
 import { piece } from "../assets";
-import { bench, box, label, lamp, planter, plant, sign } from "./draw";
+import { bench, box, DETAIL, label, lamp, planter, plant, sign } from "./draw";
 import { seat } from "./Npc";
 
 /** Static floor: marble tiles, plaza rings, entrance mat. Drawn below everything. */
@@ -50,6 +50,7 @@ export function buildFloor(text: Content["lobby"]): Container {
     t1.anchor.set(0.5);
     t2.anchor.set(0.5);
     t2.y = 16;
+    t2.label = DETAIL;
     welcome.addChild(t1, t2);
     welcome.position.set(mat.x, mat.y - 6);
     // keep both lines inside the mat whatever the language

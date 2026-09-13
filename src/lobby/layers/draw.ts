@@ -7,6 +7,9 @@ import { iso, isoCircle, rectPoly } from "../engine/iso";
 
 export const fonts = { sans: "system-ui, sans-serif", script: "cursive" };
 
+/** Label for small print that only shows when zoomed in (see createLobby). */
+export const DETAIL = "detail";
+
 export function label(text: string, style: TextStyleOptions): Text {
   const t = new Text({ text, style: { fontFamily: fonts.sans, ...style }, resolution: 3 });
   return t;
@@ -129,10 +132,13 @@ export function sign(lines: string[], opts: { dark?: boolean } = {}): Container 
   g.roundRect(-w / 2 - 3, top - 3, w + 6, h + 6, 3).fill(PALETTE.navy);
   g.roundRect(-w / 2, top, w, h, 2).fill(opts.dark ? PALETTE.navy : PALETTE.wall);
   c.addChild(g);
+  // the lettering is small print: the engine fades every "detail" in on zoom
+  const lettering = new Container({ label: DETAIL });
   texts.forEach((t, i) => {
     t.x = -w / 2 + pad;
     t.y = top + pad + i * lineH;
-    c.addChild(t);
+    lettering.addChild(t);
   });
+  c.addChild(lettering);
   return c;
 }

@@ -18,6 +18,9 @@ export class Stand extends Container {
   private sign = new Container();
   private signScale = 1;
   private highlights: Container[] = [];
+  /** Small print (subtitle, side wall, wall graphics) shown only on hover or when zoomed in. */
+  private details: Container[] = [];
+  private detail = 0;
   private greetIndex = 0;
   private hovered = false;
   private t = Math.random() * 10;
@@ -129,9 +132,11 @@ export class Stand extends Container {
     const subtitle = label(this.cfg.subtitle, { fontSize: 6.5, fontWeight: "600", fill: 0x6f6a64, letterSpacing: 1.2 });
     subtitle.position.set(2, 26);
     this.sign.addChild(icon, title, subtitle);
-    // shrink long titles/subtitles (e.g. per language) so they stay on the wall, leaving room for the hover pop
-    const signW = Math.max(title.x + title.width, subtitle.x + subtitle.width);
-    this.signScale = Math.min(1, (flatW - 40) / signW);
+    // size the sign by its title (the overview only shows the title); long titles shrink to stay on the wall
+    const signW = title.x + title.width;
+    this.signScale = Math.min(1.15, (flatW - 40) / signW);
+    // the subtitle is a detail: squeeze it under the title if it is wider
+    subtitle.scale.set(Math.min(1, (signW - subtitle.x) / subtitle.width));
     this.sign.pivot.set(signW / 2, 12);
     this.sign.scale.set(this.signScale);
     this.sign.position.set(16 + (signW * this.signScale) / 2, -WALL_H + 14 + 12 * this.signScale);
@@ -170,6 +175,9 @@ export class Stand extends Container {
       });
     }
     booth.addChild(side);
+
+    this.details = [subtitle, decor, side];
+    this.details.forEach((dt) => (dt.alpha = 0));
     return booth;
   }
 
@@ -281,7 +289,13 @@ export class Stand extends Container {
     }
   }
 
-  update(dt: number) {
+  /** zoomDetail: 0..1 from the camera zoom; hover always reveals this booth’s details. */
+  update(dt: number, zoomDetail = 0) {
+    const target = this.hovered ? 1 : zoomDetail;
+    if (Math.abs(target - this.detail) > 0.001) {
+      this.detail += (target - this.detail) * Math.min(1, dt / 140);
+      this.details.forEach((d) => (d.alpha = this.detail));
+    }
     this.t += dt * 0.004;
     this.receptionist.update(dt, false);
     if (this.hovered) this.glow.children[0].alpha = 0.75 + Math.sin(this.t * 2) * 0.25;

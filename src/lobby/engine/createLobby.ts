@@ -4,7 +4,7 @@ import { content, type Locale } from "@/content/sections";
 import { PALETTE, PLAZA_CENTER, SITTERS, VISITORS, WAYPOINTS, WORLD_SIZE, standsFor } from "../config";
 import { loadAssets } from "../assets";
 import { lobbyStore, type StandId } from "../store";
-import { fonts } from "../layers/draw";
+import { DETAIL, fonts } from "../layers/draw";
 import { buildDecor, buildFloor } from "../layers/Scene";
 import { Stand } from "../layers/Stand";
 import { Sitter, Visitor } from "../layers/Npc";
@@ -29,6 +29,11 @@ const BOUNDS = {
   minY: -90,
   maxY: WORLD_SIZE * TILE_H + 40,
 };
+
+function smoothstep(edge0: number, edge1: number, x: number) {
+  const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
+  return t * t * (3 - 2 * t);
+}
 
 function tweenTint(obj: Container, gray: number, duration: number) {
   const state = { v: (obj.tint & 0xff) / 255 };
@@ -110,11 +115,33 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
   const camera = new Camera(world, app.canvas, BOUNDS, (kind) => {
     if (store.getState().pointer !== kind) store.getState().setPointer(kind);
   });
+  // What the first view must show: every booth (walls included) down to the entrance mat.
+  const booths = (() => {
+    const xs: number[] = [];
+    const ys: number[] = [];
+    for (const { cfg } of stands.values()) {
+      const far = iso(cfg.gx, cfg.gy);
+      xs.push(iso(cfg.gx, cfg.gy + cfg.d).x, iso(cfg.gx + cfg.w, cfg.gy).x);
+      ys.push(far.y - 110, iso(cfg.gx + cfg.w, cfg.gy + cfg.d).y);
+    }
+    ys.push(iso(26, 26).y); // entrance mat
+    return { minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) };
+  })();
   const home = () => {
     const fit = camera.fitScale();
-    const mobile = app.screen.width < PANEL.breakpoint;
+    const { width, height } = app.screen;
+    const mobile = width < PANEL.breakpoint;
     camera.minScale = mobile ? fit : fit * 0.9;
-    return { x: 0, y: (BOUNDS.minY + BOUNDS.maxY) / 2, scale: mobile ? Math.max(fit, 0.55) : fit };
+    if (mobile) return { x: 0, y: (BOUNDS.minY + BOUNDS.maxY) / 2, scale: Math.max(fit, 0.55) };
+    // ~18% closer than "whole island" so booths read better; the empty floor tips may crop,
+    // but never a booth or the entrance
+    const margin = 40;
+    const contentFit = Math.min(width / (booths.maxX - booths.minX + margin * 2), height / (booths.maxY - booths.minY + margin * 2));
+    return {
+      x: (booths.minX + booths.maxX) / 2,
+      y: (booths.minY + booths.maxY) / 2,
+      scale: Math.min(fit * 1.18, contentFit),
+    };
   };
   camera.resize(app.screen.width, app.screen.height);
   const start = home();
@@ -266,12 +293,22 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     if (store.getState().exploring !== exploring) store.getState().setExploring(exploring);
   };
 
+  const detailNodes = world.getChildrenByLabel(DETAIL, true);
+  let detailLevel = 0;
+  for (const node of detailNodes) node.alpha = 0;
+
   // --- loop ---
   app.ticker.add((ticker) => {
     const dt = Math.min(ticker.deltaMS, 50);
     visitors.forEach((v) => v.update(dt));
     sitters.forEach((s) => s.update(dt));
-    stands.forEach((s) => s.update(dt));
+    // small print fades in once the zoom makes it legible (~1x), independent of screen size
+    const zoomDetail = smoothstep(0.95, 1.3, world.scale.x);
+    stands.forEach((s) => s.update(dt, zoomDetail));
+    if (Math.abs(zoomDetail - detailLevel) > 0.001) {
+      detailLevel += (zoomDetail - detailLevel) * Math.min(1, dt / 140);
+      for (const node of detailNodes) node.alpha = detailLevel;
+    }
     camera.update(dt);
     // keep speech bubbles legible when zoomed out
     const bubbleScale = Math.min(2.4, Math.max(1, 0.8 / world.scale.x));
