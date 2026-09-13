@@ -34,10 +34,14 @@ export const ASSETS = {
   "lobby-floor": { src: "/lobby/lobby-floor.png", anchor: { x: 0.5, y: 0 }, width: 1984 },
   // Round planter with the plaza tree. Radius 2.2 tiles → 200 px wide; crop so the planter rim touches both sides.
   "planter-center": { src: "/lobby/planter-center.webp", anchor: { x: 0.5, y: 1 }, width: 200, groundOffset: 45, shadow: { rx: 108, ry: 50, alpha: 0.12 } },
-  "stand-about": { src: null, anchor: { x: 0.5, y: 0.75 } },
-  "stand-portfolio": { src: null, anchor: { x: 0.5, y: 0.75 } },
-  "stand-skills": { src: null, anchor: { x: 0.5, y: 0.75 } },
-  "stand-experience": { src: null, anchor: { x: 0.5, y: 0.75 } },
+  // Booth walls + floor only (no text, desk, people or plants: those are drawn on top).
+  // Anchor = the far corner where both walls meet the floor. Made from art/reference/stand-*.png.
+  "stand-about": { src: null, anchor: { x: 0.5, y: 0.5 } },
+  "stand-portfolio": { src: null, anchor: { x: 0.5, y: 0.5 } },
+  "stand-skills": { src: null, anchor: { x: 0.5, y: 0.5 } },
+  "stand-experience": { src: null, anchor: { x: 0.5, y: 0.5 } },
+  // Reception desk shared by the four booths, anchored at the centre of its footprint. Made from art/reference/desk.png.
+  "desk": { src: null, anchor: { x: 0.5, y: 0.5 } },
   // Potted plants (two varieties). Crop tight; width is the widest leaf span at size 1.
   "plant-a": { src: "/lobby/plant-a.webp", anchor: { x: 0.508, y: 1 }, width: 42, groundOffset: 6.2, shadow: { rx: 14, ry: 6 } },
   "plant-b": { src: "/lobby/plant-b.webp", anchor: { x: 0.5, y: 1 }, width: 48, groundOffset: 3.4, shadow: { rx: 12, ry: 5 } },

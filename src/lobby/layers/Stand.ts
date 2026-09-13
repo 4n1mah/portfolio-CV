@@ -18,6 +18,20 @@ function luminance(color: number) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+/** Placeholder reception desk, relative to the centre of its footprint. The laptop is drawn separately. */
+function deskPlaceholder(): Container {
+  const c = new Container();
+  const g = new Graphics();
+  box(g, -1.3, -0.4, 2.6, 0.8, 22, PALETTE.wood);
+  box(g, -1.4, -0.45, 2.8, 0.9, 3, PALETTE.wall, 22);
+  // front light strip
+  const s1 = iso(-1.3, 0.4);
+  const s2 = iso(1.3, 0.4);
+  g.moveTo(s1.x, s1.y - 4).lineTo(s2.x, s2.y - 4).stroke({ width: 2, color: PALETTE.glow, alpha: 0.8 });
+  c.addChild(g);
+  return c;
+}
+
 /** One interactive booth: walls, signage, receptionist, desk and glow. */
 export class Stand extends Container {
   readonly receptionist: Chibi;
@@ -46,7 +60,15 @@ export class Stand extends Container {
     this.halo.alpha = 0;
     this.addChild(this.halo);
 
-    this.addChild(piece(`stand-${cfg.id}` as const, () => this.buildBooth()));
+    // walls + floor (art or placeholder), anchored at the booth's far corner on the floor
+    const shell = piece(`stand-${cfg.id}` as const, () => this.buildShell());
+    const corner = iso(gx, gy);
+    shell.position.set(corner.x, corner.y);
+    this.addChild(shell);
+    // signage, wall graphics and side-wall lettering are always drawn by code, in the current language
+    const signage = this.buildSignage();
+    signage.zIndex = 0.5;
+    this.addChild(signage);
 
     // receptionist + desk
     const rx = gx + w * 0.5;
@@ -56,16 +78,15 @@ export class Stand extends Container {
     this.receptionist.position.set(rp.x, rp.y);
     this.addChild(this.receptionist);
 
-    const desk = new Graphics();
-    box(desk, rx - 1.3, ry + 0.45, 2.6, 0.8, 22, PALETTE.wood);
-    box(desk, rx - 1.4, ry + 0.4, 2.8, 0.9, 3, PALETTE.wall, 22);
-    // laptop
-    const lp = iso(rx + 0.4, ry + 0.8);
-    desk.poly([lp.x - 8, lp.y - 26, lp.x + 6, lp.y - 33, lp.x + 6, lp.y - 45, lp.x - 8, lp.y - 38]).fill(0x3b4150);
-    // front light strip
-    const s1 = iso(rx - 1.3, ry + 1.25);
-    const s2 = iso(rx + 1.3, ry + 1.25);
-    desk.moveTo(s1.x, s1.y - 4).lineTo(s2.x, s2.y - 4).stroke({ width: 2, color: PALETTE.glow, alpha: 0.8 });
+    // desk art is anchored at the centre of its footprint, just in front of the receptionist
+    const desk = new Container();
+    const dp = iso(rx, ry + 0.85);
+    desk.position.set(dp.x, dp.y);
+    desk.addChild(piece("desk", () => deskPlaceholder()));
+    const laptop = new Graphics();
+    const lp = iso(0.4, -0.05);
+    laptop.poly([lp.x - 8, lp.y - 26, lp.x + 6, lp.y - 33, lp.x + 6, lp.y - 45, lp.x - 8, lp.y - 38]).fill(0x3b4150);
+    desk.addChild(laptop);
     this.addChild(desk);
 
     // glow outline (animated on hover)
@@ -115,17 +136,24 @@ export class Stand extends Container {
     bubbleLayer.addChild(this.bubble);
   }
 
-  /** Placeholder booth: L-shaped walls with skewed signage. */
-  private buildBooth(): Container {
-    const { gx, gy, w, d, accent } = this.cfg;
-    const booth = new Container();
+  /** Placeholder walls + floor, drawn relative to the far corner (0, 0). */
+  private buildShell(): Container {
+    const { w, d, accent } = this.cfg;
+    const shell = new Container();
     const g = new Graphics();
-    box(g, gx, gy, w, d, 6, 0xf7f2ea);
-    wallY(g, gx, gy, d, WALL_H, this.cfg.sideWall);
-    wallX(g, gx, gy, w, WALL_H, PALETTE.wall);
+    box(g, 0, 0, w, d, 6, 0xf7f2ea);
+    wallY(g, 0, 0, d, WALL_H, this.cfg.sideWall);
+    wallX(g, 0, 0, w, WALL_H, PALETTE.wall);
     // accent band on the main wall
-    wallX(g, gx, gy - 0.02, w, 10, accent, 0.2);
-    booth.addChild(g);
+    wallX(g, 0, -0.02, w, 10, accent, 0.2);
+    shell.addChild(g);
+    return shell;
+  }
+
+  /** Skewed signage on both walls, in world coordinates. */
+  private buildSignage(): Container {
+    const { gx, gy, w, d } = this.cfg;
+    const booth = new Container();
 
     // --- main wall face (runs along gx) ---
     const face = new Container();

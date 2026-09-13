@@ -24,10 +24,13 @@ La lógica (hover, zoom, NPCs) no cambia: solo cambia lo que se ve.
 |---|---|---|---|
 | `lobby-floor` | Suelo completo del lobby, vacío (mármol, anillos de la plaza, alfombra **sin texto**; el texto lo pone el código en el idioma activo) | Rombo 2:1, recortado al borde (≈ 2000 × 1020) | x 0.5, y 0 (esquina superior del rombo). Se escala solo a 1984 px de ancho |
 | `planter-center` | Jardinera redonda de la plaza con su árbol, **sin bancas ni placa** (las pone el código) | ✅ `planter-center.webp`, 1100 × 1056 | Ancho 200 px, se apoya en el centro de la base (45 px sobre el borde inferior); la placa va en la banda frontal |
-| `stand-about` | Stand "Sobre mí": paredes en L, letrero, cuadro, suelo del stand, **sin recepcionista ni escritorio** | 460 × 380 | 0.5, 0.75 |
-| `stand-portfolio` | Stand "Portafolio" con pantallas en la pared | 460 × 380 | 0.5, 0.75 |
-| `stand-skills` | Stand "Habilidades" con iconos Ps/Ai/Figma/código | 460 × 380 | 0.5, 0.75 |
-| `stand-experience` | Stand "Experiencias" con timeline en la pared | 460 × 380 | 0.5, 0.75 |
+| `stand-about` | Stand "Sobre mí": solo paredes en L y suelo, **paredes lisas** (letrero, textos, iconos y cuadros los dibuja el código encima). Plantilla: `art/reference/stand-about.png` | Mismo lienzo que la plantilla (1536 × 1024) | Esquina del fondo donde se juntan las paredes y el suelo |
+| `stand-portfolio` | Igual, pared lateral azul marino. Plantilla: `art/reference/stand-portfolio.png` | 1536 × 1024 | Igual |
+| `stand-skills` | Igual, pared lateral verde salvia. Plantilla: `art/reference/stand-skills.png` | 1536 × 1024 | Igual |
+| `stand-experience` | Igual, pared lateral nogal. Plantilla: `art/reference/stand-experience.png` | 1536 × 1024 | Igual |
+| `desk` | Mostrador de recepción (el mismo en los cuatro stands), **sin laptop**. Plantilla: `art/reference/desk.png` | 1536 × 1024 | Centro de la base del mostrador |
+
+Las plantillas de `art/reference/` las genera el código con la geometría exacta del lobby: se suben a ChatGPT para que respete la forma y solo cambie los materiales.
 | `plant-a` | Planta frondosa y redonda en maceta oscura | ✅ `plant-a.webp`, 360 px de ancho | Ancho 42 px × tamaño, apoyada en el centro de la maceta |
 | `plant-b` | Planta alta de hojas grandes en maceta oscura | ✅ `plant-b.webp`, 360 px de ancho | Ancho 48 px × tamaño, apoyada en el centro de la maceta |
 | `bench` | Banca de madera sin respaldo, lado largo de arriba-izquierda a abajo-derecha | ✅ `bench.webp`, 480 px de ancho | Ancho 73 px, apoyada en el centro de su huella; se refleja en código para las bancas en la otra diagonal |
