@@ -141,7 +141,16 @@ export class Sitter extends Container {
   private lineIndex = 0;
 
   constructor(
-    readonly spot: { gx: number; gy: number; dir: number; hair: number; shirt: number; bun?: boolean; laptop?: boolean },
+    readonly spot: {
+      gx: number;
+      gy: number;
+      dir: number;
+      hair: number;
+      shirt: number;
+      bun?: boolean;
+      laptop?: boolean;
+      seat: { gx: number; gy: number; h: number };
+    },
     private lines: string[],
     private animated: boolean,
     bubbleLayer: Container,
@@ -149,20 +158,24 @@ export class Sitter extends Container {
     super();
     const p = iso(spot.gx, spot.gy);
     this.position.set(p.x, p.y);
-    this.zIndex = depth(spot.gx, spot.gy) + 1;
+    // always drawn right above its own seat, wherever on the seat the visitor sits
+    this.zIndex = depth(spot.seat.gx, spot.seat.gy) + 1;
 
-    this.chibi = new Chibi({ hair: spot.hair, shirt: spot.shirt, bun: spot.bun, seated: true });
+    // hips sink slightly into the seat top; the legs hang over the front edge down to the floor
+    const h = spot.seat.h - 2;
+    this.chibi = new Chibi({ hair: spot.hair, shirt: spot.shirt, bun: spot.bun, seated: true, seatHeight: h });
     this.chibi.setFacing(spot.dir, true);
-    this.chibi.y = -8;
+    this.chibi.y = -h;
     this.addChild(this.chibi);
 
     if (spot.laptop) {
       const lap = new Graphics();
-      lap.roundRect(-10 * -spot.dir - 7, -20, 14, 3, 1).fill(0xc9ccd3);
-      lap.poly([-3 * -spot.dir, -20, 7 * -spot.dir + 0, -20, 9 * -spot.dir, -32, -1 * -spot.dir, -32]).fill(0x3b4150);
+      const y = -h - 3;
+      lap.roundRect(-10 * -spot.dir - 7, y, 14, 3, 1).fill(0xc9ccd3);
+      lap.poly([-3 * -spot.dir, y, 7 * -spot.dir, y, 9 * -spot.dir, y - 12, -1 * -spot.dir, y - 12]).fill(0x3b4150);
       this.addChild(lap);
     }
-    this.bubble.position.set(p.x, p.y + this.chibi.headY - 12);
+    this.bubble.position.set(p.x, p.y + this.chibi.y + this.chibi.headY - 6);
     bubbleLayer.addChild(this.bubble);
   }
 

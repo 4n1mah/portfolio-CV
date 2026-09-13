@@ -1,6 +1,6 @@
 import { Container, Graphics } from "pixi.js";
 import type { Content } from "@/content/sections";
-import { ENTRANCE_MAT, PALETTE, PLAZA_CENTER, WORLD_SIZE } from "../config";
+import { ENTRANCE_MAT, PALETTE, PLAZA_CENTER, SITTERS, WORLD_SIZE } from "../config";
 import { depth, iso, isoCircle, rectPoly, TILE_W } from "../engine/iso";
 import { piece } from "../assets";
 import { bench, box, DETAIL, label, lamp, planter, plant, sign } from "./draw";
@@ -100,9 +100,10 @@ export function buildDecor(entities: Container, text: Content["lobby"]) {
   place(entities, piece("bench", () => bench(true)), 15, 18);
 
   // seats under seated visitors: shorter benches along gy (the bench image mirrored) and the lounge sofa
-  place(entities, piece("bench", () => seat(false), 0.9, true), 12.1, 15.4);
-  place(entities, piece("bench", () => seat(false), 0.9, true), 17.8, 14.6);
-  place(entities, piece("sofa", () => seat(true, true)), 15.2, 24);
+  SITTERS.forEach(({ seat: s }) => {
+    const obj = s.kind === "sofa" ? piece("sofa", () => seat(true, true)) : piece("bench", () => seat(false), 0.9, true);
+    place(entities, obj, s.gx, s.gy);
+  });
 
   place(entities, sign(text.signLeft), 19.8, 25.6);
   place(entities, sign(text.signRight, { dark: true }), 27.4, 23.6);

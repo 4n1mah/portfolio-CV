@@ -10,6 +10,8 @@ export interface ChibiLook {
   glasses?: boolean;
   backpack?: boolean;
   seated?: boolean;
+  /** Height of the hips above the floor when seated: the rig origin is the hips and the feet reach just above the floor. */
+  seatHeight?: number;
 }
 
 /**
@@ -30,16 +32,22 @@ export class Chibi extends Container {
   constructor(private look: ChibiLook) {
     super();
     const seated = !!look.seated;
-    const bodyTop = seated ? -26 : -32;
+    // seated: origin at the hips (seat top), so the body ends at 0
+    const bodyTop = seated ? -18 : -32;
     this.headY = bodyTop - 30;
 
-    const shadow = new Graphics().ellipse(0, 0, 11, 4).fill({ color: 0x000000, alpha: 0.18 });
-    this.addChild(shadow, this.rig);
-
-    if (!seated) {
-      this.legs.roundRect(-5, -12, 4, 12, 2).fill(PALETTE.navy).roundRect(1, -12, 4, 12, 2).fill(PALETTE.navy);
+    if (seated) {
+      // no floor shadow: it would be drawn on the seat and make the visitor look like it floats
+      this.addChild(this.rig);
+      // lap coming towards the viewer, lower legs hanging over the seat edge, feet dangling or on the floor
+      const hang = Math.max(3, (look.seatHeight ?? 12) - 1);
+      this.legs.roundRect(-7, -4, 16, 7, 3.5).fill(PALETTE.navy);
+      this.legs.roundRect(-4, 0, 4, hang, 2).fill(PALETTE.navy).roundRect(2, 0, 4, hang, 2).fill(PALETTE.navy);
+      this.legs.ellipse(-2, hang, 3, 1.8).fill(0x2a2522).ellipse(4, hang, 3, 1.8).fill(0x2a2522);
     } else {
-      this.legs.roundRect(-6, -10, 12, 6, 3).fill(PALETTE.navy);
+      const shadow = new Graphics().ellipse(0, 0, 11, 4).fill({ color: 0x000000, alpha: 0.18 });
+      this.addChild(shadow, this.rig);
+      this.legs.roundRect(-5, -12, 4, 12, 2).fill(PALETTE.navy).roundRect(1, -12, 4, 12, 2).fill(PALETTE.navy);
     }
 
     const body = new Graphics().roundRect(-8, bodyTop, 16, seated ? 18 : 22, 6).fill(look.shirt);
@@ -69,7 +77,9 @@ export class Chibi extends Container {
 
     this.drawFace();
 
-    this.rig.addChild(this.legs, this.backpack, body, this.armR, head, this.face, this.backHair);
+    // seated legs hang in front of the body; standing legs sit behind it
+    if (seated) this.rig.addChild(this.backpack, body, this.legs, this.armR, head, this.face, this.backHair);
+    else this.rig.addChild(this.legs, this.backpack, body, this.armR, head, this.face, this.backHair);
     this.setFacing(1, true);
   }
 
