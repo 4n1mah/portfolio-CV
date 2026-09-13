@@ -36,12 +36,14 @@ export const ASSETS = {
   "planter-center": { src: "/lobby/planter-center.webp", anchor: { x: 0.5, y: 1 }, width: 200, groundOffset: 45, shadow: { rx: 108, ry: 50, alpha: 0.12 } },
   // Booth walls + floor only (no text, desk, people or plants: those are drawn on top).
   // Anchor = the far corner where both walls meet the floor. Made from art/reference/stand-*.png.
-  "stand-about": { src: null, anchor: { x: 0.5, y: 0.5 } },
-  "stand-portfolio": { src: null, anchor: { x: 0.5, y: 0.5 } },
-  "stand-skills": { src: null, anchor: { x: 0.5, y: 0.5 } },
-  "stand-experience": { src: null, anchor: { x: 0.5, y: 0.5 } },
-  // Reception desk shared by the four booths, anchored at the centre of its footprint. Made from art/reference/desk.png.
-  "desk": { src: null, anchor: { x: 0.5, y: 0.5 } },
+  // Anchor and width come from the template mapping (3.5 px per world px, far corner at 681.8, 398).
+  "stand-about": { src: "/lobby/stand-about.webp", anchor: { x: 0.4297, y: 0.3733 }, width: 350.29 },
+  "stand-portfolio": { src: "/lobby/stand-portfolio.webp", anchor: { x: 0.429, y: 0.3719 }, width: 350.86 },
+  "stand-skills": { src: "/lobby/stand-skills.webp", anchor: { x: 0.4293, y: 0.3723 }, width: 350.57 },
+  "stand-experience": { src: "/lobby/stand-experience.webp", anchor: { x: 0.4292, y: 0.3741 }, width: 350 },
+  // Reception desk shared by the four booths, anchored at the centre of its footprint. Made from art/reference/desk.png
+  // (9 px per world px, footprint centre at 768, 635.3).
+  "desk": { src: "/lobby/desk.webp", anchor: { x: 0.4995, y: 0.6515 }, width: 119.22 },
   // Potted plants (two varieties). Crop tight; width is the widest leaf span at size 1.
   "plant-a": { src: "/lobby/plant-a.webp", anchor: { x: 0.508, y: 1 }, width: 42, groundOffset: 6.2, shadow: { rx: 14, ry: 6 } },
   "plant-b": { src: "/lobby/plant-b.webp", anchor: { x: 0.5, y: 1 }, width: 48, groundOffset: 3.4, shadow: { rx: 12, ry: 5 } },
