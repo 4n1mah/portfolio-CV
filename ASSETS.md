@@ -22,7 +22,7 @@ La lógica (hover, zoom, NPCs) no cambia: solo cambia lo que se ve.
 
 | Key (`assets.ts`) | Qué es | Tamaño sugerido | Anchor |
 |---|---|---|---|
-| `lobby-floor` | Suelo completo del lobby, vacío (mármol, anillos de la plaza, alfombra **sin texto**; el texto lo pone el código en el idioma activo) | Rombo 2:1, recortado al borde (≈ 2000 × 1020) | x 0.5, y 0 (esquina superior del rombo). Se escala solo a 1984 px de ancho |
+| `lobby-floor` | Suelo completo del lobby, vacío (mármol, anillos de la plaza, alfombra **sin texto**; el texto lo pone el código en el idioma activo) | ✅ `lobby-floor.webp`, hecho con la plantilla `art/reference/lobby-floor.png` (plaza de radio 5.4 casillas, alfombra en `ENTRANCE_MAT`) | Esquina superior del rombo; 0.76 px por px del mundo |
 | `planter-center` | Jardinera redonda de la plaza con su árbol, **sin bancas ni placa** (las pone el código) | ✅ `planter-center.webp`, 1100 × 1056 | Ancho 200 px, se apoya en el centro de la base (45 px sobre el borde inferior); la placa va en la banda frontal |
 | `stand-about` | Stand "Sobre mí": solo paredes en L y suelo, **paredes lisas** (letrero, textos, iconos y cuadros los dibuja el código encima). Plantilla: `art/reference/stand-about.png` | ✅ `stand-about.webp`, recortada del lienzo de la plantilla (1536 × 1024) | Esquina del fondo donde se juntan las paredes y el suelo |
 | `stand-portfolio` | Igual, pared lateral azul marino. Plantilla: `art/reference/stand-portfolio.png` | ✅ `stand-portfolio.webp` | Igual |

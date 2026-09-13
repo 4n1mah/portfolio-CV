@@ -38,9 +38,10 @@ function floorArt(): Container {
 
     // plaza rings
     const center = iso(PLAZA_CENTER.gx, PLAZA_CENTER.gy);
-    const plaza = isoCircle(7.2);
+    // same radii as the floor art: the plaza ends inside the visitors' ring and clear of every booth
+    const plaza = isoCircle(5.4);
     g.ellipse(center.x, center.y, plaza.rx, plaza.ry).fill({ color: 0xf6f1e9, alpha: 0.9 });
-    [4.4, 6.4, 7.2].forEach((r, i) => {
+    [4.3, 4.8, 5.4].forEach((r, i) => {
       const { rx, ry } = isoCircle(r);
       g.ellipse(center.x, center.y, rx, ry).stroke({ width: i === 1 ? 3 : 1.5, color: i === 1 ? PALETTE.glow : 0xd8cdbd, alpha: i === 1 ? 0.55 : 1 });
     });

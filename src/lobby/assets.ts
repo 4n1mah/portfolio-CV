@@ -30,8 +30,9 @@ export interface AssetEntry {
 }
 
 export const ASSETS = {
-  // Island: 31 x 31 tiles = 1984 px wide. Crop the image to the diamond so its top corner is at y = 0.
-  "lobby-floor": { src: "/lobby/lobby-floor.png", anchor: { x: 0.5, y: 0 }, width: 1984 },
+  // Island: 31 x 31 tiles = 1984 px wide. Made from art/reference/lobby-floor.png (0.76 px per world px);
+  // the anchor is the diamond's top corner, width includes the thin floor edge.
+  "lobby-floor": { src: "/lobby/lobby-floor.webp", anchor: { x: 0.4997, y: 0.009 }, width: 1990.8 },
   // Round planter with the plaza tree. Radius 2.2 tiles → 200 px wide; crop so the planter rim touches both sides.
   "planter-center": { src: "/lobby/planter-center.webp", anchor: { x: 0.5, y: 1 }, width: 200, groundOffset: 45, shadow: { rx: 108, ry: 50, alpha: 0.12 } },
   // Booth walls + floor only (no text, desk, people or plants: those are drawn on top).
