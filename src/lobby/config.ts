@@ -6,8 +6,6 @@ import type { StandId } from "./store";
 
 export const WORLD_SIZE = 31;
 export const PLAZA_CENTER = { gx: 15, gy: 15 };
-/** Entrance mat: center and side length in tiles. Matches public/lobby/lobby-floor.webp. */
-export const ENTRANCE_MAT = { gx: 27.2, gy: 27.2, size: 4 };
 
 export const PALETTE = {
   background: 0x1c2231,
@@ -52,11 +50,14 @@ export type StandConfig = StandLayout & StandText;
 // Side walls by theme: About = warm sand (personal), Portfolio = navy (work),
 // Skills = sage (growth), Experience = walnut (career path).
 // Walls sit on each booth’s far edges (gx and gy), so visitor routes stay on the open (near) sides.
+// The booths form an emerald around the plaza on screen: About on top, Portfolio left, Skills right
+// (Portfolio mirrored across the vertical axis, i.e. its footprint centre with gx and gy swapped)
+// and Experience at the bottom, pushed down just enough for its walls to clear the plaza rim.
 const STAND_LAYOUT: StandLayout[] = [
   { id: "about", gx: 3.5, gy: 4, w: 6, d: 4.5, accent: 0xc9a27a, sideWall: 0xdcb68c, icon: "person", receptionist: { hair: 0x2d2420, shirt: 0x2f3b5c } },
-  { id: "portfolio", gx: 4, gy: 18, w: 6, d: 4.5, accent: 0x1f2a44, sideWall: 0x2a3657, icon: "folder", receptionist: { hair: 0x3b2a22, shirt: 0x1f2a44 } },
-  { id: "skills", gx: 18, gy: 4, w: 6, d: 4.5, accent: 0x4f6b62, sideWall: 0x5f7f6f, icon: "gear", receptionist: { hair: 0x4a3226, shirt: 0x4f6b62, glasses: true } },
-  { id: "experience", gx: 22.5, gy: 16, w: 6, d: 4.5, accent: 0x8a6a52, sideWall: 0x8a6448, icon: "briefcase", receptionist: { hair: 0x5a3b2a, shirt: 0x2f3b5c } },
+  { id: "portfolio", gx: 3.875, gy: 18.75, w: 6, d: 4.5, accent: 0x1f2a44, sideWall: 0x2a3657, icon: "folder", receptionist: { hair: 0x3b2a22, shirt: 0x1f2a44 } },
+  { id: "skills", gx: 18, gy: 4.625, w: 6, d: 4.5, accent: 0x4f6b62, sideWall: 0x5f7f6f, icon: "gear", receptionist: { hair: 0x4a3226, shirt: 0x4f6b62, glasses: true } },
+  { id: "experience", gx: 21.55, gy: 22.55, w: 6, d: 4.5, accent: 0x8a6a52, sideWall: 0x8a6448, icon: "briefcase", receptionist: { hair: 0x5a3b2a, shirt: 0x2f3b5c } },
 ];
 
 export function standsFor(text: Content["lobby"]): StandConfig[] {
@@ -66,7 +67,7 @@ export function standsFor(text: Content["lobby"]): StandConfig[] {
 // Walkable graph for visitors: a ring around the central planter plus a few spurs.
 export const WAYPOINTS: Record<string, { gx: number; gy: number; links: string[]; faces?: StandId }> = {
   r0: { gx: 20.6, gy: 15, links: ["r1", "r7"] },
-  r1: { gx: 19, gy: 19, links: ["r0", "r2", "gate"] },
+  r1: { gx: 19, gy: 19, links: ["r0", "r2"] },
   r2: { gx: 15, gy: 20.6, links: ["r1", "r3", "lounge"] },
   r3: { gx: 11, gy: 19, links: ["r2", "r4", "port"] },
   r4: { gx: 9.4, gy: 15, links: ["r3", "r5", "port"] },
@@ -76,9 +77,9 @@ export const WAYPOINTS: Record<string, { gx: number; gy: number; links: string[]
   about: { gx: 10.4, gy: 10, links: ["r5", "r6"], faces: "about" },
   port: { gx: 11.2, gy: 20.4, links: ["r3", "r4"], faces: "portfolio" },
   skill: { gx: 19.5, gy: 9.8, links: ["r6", "r7"], faces: "skills" },
-  exp: { gx: 25, gy: 21.8, links: ["gate"], faces: "experience" },
-  gate: { gx: 22.3, gy: 22.3, links: ["r1", "exp"] },
-  lounge: { gx: 17, gy: 22.2, links: ["r2"] },
+  // Experience opens away from the plaza, so its visitors walk round the side wall to the front
+  exp: { gx: 21.9, gy: 28.6, links: ["lounge"], faces: "experience" },
+  lounge: { gx: 17, gy: 22.2, links: ["r2", "exp"] },
 };
 
 export const VISITORS = [

@@ -114,31 +114,3 @@ export function planter(radius: number): Container {
   c.addChild(g);
   return c;
 }
-
-/** Standing sign board that grows to fit its lines. */
-export function sign(lines: string[], opts: { dark?: boolean } = {}): Container {
-  const c = new Container();
-  const g = new Graphics();
-  const texts = lines.map((line) =>
-    label(line, { fontSize: 6.5, fill: opts.dark ? 0xffffff : PALETTE.ink, fontWeight: "600", letterSpacing: 0.5 }),
-  );
-  const pad = 6;
-  const lineH = 9;
-  const w = Math.max(46, ...texts.map((t) => t.width + pad * 2));
-  const h = Math.max(40, texts.length * lineH + pad * 2);
-  const top = -h - 10;
-  g.ellipse(0, 0, w * 0.4, 6).fill({ color: 0x000000, alpha: 0.15 });
-  g.rect(-3, -10, 6, 10).fill(PALETTE.navy);
-  g.roundRect(-w / 2 - 3, top - 3, w + 6, h + 6, 3).fill(PALETTE.navy);
-  g.roundRect(-w / 2, top, w, h, 2).fill(opts.dark ? PALETTE.navy : PALETTE.wall);
-  c.addChild(g);
-  // the lettering is small print: the engine fades every "detail" in on zoom
-  const lettering = new Container({ label: DETAIL });
-  texts.forEach((t, i) => {
-    t.x = -w / 2 + pad;
-    t.y = top + pad + i * lineH;
-    lettering.addChild(t);
-  });
-  c.addChild(lettering);
-  return c;
-}

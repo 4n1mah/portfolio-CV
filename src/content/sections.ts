@@ -267,9 +267,6 @@ const es = {
     activeGreeting: "¡Bienvenida/o! Aquí tienes todo 👉",
     visitorLines: ["Qué interesante 👏", "¡Mira este proyecto! 😍", "Me encanta este lugar", "¿Ya viste Habilidades?", "Qué buena idea 💡", "Voy a Experiencias"],
     sitterLines: [["Qué interesante 👏"], ["Mira este proyecto 😍"], ["Buenas ideas ✨", "Me quedo un rato más"]],
-    signLeft: ["TU PRÓXIMO", "GRAN PROYECTO", "TAMBIÉN", "EMPIEZA AQUÍ →"],
-    signRight: ["EXPLORA", "CONECTA", "INSPÍRATE", "CREA →"],
-    mat: ["B I E N V E N I D O", "EXPLORA · HAZ CLICK · DESCUBRE"],
     plazaSign: "Sadiel’s Plaza",
   },
 };
@@ -507,9 +504,6 @@ const en: Content = {
     activeGreeting: "Welcome! Here's everything 👉",
     visitorLines: ["How interesting 👏", "Check out this project! 😍", "I love this place", "Seen the Skills booth?", "Great idea 💡", "Heading to Experience"],
     sitterLines: [["How interesting 👏"], ["Look at this project 😍"], ["Good ideas ✨", "I'll stay a bit longer"]],
-    signLeft: ["YOUR NEXT", "BIG PROJECT", "ALSO", "STARTS HERE →"],
-    signRight: ["EXPLORE", "CONNECT", "GET INSPIRED", "CREATE →"],
-    mat: ["W E L C O M E", "EXPLORE · CLICK · DISCOVER"],
     plazaSign: "Sadiel’s Plaza",
   },
 };

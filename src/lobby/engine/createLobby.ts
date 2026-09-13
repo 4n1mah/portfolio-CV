@@ -1,7 +1,7 @@
 import { Application, Container, type FederatedPointerEvent } from "pixi.js";
 import gsap from "gsap";
 import { content, type Locale } from "@/content/sections";
-import { ENTRANCE_MAT, PALETTE, PLAZA_CENTER, SITTERS, VISITORS, WAYPOINTS, WORLD_SIZE, standsFor } from "../config";
+import { PALETTE, PLAZA_CENTER, SITTERS, VISITORS, WAYPOINTS, WORLD_SIZE, standsFor } from "../config";
 import { ASSETS, loadAssets } from "../assets";
 import { lobbyStore, type StandId } from "../store";
 import { DETAIL, fonts } from "../layers/draw";
@@ -74,14 +74,14 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
 
   // --- layers ---
   const world = new Container();
-  const floor = buildFloor(text);
+  const floor = buildFloor();
   const entities = new Container();
   entities.sortableChildren = true;
   const bubbles = new Container();
   world.addChild(floor, entities, bubbles);
   app.stage.addChild(world);
 
-  buildDecor(entities, text);
+  buildDecor(entities);
 
   const stands = new Map<StandId, Stand>();
   for (const cfg of standsFor(text)) {
@@ -115,7 +115,7 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
   const camera = new Camera(world, app.canvas, BOUNDS, (kind) => {
     if (store.getState().pointer !== kind) store.getState().setPointer(kind);
   });
-  // What the first view must show: every booth (walls included) down to the entrance mat.
+  // What the first view must show: every booth, walls included.
   const booths = (() => {
     const xs: number[] = [];
     const ys: number[] = [];
@@ -124,7 +124,6 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
       xs.push(iso(cfg.gx, cfg.gy + cfg.d).x, iso(cfg.gx + cfg.w, cfg.gy).x);
       ys.push(far.y - 110, iso(cfg.gx + cfg.w, cfg.gy + cfg.d).y);
     }
-    ys.push(iso(ENTRANCE_MAT.gx + ENTRANCE_MAT.size / 2, ENTRANCE_MAT.gy + ENTRANCE_MAT.size / 2).y); // entrance mat
     return { minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) };
   })();
   const home = () => {
@@ -136,7 +135,7 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     // ~18% closer than "whole island" so booths read better; the empty floor tips may crop,
     // but never a booth or the entrance
     const margin = 40;
-    const hintBar = 36; // bottom hint pill: keep the entrance mat lettering above it
+    const hintBar = 36; // bottom hint pill: keep the front booth above it
     const contentFit = Math.min(
       width / (booths.maxX - booths.minX + margin * 2),
       (height - hintBar) / (booths.maxY - booths.minY + margin * 2),
