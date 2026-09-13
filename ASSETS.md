@@ -30,8 +30,9 @@ La lógica (hover, zoom, NPCs) no cambia: solo cambia lo que se ve.
 | `stand-experience` | Stand "Experiencias" con timeline en la pared | 460 × 380 | 0.5, 0.75 |
 | `plant-a` | Planta frondosa y redonda en maceta oscura | ✅ `plant-a.webp`, 360 px de ancho | Ancho 42 px × tamaño, apoyada en el centro de la maceta |
 | `plant-b` | Planta alta de hojas grandes en maceta oscura | ✅ `plant-b.webp`, 360 px de ancho | Ancho 48 px × tamaño, apoyada en el centro de la maceta |
-| `bench` | Banca de madera | 140 × 80 | 0.5, 0.7 |
-| `lamp` | Poste de luz con bombilla cálida | 40 × 110 | 0.5, 0.97 |
+| `bench` | Banca de madera sin respaldo, lado largo de arriba-izquierda a abajo-derecha | ✅ `bench.webp`, 480 px de ancho | Ancho 73 px, apoyada en el centro de su huella; se refleja en código para las bancas en la otra diagonal |
+| `sofa` | Sofá gris de dos plazas, respaldo al fondo a la derecha | ✅ `sofa.webp`, 480 px de ancho | Ancho 78 px, apoyado en el centro entre las patas |
+| `lamp` | Poste azul marino con globo de luz, **sin halo** (el brillo lo dibuja el código) | ✅ `lamp.webp`, 96 px de ancho | Ancho 10.5 px, apoyado en el centro de la base; halo a 54 px de altura |
 
 > Los stands se colocan sobre las posiciones de `STANDS` en `src/lobby/config.ts`. Si tu imagen no cae exacto, ajusta el `anchor` en vez de mover la lógica.
 

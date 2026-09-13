@@ -37,11 +37,11 @@ export const ASSETS = {
   "plant-a": { src: "/lobby/plant-a.webp", anchor: { x: 0.508, y: 1 }, width: 42, groundOffset: 6.2, shadow: { rx: 14, ry: 6 } },
   "plant-b": { src: "/lobby/plant-b.webp", anchor: { x: 0.5, y: 1 }, width: 48, groundOffset: 3.4, shadow: { rx: 12, ry: 5 } },
   // Backless wooden bench whose long side runs down-right (along gx); mirrored for benches along gy.
-  "bench": { src: null, anchor: { x: 0.5, y: 1 }, width: 78, groundOffset: 10, shadow: { rx: 42, ry: 13, alpha: 0.1 } },
+  "bench": { src: "/lobby/bench.webp", anchor: { x: 0.5, y: 1 }, width: 73, groundOffset: 25, shadow: { rx: 40, ry: 13, alpha: 0.1 } },
   // Lounge sofa, backrest on the back-right side (along gx).
-  "sofa": { src: null, anchor: { x: 0.5, y: 1 }, width: 78, groundOffset: 10, shadow: { rx: 42, ry: 14, alpha: 0.1 } },
+  "sofa": { src: "/lobby/sofa.webp", anchor: { x: 0.502, y: 1 }, width: 78, groundOffset: 17, shadow: { rx: 42, ry: 14, alpha: 0.1 } },
   // Street lamp; the halo around the bulb is drawn by code.
-  "lamp": { src: null, anchor: { x: 0.5, y: 1 }, width: 12, groundOffset: 2, shadow: { rx: 7, ry: 3, alpha: 0.15 }, glow: { y: 50, r: 12 } },
+  "lamp": { src: "/lobby/lamp.webp", anchor: { x: 0.498, y: 1 }, width: 10.5, groundOffset: 1.8, shadow: { rx: 7, ry: 3, alpha: 0.15 }, glow: { y: 54, r: 13 } },
 } satisfies Record<string, AssetEntry>;
 
 export type AssetKey = keyof typeof ASSETS;

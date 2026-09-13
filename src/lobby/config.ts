@@ -94,6 +94,6 @@ export const VISITORS = [
 // Seated visitors: grid position and facing (+1 right, -1 left). Their lines come from content.lobby.sitterLines.
 export const SITTERS = [
   { gx: 12.3, gy: 15.6, dir: 1, hair: 0x2d2420, shirt: 0x2f3b5c, laptop: true },
-  { gx: 17.6, gy: 14.4, dir: -1, hair: 0xe3c68f, shirt: 0xd9d2c5, bun: true },
+  { gx: 18.05, gy: 14.65, dir: -1, hair: 0xe3c68f, shirt: 0xd9d2c5, bun: true },
   { gx: 15.2, gy: 24.2, dir: 1, hair: 0x3b2a22, shirt: 0x8a6a52, laptop: true },
 ];
