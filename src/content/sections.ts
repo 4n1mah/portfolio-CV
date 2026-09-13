@@ -184,31 +184,39 @@ const es = {
         role: "Analista de Enrutamiento de Leads",
         company: "National Debt Relief / Broadway Support Services",
         period: "Feb 2026 — Jul 2026",
-        description: "Distribución de leads en tiempo real vía Salesforce y AWS para más de 500 agentes y más de 20,000 leads diarios.",
+        description:
+          "Responsable de que los leads llegaran a los agentes de ventas correctos en el momento correcto, en una operación de más de 500 agentes y más de 20,000 leads diarios.",
         achievements: [
-          "Diagnostiqué fallas en configuraciones de CRM y dialer junto a Tecnología",
-          "Validé cambios antes de producción para evitar interrupciones",
-          "Reportes diarios, semanales y ad-hoc para liderazgo",
+          "Distribuía los leads en Salesforce y AWS para cumplir las métricas del equipo y generar más ventas para la empresa",
+          "Monitoreaba el flujo de leads en tiempo real y ajustaba la distribución sobre la marcha según el desempeño en vivo",
+          "Alineaba la estrategia de enrutamiento con los líderes de Ventas e Ingresos para priorizar las metas del negocio",
         ],
       },
       {
         role: "Analista de Tiempo Real (RTA)",
         company: "National Debt Relief / Broadway Support Services",
         period: "Oct 2025 — Feb 2026",
-        description: "Monitoreo de SLA, adherencia y ocupación en 5–6 campañas usando Aspect WFM.",
+        description:
+          "Analista de Workforce Management (WFM): vigilaba en tiempo real que la operación cumpliera sus métricas en 5–6 campañas usando Aspect WFM.",
         achievements: [
-          "Creé un tracker de SLA automatizado adoptado en toda la empresa",
-          "Ahorro de más de 13 horas semanales de trabajo manual",
-          "SLA por encima del 90% en todos los departamentos",
-          "Gestión de ~60 tickets diarios hasta su cierre",
+          "Creé el SLA Report: un tracker automatizado en Excel (Power Query y Power Pivot) que consolida más de 10 departamentos, adoptado en toda la empresa y que ahorra más de 13 horas semanales",
+          "Monitoreaba SLA, adherencia y ocupación, y me aseguraba de que las llamadas se atendieran, coordinando acciones inmediatas con el piso",
+          "Mantuve el SLA por encima del 90% en todos los departamentos",
+          "Preparaba y enviaba reportes diarios de KPI y métricas a los departamentos a mi cargo",
+          "Gestionaba ~60 tickets diarios de la operación hasta su cierre",
         ],
       },
       {
         role: "Ejecutivo de Cuentas de Ventas",
         company: "National Debt Relief / Broadway Support Services",
         period: "May 2025 — Oct 2025",
-        description: "Venta consultiva de programas de alivio de deudas para el mercado de EE. UU.",
-        achievements: ["Desempeño constante en o por encima del promedio del equipo"],
+        description:
+          "Venta consultiva de programas de alivio de deudas para clientes del mercado de EE. UU., en un entorno de alto volumen orientado a metas.",
+        achievements: [
+          "Llevaba cada venta de principio a fin: descubrimiento de necesidades, manejo de objeciones, cierre e inscripción en el programa",
+          "Mantuve un desempeño constante en o por encima del promedio del equipo de ventas",
+          "Esta experiencia en ventas es la que después guió mi forma de distribuir leads y diseñar los reportes de SLA",
+        ],
       },
       {
         role: "Coach de Soporte",
@@ -262,6 +270,7 @@ const es = {
     signLeft: ["TU PRÓXIMO", "GRAN PROYECTO", "TAMBIÉN", "EMPIEZA AQUÍ →"],
     signRight: ["EXPLORA", "CONECTA", "INSPÍRATE", "CREA →"],
     mat: ["B I E N V E N I D O", "EXPLORA · HAZ CLICK · DESCUBRE"],
+    plazaSign: "Sadiel’s Plaza",
   },
 };
 
@@ -415,31 +424,39 @@ const en: Content = {
         role: "Lead Routing Analyst",
         company: "National Debt Relief / Broadway Support Services",
         period: "Feb 2026 — Jul 2026",
-        description: "Real-time lead distribution through Salesforce and AWS for 500+ agents and 20,000+ leads per day.",
+        description:
+          "Made sure leads reached the right sales agents at the right time, in an operation of 500+ agents and 20,000+ leads per day.",
         achievements: [
-          "Diagnosed CRM and dialer configuration issues together with the Technology team",
-          "Validated changes before production to prevent disruptions",
-          "Daily, weekly and ad-hoc reports for leadership",
+          "Distributed leads through Salesforce and AWS to hit team metrics and drive more sales for the company",
+          "Monitored lead flow in real time and adjusted distribution on the fly based on live performance",
+          "Aligned routing strategy with Sales and Revenue leadership to prioritize business goals",
         ],
       },
       {
         role: "Real-Time Analyst (RTA)",
         company: "National Debt Relief / Broadway Support Services",
         period: "Oct 2025 — Feb 2026",
-        description: "Monitored SLA, adherence and occupancy across 5–6 campaigns using Aspect WFM.",
+        description:
+          "Workforce Management (WFM) analyst: kept the operation on target in real time across 5–6 campaigns using Aspect WFM.",
         achievements: [
-          "Built an automated SLA tracker adopted company-wide",
-          "Saved 13+ hours of manual work per week",
+          "Built the SLA Report: an automated Excel tracker (Power Query + Power Pivot) consolidating 10+ departments, adopted company-wide and saving 13+ hours per week",
+          "Monitored SLA, adherence and occupancy and made sure calls were answered, coordinating immediate action with the floor",
           "Kept SLA above 90% in every department",
-          "Handled ~60 tickets per day through to resolution",
+          "Prepared and sent daily KPI and metrics reports to the departments I supported",
+          "Handled ~60 operational tickets per day through to resolution",
         ],
       },
       {
         role: "Sales Account Executive",
         company: "National Debt Relief / Broadway Support Services",
         period: "May 2025 — Oct 2025",
-        description: "Consultative sales of debt relief programs for the U.S. market.",
-        achievements: ["Consistently performed at or above the team average"],
+        description:
+          "Consultative sales of debt relief programs for U.S. customers in a high-volume, goal-driven environment.",
+        achievements: [
+          "Owned every sale end to end: needs discovery, objection handling, closing and program enrollment",
+          "Consistently performed at or above the team sales average",
+          "This hands-on sales experience later shaped how I routed leads and designed SLA reporting",
+        ],
       },
       {
         role: "Support Coach",
@@ -493,6 +510,7 @@ const en: Content = {
     signLeft: ["YOUR NEXT", "BIG PROJECT", "ALSO", "STARTS HERE →"],
     signRight: ["EXPLORE", "CONNECT", "GET INSPIRED", "CREATE →"],
     mat: ["W E L C O M E", "EXPLORE · CLICK · DISCOVER"],
+    plazaSign: "Sadiel’s Plaza",
   },
 };
 

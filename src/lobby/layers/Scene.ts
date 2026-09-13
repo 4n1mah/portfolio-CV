@@ -39,11 +39,11 @@ export function buildFloor(text: Content["lobby"]): Container {
     });
 
     // entrance mat
-    box(g, 20.6, 20.6, 3.4, 3.4, 2, 0x2b2f38);
-    g.poly(rectPoly(20.9, 20.9, 2.8, 2.8, 2)).stroke({ width: 1, color: 0x555a66 });
+    box(g, 22.6, 22.6, 3.4, 3.4, 2, 0x2b2f38);
+    g.poly(rectPoly(22.9, 22.9, 2.8, 2.8, 2)).stroke({ width: 1, color: 0x555a66 });
     c.addChild(g);
 
-    const mat = iso(22.3, 22.3);
+    const mat = iso(24.3, 24.3);
     const welcome = new Container();
     const t1 = label(text.mat[0], { fontSize: 13, fill: 0xf2ede4, fontWeight: "500" });
     const t2 = label(text.mat[1], { fontSize: 6, fill: 0xb9b3a8, letterSpacing: 1.5 });
@@ -72,25 +72,26 @@ export function buildDecor(entities: Container, text: Content["lobby"]) {
   place(entities, piece("planter-center", () => planter(2.2)), PLAZA_CENTER.gx, PLAZA_CENTER.gy);
 
   const plants: [number, number, number, number][] = [
-    [1, 9.5, 1.1, 0], [1, 12, 1.2, 1], [9.5, 1, 1.1, 1], [12.5, 1, 1.2, 0],
-    [1, 22, 1.2, 0], [22, 1, 1.2, 1], [1.2, 25.5, 1, 1], [25.5, 1.2, 1, 0],
-    [10.4, 20.3, 1, 0], [19.8, 10.8, 1, 1], [9.6, 23.8, 1.1, 1], [23.8, 9.8, 1.1, 0],
-    [20.2, 25.6, 1, 0], [24.8, 18.8, 1, 1], [15.2, 25.6, 0.9, 1],
+    [3, 11.5, 1.1, 0], [3, 14, 1.2, 1], [11.5, 3, 1.1, 1], [14.5, 3, 1.2, 0],
+    [3, 24, 1.2, 0], [24, 3, 1.2, 1], [3.2, 27.5, 1, 1], [27.5, 3.2, 1, 0],
+    [12.4, 22.3, 1, 0], [21.8, 12.8, 1, 1], [11.6, 25.8, 1.1, 1], [25.8, 11.8, 1.1, 0],
+    [22.2, 27.6, 1, 0], [29.6, 22.6, 1, 1], [17.2, 27.6, 0.9, 1],
   ];
   plants.forEach(([gx, gy, s, v]) => place(entities, piece("plant-a", () => plant(s, v)), gx, gy));
 
   const lamps: [number, number][] = [
-    [9.2, 11.6], [16.8, 14.4], [11.6, 9.2], [14.4, 16.8], [19.8, 19.8], [25.4, 25.4],
+    [11.2, 13.6], [18.8, 16.4], [13.6, 11.2], [16.4, 18.8], [21.8, 21.8], [27.4, 27.4],
   ];
   lamps.forEach(([gx, gy]) => place(entities, piece("lamp", () => lamp()), gx, gy));
 
-  place(entities, piece("bench", () => bench(true)), 13, 10.1);
+  place(entities, piece("bench", () => bench(true)), 15, 12.1);
+  place(entities, piece("bench", () => bench(true)), 15, 18);
 
   // seats under seated visitors
-  place(entities, seat(false), 10.1, 13.4);
-  place(entities, seat(false), 15.8, 12.6);
-  place(entities, seat(true, true), 13.2, 22);
+  place(entities, seat(false), 12.1, 15.4);
+  place(entities, seat(false), 17.8, 14.6);
+  place(entities, seat(true, true), 15.2, 24);
 
-  place(entities, sign(text.signLeft), 17.8, 23.6);
-  place(entities, sign(text.signRight, { dark: true }), 23.8, 19.2);
+  place(entities, sign(text.signLeft), 19.8, 25.6);
+  place(entities, sign(text.signRight, { dark: true }), 27.4, 23.6);
 }

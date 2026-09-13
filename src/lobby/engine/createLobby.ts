@@ -1,7 +1,7 @@
 import { Application, Container, type FederatedPointerEvent } from "pixi.js";
 import gsap from "gsap";
-import { content, profile, type Locale } from "@/content/sections";
-import { PALETTE, SITTERS, VISITORS, WAYPOINTS, standsFor } from "../config";
+import { content, type Locale } from "@/content/sections";
+import { PALETTE, PLAZA_CENTER, SITTERS, VISITORS, WAYPOINTS, WORLD_SIZE, standsFor } from "../config";
 import { loadAssets } from "../assets";
 import { lobbyStore, type StandId } from "../store";
 import { fonts } from "../layers/draw";
@@ -10,7 +10,7 @@ import { Stand } from "../layers/Stand";
 import { Sitter, Visitor } from "../layers/Npc";
 import { NameSign } from "../layers/NameSign";
 import { Camera } from "./camera";
-import { depth, iso, TILE_H, TILE_W } from "./iso";
+import { depth, iso, isoCircle, TILE_H, TILE_W } from "./iso";
 
 export const PANEL = { breakpoint: 768, width: 480, widthVw: 0.44, sheetVh: 0.64 };
 
@@ -24,10 +24,10 @@ export function panelCover(width: number, height: number) {
 let instances = 0;
 
 const BOUNDS = {
-  minX: -27 * (TILE_W / 2) - 20,
-  maxX: 27 * (TILE_W / 2) + 20,
+  minX: -WORLD_SIZE * (TILE_W / 2) - 20,
+  maxX: WORLD_SIZE * (TILE_W / 2) + 20,
   minY: -90,
-  maxY: 27 * TILE_H + 40,
+  maxY: WORLD_SIZE * TILE_H + 40,
 };
 
 function tweenTint(obj: Container, gray: number, duration: number) {
@@ -85,16 +85,17 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     entities.addChild(stand);
   }
 
-  // golden sign with the owner name, right in front of the central planter
-  const nameSign = new NameSign(profile.name, content[locale].ui.role);
-  const signSpot = iso(14.7, 14.7);
-  nameSign.position.set(signSpot.x, signSpot.y);
-  nameSign.zIndex = depth(14.7, 14.7);
+  // "Sadiel’s Plaza" plate on the front of the central planter (planter band is 34px tall)
+  const nameSign = new NameSign(text.plazaSign);
+  const plaza = iso(PLAZA_CENTER.gx, PLAZA_CENTER.gy);
+  nameSign.position.set(plaza.x, plaza.y + isoCircle(2.2).ry - 17);
+  nameSign.zIndex = depth(PLAZA_CENTER.gx, PLAZA_CENTER.gy) + 1;
   entities.addChild(nameSign);
 
+  const occluders = [...stands.values()].map(({ cfg }) => ({ gx: cfg.gx, gy: cfg.gy, w: cfg.w, d: cfg.d, z: depth(cfg.gx, cfg.gy) }));
   const starts = Object.keys(WAYPOINTS).filter((k) => k.startsWith("r"));
   const visitors = VISITORS.map((look, i) => {
-    const v = new Visitor(look, starts[i % starts.length], reducedMotion, bubbles, text.visitorLines);
+    const v = new Visitor(look, starts[i % starts.length], reducedMotion, bubbles, text.visitorLines, occluders);
     entities.addChild(v);
     return v;
   });
@@ -284,7 +285,7 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
 
   // an older instance that finishes loading late must not clobber the live one
   if (instance === instances) {
-    if (process.env.NODE_ENV !== "production") Object.assign(globalThis, { __lobby: { app, camera, stands } });
+    if (process.env.NODE_ENV !== "production") Object.assign(globalThis, { __lobby: { app, camera, stands, visitors } });
     store.getState().setReady(true);
   }
 

@@ -11,6 +11,18 @@ const pick = <T,>(list: T[]) => list[Math.floor(Math.random() * list.length)];
 
 type State = "walk" | "idle";
 
+/** Booth footprint (far corner + size) and its draw order. */
+export interface Occluder {
+  gx: number;
+  gy: number;
+  w: number;
+  d: number;
+  z: number;
+}
+
+// How far behind a wall (in grid units) a visitor still overlaps it on screen.
+const WALL_SHADOW = 4;
+
 /** A visitor that wanders the waypoint graph, pauses at stands and chats. */
 export class Visitor extends Container {
   readonly chibi: Chibi;
@@ -28,6 +40,7 @@ export class Visitor extends Container {
     private frozen: boolean,
     bubbleLayer: Container,
     private lines: string[],
+    private occluders: Occluder[] = [],
   ) {
     super();
     this.chibi = new Chibi(look);
@@ -46,8 +59,22 @@ export class Visitor extends Container {
   private sync() {
     const p = iso(this.gx, this.gy);
     this.position.set(p.x, p.y);
-    this.zIndex = depth(this.gx, this.gy);
+    this.zIndex = this.drawOrder();
     this.bubble.position.set(p.x, p.y + this.chibi.headY - 4);
+  }
+
+  /**
+   * Booths are drawn as one piece, so plain (gx + gy) sorting would put a visitor walking
+   * just behind a wall on top of it. Behind a wall, drop the visitor under that booth.
+   */
+  private drawOrder(): number {
+    let z = depth(this.gx, this.gy);
+    for (const o of this.occluders) {
+      const behindSideWall = this.gx < o.gx && this.gx > o.gx - WALL_SHADOW && this.gy > o.gy - 1 && this.gy < o.gy + o.d;
+      const behindMainWall = this.gy < o.gy && this.gy > o.gy - WALL_SHADOW && this.gx > o.gx - 1 && this.gx < o.gx + o.w;
+      if ((behindSideWall || behindMainWall) && z >= o.z) z = o.z - 1;
+    }
+    return z;
   }
 
   /** Stop and say something (used when a stand asks a nearby visitor to react). */
