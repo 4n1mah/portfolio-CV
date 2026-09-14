@@ -74,10 +74,24 @@ export interface CharacterEntry {
   headY: number;
 }
 
-// Characters from generated sheets (see ASSETS.md). Cells are cut, aligned on the feet and sized
-// by a script so every character stands 62 px tall, like the vector chibis.
+// Characters from generated sheets (see ASSETS.md). Cells are cut, aligned on the ground point and sized
+// by a script so every character stands 62 px tall like the vector chibis (65 with a top bun).
+// Seated characters are anchored at the seat contact and measure 48 px from there to the top of the head.
 export const CHARACTERS: Record<string, CharacterEntry> = {
-  "staff-about": { src: "/lobby/staff-about.webp", poses: ["front", "wave"], anchor: { x: 0.5328, y: 0.9538 }, width: 41.51, headY: -62 },
+  "staff-about": { src: "/lobby/staff-about.webp", poses: ["front", "wave"], anchor: { x: 0.5329, y: 0.9548 }, width: 41.43, headY: -62 },
+  "staff-portfolio": { src: "/lobby/staff-portfolio.webp", poses: ["front", "wave"], anchor: { x: 0.5404, y: 0.9739 }, width: 41.03, headY: -62 },
+  "staff-skills": { src: "/lobby/staff-skills.webp", poses: ["front", "wave"], anchor: { x: 0.5348, y: 0.9606 }, width: 41.49, headY: -62 },
+  "staff-experience": { src: "/lobby/staff-experience.webp", poses: ["front", "wave"], anchor: { x: 0.5171, y: 0.9547 }, width: 42.88, headY: -62 },
+  "visitor-1": { src: "/lobby/visitor-1.webp", poses: ["front", "back"], anchor: { x: 0.5835, y: 0.9709 }, width: 36.58, headY: -62 },
+  "visitor-2": { src: "/lobby/visitor-2.webp", poses: ["front", "back"], anchor: { x: 0.5629, y: 0.9597 }, width: 41.24, headY: -62 },
+  "visitor-3": { src: "/lobby/visitor-3.webp", poses: ["front", "back"], anchor: { x: 0.5284, y: 0.9706 }, width: 33.25, headY: -65 },
+  "visitor-4": { src: "/lobby/visitor-4.webp", poses: ["front", "back"], anchor: { x: 0.5664, y: 0.9629 }, width: 36.92, headY: -62 },
+  "visitor-5": { src: "/lobby/visitor-5.webp", poses: ["front", "back"], anchor: { x: 0.5683, y: 0.9669 }, width: 37.51, headY: -62 },
+  "visitor-6": { src: "/lobby/visitor-6.webp", poses: ["front", "back"], anchor: { x: 0.5158, y: 0.9546 }, width: 43.65, headY: -62 },
+  "visitor-7": { src: "/lobby/visitor-7.webp", poses: ["front", "back"], anchor: { x: 0.5802, y: 0.955 }, width: 39.39, headY: -62 },
+  "sitter-1": { src: "/lobby/sitter-1.webp", poses: ["seated"], anchor: { x: 0.375, y: 0.7434 }, width: 40.32, headY: -48 },
+  "sitter-2": { src: "/lobby/sitter-2.webp", poses: ["seated"], anchor: { x: 0.4111, y: 0.7439 }, width: 38.45, headY: -52 },
+  "sitter-3": { src: "/lobby/sitter-3.webp", poses: ["seated"], anchor: { x: 0.3889, y: 0.7398 }, width: 39.59, headY: -48 },
 };
 
 const frameCache = new Map<string, Partial<Record<CharacterPose, Texture>>>();

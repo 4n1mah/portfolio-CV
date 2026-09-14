@@ -45,11 +45,13 @@ Los generadores de imágenes no mantienen bien a un personaje a lo largo de much
 
 | Archivo | Quién | Poses (de izquierda a derecha) | Lienzo |
 |---|---|---|---|
-| `staff-about` ✅, `staff-portfolio`, `staff-skills`, `staff-experience` | Recepcionistas | De frente · saludando | 1536 × 1024 |
-| `visitor-1` … `visitor-7` | Visitantes que caminan | De frente hacia abajo a la derecha · de espaldas hacia arriba a la derecha | 1536 × 1024 |
-| `sitter-1`, `sitter-2`, `sitter-3` | Sentados (banca, banca, sofá) | Sentado sobre un asiento invisible, mirando abajo a la derecha | 1024 × 1024 |
+| ✅ `staff-about`, `staff-portfolio`, `staff-skills`, `staff-experience` | Recepcionistas | De frente · saludando | 1536 × 1024 |
+| ✅ `visitor-1` … `visitor-7` | Visitantes que caminan | De frente hacia abajo a la derecha · de espaldas hacia arriba a la derecha | 1536 × 1024 |
+| ✅ `sitter-1`, `sitter-2`, `sitter-3` | Sentados (banca, banca, sofá) | Sentado sobre un asiento invisible, mirando abajo a la derecha | 1024 × 1024 (ChatGPT las entrega de 1254 × 1254) |
 
-Al prepararla, cada hoja se corta en celdas iguales (una por pose) alineadas en los pies y se reduce a 400 px de alto en WebP. La entrada de `CHARACTERS` en `src/lobby/assets.ts` guarda las poses, el punto de apoyo (entre los pies), el ancho de la celda y la altura de la cabeza, de modo que todos miden 62 px como los chibis vectoriales. Mientras un personaje no tenga imagen, se sigue dibujando el chibi vectorial.
+Al prepararla, cada hoja se corta en celdas iguales (una por pose) que comparten el punto de apoyo y se guarda en WebP a 6 px por px del mundo (unos 400 px de alto). El punto de apoyo es el centro entre los pies o, en los sentados, el punto donde tocan el asiento (medido a mano sobre la imagen). La entrada de `CHARACTERS` en `src/lobby/assets.ts` guarda las poses, ese punto, el ancho de la celda y la altura de la cabeza: de pie miden 62 px como los chibis vectoriales (65 con moño alto) y sentados 48 px desde el asiento (52 con moño). Mientras un personaje no tenga imagen, se sigue dibujando el chibi vectorial.
+
+Revisar que cada archivo corresponda a su personaje antes de prepararlo: `staff-skills` y `staff-experience` llegaron con los nombres cruzados.
 
 Flujo: primero `staff-about` con `art/lobby/sofa.png` y `art/lobby/plant-a.png` como referencia de estilo (prompt A). Cuando esa hoja se vea bien dentro del lobby, cada personaje nuevo se pide adjuntando esa hoja (prompt B) para que todos tengan el mismo estilo y tamaño.
 

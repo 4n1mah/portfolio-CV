@@ -41,13 +41,14 @@ export class Chibi extends Container {
     if (look.sheet && this.frames) {
       const entry = CHARACTERS[look.sheet];
       this.headY = entry.headY;
-      const shadow = new Graphics().ellipse(0, 0, 11, 4).fill({ color: 0x000000, alpha: 0.18 });
       const tex = this.poseTexture();
       this.sprite = new Sprite(tex);
       this.sprite.anchor.set(entry.anchor.x, entry.anchor.y);
       this.sprite.scale.set(entry.width / tex.width);
       this.rig.addChild(this.sprite);
-      this.addChild(shadow, this.rig);
+      // seated art is anchored at the seat, so a floor shadow would land on the seat
+      if (!look.seated) this.addChild(new Graphics().ellipse(0, 0, 11, 4).fill({ color: 0x000000, alpha: 0.18 }));
+      this.addChild(this.rig);
       return;
     }
 
@@ -175,6 +176,11 @@ export class Chibi extends Container {
     } else if (!this.look.seated) {
       this.legs.scale.y = moving ? 1 - Math.abs(Math.cos(this.phase)) * 0.2 : 1;
     }
+  }
+
+  /** True when drawn from a character sheet (its props, like a laptop, are part of the art). */
+  get hasArt() {
+    return this.sprite !== null;
   }
 
   get facingViewer() {

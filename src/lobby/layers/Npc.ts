@@ -142,6 +142,7 @@ export class Sitter extends Container {
 
   constructor(
     readonly spot: {
+      sheet?: string;
       gx: number;
       gy: number;
       dir: number;
@@ -163,12 +164,12 @@ export class Sitter extends Container {
 
     // hips sink slightly into the seat top; the legs hang over the front edge down to the floor
     const h = spot.seat.h - 2;
-    this.chibi = new Chibi({ hair: spot.hair, shirt: spot.shirt, bun: spot.bun, seated: true, seatHeight: h });
+    this.chibi = new Chibi({ sheet: spot.sheet, hair: spot.hair, shirt: spot.shirt, bun: spot.bun, seated: true, seatHeight: h });
     this.chibi.setFacing(spot.dir, true);
     this.chibi.y = -h;
     this.addChild(this.chibi);
 
-    if (spot.laptop) {
+    if (spot.laptop && !this.chibi.hasArt) {
       const lap = new Graphics();
       const y = -h - 3;
       lap.roundRect(-10 * -spot.dir - 7, y, 14, 3, 1).fill(0xc9ccd3);

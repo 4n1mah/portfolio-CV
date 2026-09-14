@@ -82,14 +82,15 @@ export const WAYPOINTS: Record<string, { gx: number; gy: number; links: string[]
   lounge: { gx: 17, gy: 22.2, links: ["r2", "exp"] },
 };
 
+// `sheet` is the character art (CHARACTERS in assets.ts); the colors draw the vector chibi while it is missing.
 export const VISITORS = [
-  { hair: 0x2d2420, shirt: 0x3c4a6b, curly: true },
-  { hair: 0x6b4a33, shirt: 0xd9d2c5 },
-  { hair: 0xe3c68f, shirt: 0x2f3b5c, bun: true },
-  { hair: 0x2d2420, shirt: 0x8a6a52, bun: true },
-  { hair: 0x3b2a22, shirt: 0x4f6b62, curly: true },
-  { hair: 0x1f1a17, shirt: 0xe9e2d7 },
-  { hair: 0x5a3b2a, shirt: 0x1f2a44 },
+  { sheet: "visitor-1", hair: 0x2d2420, shirt: 0x3c4a6b, curly: true },
+  { sheet: "visitor-2", hair: 0x6b4a33, shirt: 0xd9d2c5 },
+  { sheet: "visitor-3", hair: 0xe3c68f, shirt: 0x2f3b5c, bun: true },
+  { sheet: "visitor-4", hair: 0x2d2420, shirt: 0x8a6a52, bun: true },
+  { sheet: "visitor-5", hair: 0x3b2a22, shirt: 0x4f6b62, curly: true },
+  { sheet: "visitor-6", hair: 0x1f1a17, shirt: 0xe9e2d7 },
+  { sheet: "visitor-7", hair: 0x5a3b2a, shirt: 0x1f2a44 },
 ];
 
 // Seated visitors and the seat under each one. Their lines come from content.lobby.sitterLines.
@@ -97,7 +98,7 @@ export const VISITORS = [
 // benches along gy face down-right (dir +1), the sofa along gx faces down-left (dir -1).
 // seat.h is the seat top height in world px, measured on the seat art.
 export const SITTERS = [
-  { gx: 12.24, gy: 15.7, dir: 1, hair: 0x2d2420, shirt: 0x2f3b5c, laptop: true, seat: { kind: "bench", gx: 12.1, gy: 15.4, h: 11 } },
-  { gx: 17.94, gy: 14.6, dir: 1, hair: 0xe3c68f, shirt: 0xd9d2c5, bun: true, seat: { kind: "bench", gx: 17.8, gy: 14.6, h: 11 } },
-  { gx: 15.2, gy: 24.2, dir: -1, hair: 0x3b2a22, shirt: 0x8a6a52, laptop: true, seat: { kind: "sofa", gx: 15.2, gy: 24, h: 9 } },
+  { sheet: "sitter-1", gx: 12.24, gy: 15.7, dir: 1, hair: 0x2d2420, shirt: 0x2f3b5c, laptop: true, seat: { kind: "bench", gx: 12.1, gy: 15.4, h: 11 } },
+  { sheet: "sitter-2", gx: 17.94, gy: 14.6, dir: 1, hair: 0xe3c68f, shirt: 0xd9d2c5, bun: true, seat: { kind: "bench", gx: 17.8, gy: 14.6, h: 11 } },
+  { sheet: "sitter-3", gx: 15.2, gy: 24.2, dir: -1, hair: 0x3b2a22, shirt: 0x8a6a52, laptop: true, seat: { kind: "sofa", gx: 15.2, gy: 24, h: 9 } },
 ];
