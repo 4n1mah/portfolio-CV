@@ -53,12 +53,17 @@ function place(target: Container, obj: Container, gx: number, gy: number) {
 export function buildDecor(entities: Container) {
   place(entities, piece("planter-center", () => planter(2.2)), PLAZA_CENTER.gx, PLAZA_CENTER.gy);
 
-  const plants: [number, number, number, number][] = [
-    [3, 11.5, 1.1, 0], [3, 14, 1.2, 1], [11.5, 3, 1.1, 1], [14.5, 3, 1.2, 0],
-    [3, 24, 1.2, 0], [24, 3, 1.2, 1], [3.2, 27.5, 1, 1], [27.5, 3.2, 1, 0],
-    [12.4, 22.3, 1, 0], [21.8, 12.8, 1, 1], [11.6, 25.8, 1.1, 1], [25.8, 11.8, 1.1, 0],
-    [21, 28.2, 1, 0], [30, 21.4, 1, 1], [17.2, 27.6, 0.9, 1],
+  // Plants sit on the centres of the outer ring of floor tiles, mirrored across the vertical axis
+  // (gx <-> gy), in the gaps between booths: one accent at each back gap, and from each side corner
+  // a row alternating round and tall plants along the front edge, stopping short of Experience's lamps.
+  const T = WORLD_SIZE / 8;
+  const tile = (i: number) => (i + 0.5) * T;
+  const half: [number, number, number, number][] = [
+    [tile(0), tile(3), 1.2, 1],
+    [tile(0), tile(6), 1.1, 1], [tile(0), tile(7), 1.2, 0], [tile(1), tile(7), 1.1, 1],
+    [tile(2), tile(7), 1, 0], [tile(3), tile(7), 1.1, 1], [tile(4), tile(7), 1, 0],
   ];
+  const plants = half.flatMap(([gx, gy, s, v]) => [[gx, gy, s, v], [gy, gx, s, v]]);
   plants.forEach(([gx, gy, s, v]) => place(entities, piece(v === 0 ? "plant-a" : "plant-b", () => plant(s, v), s), gx, gy));
 
   const lamps: [number, number][] = [
