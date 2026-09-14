@@ -61,8 +61,10 @@ Flujo: primero `staff-about` con `art/lobby/sofa.png` y `art/lobby/plant-a.png` 
 
 Poses para `[POSES]`:
 - Recepcionistas: *Pose 1 (left half): standing, facing the viewer and turned slightly toward the lower right. Pose 2 (right half): the same, waving with the arm on the right side of the image raised. Feet on the same line.*
-- Visitantes: *Pose 1 (left half): walking toward the viewer, turned toward the lower right of the image. Pose 2 (right half): the same character seen from behind, walking away toward the upper right of the image (we see the back of the head, the backpack and a sliver of the cheek). Feet on the same line.*
-- Sentados: *One pose, centered: sitting on the edge of an invisible seat (do not draw any chair, bench or sofa), facing the lower right of the image, thighs forward and lower legs hanging straight down.*
+- Visitantes: *Pose 1 (left half): standing naturally with the feet a small step apart, body and face clearly turned 45° toward the lower right of the image, arms relaxed at the sides. Pose 2 (right half): the same character seen from behind, body clearly turned 45° toward the upper right of the image, as if walking away in that direction; we see the back of the head, the backpack and a sliver of the cheek, no face. Feet on the same line. No lanyard or badge.* La pose es neutra (no a medio paso) porque la misma imagen sirve quieto y caminando; el paso lo simula el código.
+- Sentados: *One pose, centered: sitting in mid-air on an invisible seat (do not draw any chair, bench, sofa, cushion or floor), body and face turned 45° toward the lower right of the image, thighs horizontal and lower legs hanging straight down. No lanyard or badge.*
+
+Adjuntar siempre `art/lobby/staff-about.png`; los visitantes 2 a 7 llevan además `visitor-1` aprobado, que es el primero con vista de espaldas.
 
 Descripciones:
 
