@@ -1,4 +1,4 @@
-import { Assets, Container, Graphics, Sprite, Texture } from "pixi.js";
+import { Assets, Container, Graphics, Rectangle, Sprite, Texture } from "pixi.js";
 import { PALETTE } from "./config";
 import { iso } from "./engine/iso";
 
@@ -59,8 +59,49 @@ export const ASSETS = {
 
 export type AssetKey = keyof typeof ASSETS;
 
+export type CharacterPose = "front" | "back" | "wave" | "seated";
+
+/** A character sheet: equal cells side by side, one per pose, all sharing the same ground point. */
+export interface CharacterEntry {
+  src: string | null;
+  /** Poses in the strip, left to right. */
+  poses: CharacterPose[];
+  /** Ground point inside a cell (0..1): between the feet, or the hips for a seated pose. */
+  anchor: { x: number; y: number };
+  /** Cell width in world pixels. */
+  width: number;
+  /** Top of the head above the ground point, in world pixels (negative, like Chibi.headY). */
+  headY: number;
+}
+
+// Characters from generated sheets (see ASSETS.md). Cells are cut, aligned on the feet and sized
+// by a script so every character stands 62 px tall, like the vector chibis.
+export const CHARACTERS: Record<string, CharacterEntry> = {
+  "staff-about": { src: "/lobby/staff-about.webp", poses: ["front", "wave"], anchor: { x: 0.5328, y: 0.9538 }, width: 41.51, headY: -62 },
+};
+
+const frameCache = new Map<string, Partial<Record<CharacterPose, Texture>>>();
+
+/** The textures of each pose of a character sheet, or null while it has no art. */
+export function characterFrames(key: string): Partial<Record<CharacterPose, Texture>> | null {
+  const entry = CHARACTERS[key];
+  if (!entry?.src || !Assets.cache.has(key)) return null;
+  let frames = frameCache.get(key);
+  if (!frames) {
+    const base = Assets.get<Texture>(key);
+    const cellW = base.width / entry.poses.length;
+    const made: Partial<Record<CharacterPose, Texture>> = {};
+    entry.poses.forEach((pose, i) => {
+      made[pose] = new Texture({ source: base.source, frame: new Rectangle(i * cellW, 0, cellW, base.height) });
+    });
+    frames = made;
+    frameCache.set(key, frames);
+  }
+  return frames;
+}
+
 export async function loadAssets(): Promise<void> {
-  const entries = Object.entries(ASSETS as Record<string, AssetEntry>).filter(([, a]) => a.src);
+  const entries = [...Object.entries(ASSETS as Record<string, AssetEntry>), ...Object.entries(CHARACTERS)].filter(([, a]) => a.src);
   // mipmaps keep big images crisp instead of grainy when the camera zooms out
   await Promise.all(entries.map(([key, a]) => Assets.load({ alias: key, src: a.src!, data: { autoGenerateMipmaps: true } })));
 }

@@ -1,8 +1,11 @@
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, Sprite, type Texture } from "pixi.js";
 import gsap from "gsap";
 import { PALETTE } from "../config";
+import { CHARACTERS, characterFrames, type CharacterPose } from "../assets";
 
 export interface ChibiLook {
+  /** Character sheet key in CHARACTERS; the vector parts below are drawn while it has no art. */
+  sheet?: string;
   hair: number;
   shirt: number;
   curly?: boolean;
@@ -15,8 +18,8 @@ export interface ChibiLook {
 }
 
 /**
- * Placeholder chibi built from vector parts. Swap for an AnimatedSprite later:
- * the rest of the engine only uses `setFacing`, `wave`, `update` and `headY`.
+ * A lobby character: the poses of its generated sheet when there is one, otherwise a chibi built
+ * from vector parts. The rest of the engine only uses `setFacing`, `wave`, `update` and `headY`.
  */
 export class Chibi extends Container {
   readonly headY: number;
@@ -28,9 +31,26 @@ export class Chibi extends Container {
   private backpack = new Graphics();
   private phase = Math.random() * Math.PI * 2;
   private towardViewer = true;
+  private sprite: Sprite | null = null;
+  private frames: Partial<Record<CharacterPose, Texture>> | null;
+  private waving = false;
 
   constructor(private look: ChibiLook) {
     super();
+    this.frames = look.sheet ? characterFrames(look.sheet) : null;
+    if (look.sheet && this.frames) {
+      const entry = CHARACTERS[look.sheet];
+      this.headY = entry.headY;
+      const shadow = new Graphics().ellipse(0, 0, 11, 4).fill({ color: 0x000000, alpha: 0.18 });
+      const tex = this.poseTexture();
+      this.sprite = new Sprite(tex);
+      this.sprite.anchor.set(entry.anchor.x, entry.anchor.y);
+      this.sprite.scale.set(entry.width / tex.width);
+      this.rig.addChild(this.sprite);
+      this.addChild(shadow, this.rig);
+      return;
+    }
+
     const seated = !!look.seated;
     // seated: origin at the hips (seat top), so the body ends at 0
     const bodyTop = seated ? -18 : -32;
@@ -100,10 +120,21 @@ export class Chibi extends Container {
     if (glasses) f.circle(-5, y + 16, 4).stroke({ width: 1.2, color: 0x1d1a18 }).circle(5, y + 16, 4).stroke({ width: 1.2, color: 0x1d1a18 });
   }
 
+  /** Standing pose for the current direction (sheets without a back view keep the front one). */
+  private poseTexture(): Texture {
+    const f = this.frames!;
+    if (this.look.seated && f.seated) return f.seated;
+    return (!this.towardViewer && f.back) || f.front || f.seated!;
+  }
+
   /** dirX: +1 right / -1 left. towardViewer: face visible (moving down-screen). */
   setFacing(dirX: number, towardViewer: boolean) {
     this.rig.scale.x = dirX >= 0 ? 1 : -1;
     this.towardViewer = towardViewer;
+    if (this.sprite) {
+      if (!this.waving) this.sprite.texture = this.poseTexture();
+      return;
+    }
     this.face.visible = towardViewer;
     this.backHair.visible = !towardViewer;
     this.backpack.visible = !towardViewer;
@@ -112,6 +143,19 @@ export class Chibi extends Container {
   }
 
   wave(on: boolean) {
+    if (this.sprite) {
+      const sprite = this.sprite;
+      gsap.killTweensOf(sprite);
+      this.waving = on && !!this.frames!.wave;
+      sprite.texture = this.waving ? this.frames!.wave! : this.poseTexture();
+      if (on) {
+        // the pose switch plus a gentle sway around the feet reads as a hello
+        gsap.fromTo(sprite, { rotation: 0 }, { rotation: 0.05, duration: 0.28, repeat: 5, yoyo: true, ease: "sine.inOut" });
+      } else {
+        gsap.to(sprite, { rotation: 0, duration: 0.2 });
+      }
+      return;
+    }
     gsap.killTweensOf(this.armR);
     if (on) {
       gsap.to(this.armR, { rotation: -2.6, duration: 0.25, ease: "power2.out" });
@@ -125,7 +169,10 @@ export class Chibi extends Container {
   update(dt: number, moving: boolean) {
     this.phase += dt * (moving ? 0.012 : 0.003);
     this.rig.y = moving ? -Math.abs(Math.sin(this.phase)) * 2.5 : Math.sin(this.phase) * 0.6;
-    if (!this.look.seated) {
+    if (this.sprite) {
+      // a sheet has no walk frames: a light waddle around the feet stands in for the steps
+      this.rig.rotation = moving ? Math.sin(this.phase) * 0.06 : 0;
+    } else if (!this.look.seated) {
       this.legs.scale.y = moving ? 1 - Math.abs(Math.cos(this.phase)) * 0.2 : 1;
     }
   }

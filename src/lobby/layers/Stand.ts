@@ -73,7 +73,7 @@ export class Stand extends Container {
     // receptionist + desk
     const rx = gx + w * 0.5;
     const ry = gy + d * 0.42;
-    this.receptionist = new Chibi({ ...cfg.receptionist, backpack: false });
+    this.receptionist = new Chibi({ ...cfg.receptionist, backpack: false, sheet: `staff-${cfg.id}` });
     const rp = iso(rx, ry);
     this.receptionist.position.set(rp.x, rp.y);
     this.addChild(this.receptionist);
