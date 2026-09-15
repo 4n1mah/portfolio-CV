@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { initialLocale, lobbyStore, useContent, useLobby } from "@/lobby/store";
+import Clouds from "./Clouds";
 import Hud from "./Hud";
 import SectionPanel from "./SectionPanel";
 import SimpleView from "./SimpleView";
 import styles from "./lobby.module.css";
+
+// The cloud intro plays once per page load, not when the lobby is rebuilt for a language change.
+let introPending = true;
 
 export default function LobbyExperience() {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -13,6 +17,8 @@ export default function LobbyExperience() {
   const ready = useLobby((s) => s.ready);
   const locale = useLobby((s) => s.locale);
   const { ui } = useContent();
+  const [clouds, setClouds] = useState(introPending);
+  const hideClouds = useCallback(() => setClouds(false), []);
 
   useEffect(() => {
     const s = lobbyStore.getState();
@@ -33,8 +39,12 @@ export default function LobbyExperience() {
     // Pixi only runs in the browser, so the engine is loaded on demand.
     // It is rebuilt when the language changes because the signage is baked into the scene.
     import("@/lobby/engine/createLobby")
-      .then(({ createLobby }) => createLobby(host, locale))
-      .then((d) => (cancelled ? d() : (destroy = d)))
+      .then(({ createLobby }) => createLobby(host, locale, { intro: introPending }))
+      .then((d) => {
+        if (cancelled) return d();
+        destroy = d;
+        introPending = false;
+      })
       .catch((err) => {
         console.error("No se pudo iniciar el lobby", err);
         lobbyStore.getState().setSimpleMode(true);
@@ -56,6 +66,7 @@ export default function LobbyExperience() {
       </div>
       <Hud />
       <SectionPanel />
+      {clouds && <Clouds ready={ready} label={ui.loading} onDone={hideClouds} />}
     </main>
   );
 }

@@ -3,17 +3,17 @@
 import { profile } from "@/content/sections";
 import { lobbyStore, useContent, useLobby, type SpotId } from "@/lobby/store";
 import { SECTION_ORDER, spotInfo } from "./sections";
+import Toolbar from "./Toolbar";
 import styles from "./lobby.module.css";
 
 export default function Hud() {
   const hovered = useLobby((s) => s.hovered);
   const active = useLobby((s) => s.active);
   const pointer = useLobby((s) => s.pointer);
-  const locale = useLobby((s) => s.locale);
   const exploring = useLobby((s) => s.exploring);
   const nameLinksOpen = useLobby((s) => s.nameLinksOpen);
   const c = useContent();
-  const { open, setSimpleMode, setLocale, setNameLinks, closeNameLinksSoon } = lobbyStore.getState();
+  const { open, setNameLinks, closeNameLinksSoon } = lobbyStore.getState();
   const preview = hovered ? spotInfo(c, hovered) : null;
   const touch = pointer === "touch";
 
@@ -73,14 +73,7 @@ export default function Hud() {
         )}
       </div>
 
-      <div className={styles.corner}>
-        <button className={styles.pill} onClick={() => setLocale(locale === "es" ? "en" : "es")} lang={locale === "es" ? "en" : "es"}>
-          {c.ui.switchLanguage}
-        </button>
-        <button className={styles.pill} onClick={() => setSimpleMode(true)}>
-          {c.ui.simpleMode}
-        </button>
-      </div>
+      <Toolbar variant="lobby" />
 
       <nav className={styles.keyboardNav} aria-label={c.ui.sections}>
         {SECTION_ORDER.map((id) => (

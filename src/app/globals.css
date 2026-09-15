@@ -25,6 +25,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* printed pages (the CV) must not carry the lobby's dark background */
+@media print {
+  html,
+  body {
+    background: #fff;
+  }
+}
+
 a {
   color: inherit;
 }

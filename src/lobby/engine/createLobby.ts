@@ -49,7 +49,8 @@ function tweenTint(obj: Container, gray: number, duration: number) {
   });
 }
 
-export async function createLobby(host: HTMLElement, locale: Locale): Promise<() => void> {
+/** `intro`: the first load of the page, when the camera comes down from far away while the clouds part. */
+export async function createLobby(host: HTMLElement, locale: Locale, { intro = false } = {}): Promise<() => void> {
   const instance = ++instances;
   const text = content[locale].lobby;
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -168,6 +169,13 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
   if (reducedMotion) {
     camera.view = start;
     camera.apply();
+  } else if (intro) {
+    // from high above, the island a speck in the dark, down to the overview (the clouds are HTML, see Clouds.tsx)
+    const minScale = camera.minScale;
+    camera.minScale = start.scale * 0.2;
+    camera.view = { ...start, scale: start.scale * 0.2 };
+    camera.apply();
+    camera.flyTo(start, 3.4, () => (camera.minScale = minScale));
   } else {
     camera.view = { ...start, scale: start.scale * 1.35, y: start.y + 60 };
     camera.apply();

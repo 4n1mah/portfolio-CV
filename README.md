@@ -24,6 +24,9 @@ An interactive portfolio designed as a living isometric lobby: visitors walk aro
 - **Living scene** → NPC visitors walk a waypoint graph, stop at booths, sit down and chat.
 - **Bilingual** → Spanish / English, including the signage inside the lobby. The choice is remembered.
 - **Mobile** → drag to pan, pinch to zoom, tap to highlight and tap again to enter.
+- **Intro** → on the first load the camera flies down from far away while the clouds part.
+- **Recruiter shortcuts** → language, music, simple mode and a one-page Harvard-style CV (PDF, ES / EN) in the top-right corner.
+- **Background music** → a lo-fi loop synthesized live with the Web Audio API, with a mute button.
 - **Simple mode** → a plain, accessible, linear version of all the content.
 - **Accessible** → keyboard navigation, `Esc` to close, and support for `prefers-reduced-motion`.
 
@@ -80,12 +83,14 @@ Open http://localhost:3000.
 | `npm run build` | Production build |
 | `npm start` | Serves the production build |
 | `npm run lint` | ESLint |
+| `npm run cv:pdf` | Prints `/cv/es` and `/cv/en` to `public/downloads` with a local Chrome or Edge (run the dev server first) |
 
 ## ✏️ Customization
 
 | What | Where |
 | --- | --- |
 | Texts in both languages | `src/content/sections.ts` |
+| CV (one page, Harvard format) | `src/content/cv.ts`, then `npm run cv:pdf` |
 | Booth positions, routes, colors | `src/lobby/config.ts` |
 | Replace placeholders with real art | `src/lobby/assets.ts` + [`ASSETS.md`](ASSETS.md) |
 | Panel and HUD styles | `src/components/*.module.css` |
@@ -110,7 +115,7 @@ Portafolio interactivo diseñado como un lobby isométrico vivo: los visitantes 
 
 *La cartelería del lobby también cambia de idioma: el mismo espacio, en español.*
 
-**Funcionalidades:** hover con glow y saludo de la recepcionista, zoom de cámara al hacer click, NPCs con rutas automáticas, versión en español e inglés, soporte táctil, modo simple accesible y respeto por `prefers-reduced-motion`.
+**Funcionalidades:** animación de entrada entre nubes, hover con glow y saludo de la recepcionista, zoom de cámara al hacer click, NPCs que recorren la plaza, música de fondo con botón de silencio, CV estilo Harvard descargable en PDF, versión en español e inglés, soporte táctil, modo simple accesible y respeto por `prefers-reduced-motion`.
 
 **Ejecutar en local:**
 
@@ -119,6 +124,6 @@ npm install
 npm run dev
 ```
 
-**Editar contenido:** todos los textos (en ambos idiomas) están en `src/content/sections.ts`. La distribución del lobby está en `src/lobby/config.ts`, y la guía para reemplazar los placeholders por arte real está en [`ASSETS.md`](ASSETS.md).
+**Editar contenido:** todos los textos (en ambos idiomas) están en `src/content/sections.ts`. El CV está en `src/content/cv.ts`; después de editarlo, con el servidor corriendo, `npm run cv:pdf` regenera los PDF. La distribución del lobby está en `src/lobby/config.ts`, y la guía para reemplazar los placeholders por arte real está en [`ASSETS.md`](ASSETS.md).
 
 **Licencia:** el código es MIT; el contenido personal pertenece a su autor.
