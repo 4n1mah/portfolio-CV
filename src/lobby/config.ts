@@ -65,9 +65,9 @@ export function standsFor(text: Content["lobby"]): StandConfig[] {
 }
 
 // Upcoming features in three of the gaps between booths (drawn in layers/Features.ts).
-// Visitor notes: a freestanding mural between About and Portfolio. It runs along gy from (gx, gy) for `d` tiles
-// and faces down-right, towards the plaza.
-export const NOTES_BOARD = { gx: 4.8, gy: 11.6, d: 4, color: 0xd9b25f };
+// Visitor notes: a freestanding mural centred in the gap between About and Portfolio. It runs along gy from
+// (gx, gy) for `d` tiles and faces down-right, towards the plaza.
+export const NOTES_BOARD = { gx: 6.6, gy: 12.6, d: 2, color: 0xd9b25f };
 // Most visited sections: a freestanding screen between Portfolio and Experience. It runs along gx from
 // (gx, gy) and faces down-left, like the booths' main walls.
 export const STATS_BOARD = { gx: 12, gy: 26, w: 4 };

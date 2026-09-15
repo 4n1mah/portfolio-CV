@@ -41,16 +41,16 @@ Las plantillas de `art/reference/` las genera el código con la geometría exact
 
 ## Funciones en construcción
 
-Tres espacios entre los stands (`src/lobby/layers/Features.ts`, posiciones en `NOTES_BOOTH`, `STATS_BOARD` y `ANIMA_DESK` de `config.ts`). Se iluminan al pasar el mouse y al hacer click abren un panel "En construcción". Todos los textos (título, "Próximamente", "En construcción", el cartel de Anima) los dibuja el código en el idioma activo, así que las imágenes van **sin texto**.
+Tres espacios entre los stands (`src/lobby/layers/Features.ts`, posiciones en `NOTES_BOARD`, `STATS_BOARD` y `ANIMA_DESK` de `config.ts`). Se iluminan al pasar el mouse y al hacer click abren un panel "En construcción". Todos los textos (título, "Próximamente", "En construcción", el cartel de Anima) los dibuja el código en el idioma activo, así que las imágenes van **sin texto**.
 
 | Key | Qué es | Plantilla (`art/reference/`) | Referencia de estilo |
 |---|---|---|---|
-| `notes-board` | Mural independiente del muro de visitantes (mira hacia la plaza): panel mostaza sobre base de madera con corcho y notas | `notes-board.png` | `art/lobby/desk.png` |
-| `stats-board` | Pantalla con gráfico de barras, cinta de precaución y conos | `stats-board.png` | `art/lobby/desk.png` |
-| `desk-anima` | Mostrador azul marino en herradura, abierto por detrás | `desk-anima.png` | `art/lobby/desk.png` |
-| `staff-anima` | Anima (hoja de personaje: de frente · saludando) | — | `art/lobby/staff-about.png` |
+| ✅ `notes-board` | Mural independiente del muro de visitantes (mira hacia la plaza): panel mostaza sobre base de madera con corcho y notas | `notes-board.png` | `art/lobby/desk.png` |
+| ✅ `stats-board` | Pantalla con gráfico de barras, cinta de precaución y conos | `stats-board.png` | `art/lobby/desk.png` |
+| ✅ `desk-anima` | Mostrador azul marino en herradura, abierto por detrás | `desk-anima.png` | `art/lobby/desk.png` |
+| ✅ `staff-anima` | Anima (hoja de personaje: de frente · saludando) | — | `art/lobby/staff-about.png` |
 
-La correspondencia de cada plantilla con el mundo está en `art/reference/features-mapping.json`.
+La correspondencia de cada plantilla con el mundo está en `art/reference/features-mapping.json`, pero ChatGPT devolvió estas imágenes a otro tamaño (1448 × 1086) y con proporciones propias, así que el anchor y el ancho se midieron sobre el arte. El mural llegó mirando hacia el lado contrario y se reflejó al exportarlo; la pantalla y el mostrador tienen una cámara algo más baja que el lobby, lo que se corrige con `skewY` y `squashY`. Las sombras de contacto de las cuatro piezas las dibuja el código.
 
 ## Personajes
 

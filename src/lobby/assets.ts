@@ -25,6 +25,8 @@ export interface AssetEntry {
   glow?: { y: number; r: number; alpha?: number };
   /** Vertical factor applied after sizing: flattens art rendered from a higher camera than the lobby's 2:1 view. */
   squashY?: number;
+  /** Vertical skew (radians) around the anchor: steepens straight edges drawn flatter than the lobby's 2:1 slope. */
+  skewY?: number;
   /** Soft shadow shaped like the piece's footprint (w × d tiles along gx; mirrored with flipX), for long diagonal pieces. */
   footprint?: { w: number; d: number; alpha?: number };
 }
@@ -55,13 +57,15 @@ export const ASSETS = {
   "sofa": { src: "/lobby/sofa.webp", anchor: { x: 0.502, y: 1 }, width: 78, groundOffset: 17, footprint: { w: 1.6, d: 0.7 } },
   // Street lamp; the halo around the bulb is drawn by code.
   "lamp": { src: "/lobby/lamp.webp", anchor: { x: 0.498, y: 1 }, width: 10.5, groundOffset: 1.8, shadow: { rx: 7, ry: 3, alpha: 0.15 }, glow: { y: 54, r: 13 } },
-  // Upcoming features (layers/Features.ts); titles, "coming soon" and "under construction" labels are drawn by code.
-  // Visitor notes mural: panel on a low base with a cork board. Anchor = front end of the mural on the floor.
-  "notes-board": { src: null, anchor: { x: 0.5, y: 1 } },
-  // Stats screen with its bar chart and caution tape. Anchor = bottom of the screen's left leg line (gx, gy).
-  "stats-board": { src: null, anchor: { x: 0.5, y: 1 } },
-  // Anima's horseshoe desk, open at the back. Anchor = centre of the ring on the floor.
-  "desk-anima": { src: null, anchor: { x: 0.5, y: 0.5 } },
+  // Upcoming features (layers/Features.ts); titles, "coming soon" and "under construction" labels and all
+  // contact shadows are drawn by code. Measured on the art, not on the templates (the generator resized them).
+  // Visitor notes mural, mirrored at export so it faces the plaza. Anchor = floor under the front end of its face.
+  "notes-board": { src: "/lobby/notes-board.webp", anchor: { x: 0.1797, y: 0.9621 }, width: 85.68 },
+  // Stats screen with its bar chart and caution tape. Anchor = floor under the left end of the screen face;
+  // the art's edges run a little flatter than the lobby's 2:1 slope, hence the skew.
+  "stats-board": { src: "/lobby/stats-board.webp", anchor: { x: 0.0641, y: 0.6375 }, width: 145.34, skewY: 0.07 },
+  // Anima's U-shaped desk, open at the back. Anchor = centre of its footprint; drawn from a lower camera, hence the stretch.
+  "desk-anima": { src: "/lobby/desk-anima.webp", anchor: { x: 0.4989, y: 0.7403 }, width: 89.95, squashY: 1.15 },
 } satisfies Record<string, AssetEntry>;
 
 export type AssetKey = keyof typeof ASSETS;
@@ -99,6 +103,7 @@ export const CHARACTERS: Record<string, CharacterEntry> = {
   "sitter-1": { src: "/lobby/sitter-1.webp", poses: ["seated"], anchor: { x: 0.375, y: 0.7434 }, width: 40.32, headY: -48 },
   "sitter-2": { src: "/lobby/sitter-2.webp", poses: ["seated"], anchor: { x: 0.4111, y: 0.7439 }, width: 38.45, headY: -52 },
   "sitter-3": { src: "/lobby/sitter-3.webp", poses: ["seated"], anchor: { x: 0.3889, y: 0.7398 }, width: 39.59, headY: -48 },
+  "staff-anima": { src: "/lobby/staff-anima.webp", poses: ["front", "wave"], anchor: { x: 0.5443, y: 0.9622 }, width: 41.24, headY: -62 },
 };
 
 const frameCache = new Map<string, Partial<Record<CharacterPose, Texture>>>();
@@ -145,6 +150,7 @@ export function piece(key: AssetKey, fallback: () => Container, size = 1, flipX 
   sprite.scale.set(flipX ? -scale : scale, scaleY);
   const anchorY = entry.groundOffset !== undefined ? 1 - (entry.groundOffset * size) / scaleY / tex.height : entry.anchor.y;
   sprite.anchor.set(entry.anchor.x, anchorY);
+  if (entry.skewY) sprite.skew.y = flipX ? -entry.skewY : entry.skewY;
   if (!entry.shadow && !entry.glow && !entry.footprint) return sprite;
 
   const holder = new Container();

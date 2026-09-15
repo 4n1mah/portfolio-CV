@@ -18,6 +18,16 @@ type LobbyText = Content["lobby"];
 /** Width of a wall face (or screen) of `len` tiles once its skew is undone. */
 const flatLength = (len: number) => (len * TILE_W) / 2 / Math.cos(WALL_SKEW);
 
+/** Soft contact shadow on the floor: a grid rectangle drawn twice, slightly grown, at low alpha (no blur filter). */
+function contactShadow(gx: number, gy: number, w: number, d: number, alpha = 0.16): Graphics {
+  const g = new Graphics();
+  for (const [grow, a] of [[0.35, alpha * 0.45], [0.1, alpha]]) {
+    g.poly(rectPoly(gx - grow / 2, gy - grow / 2, w + grow, d + grow)).fill({ color: 0x000000, alpha: a });
+  }
+  g.zIndex = -1;
+  return g;
+}
+
 /** Shared hover glow and camera framing. Children are local to the spot's anchor on the floor. */
 export abstract class FeatureSpot extends Container {
   abstract readonly spotId: FeatureId;
@@ -68,38 +78,39 @@ export abstract class FeatureSpot extends Container {
 // --- Visitor notes mural -------------------------------------------------------------------------
 
 /** Freestanding mural on a low base; its face looks down-right, towards the plaza. */
-const MURAL = { base: 6, h: 86, thick: 0.2 };
+const MURAL = { base: 7, h: 103, thick: 0.2 };
 /** Title strip and cork board on the mural face (x along the mural from its front end, y up). */
-const MURAL_TITLE_Y = -MURAL.base - MURAL.h + 10;
-const CORK = { x: 8, top: -MURAL.base - MURAL.h + 22, bottom: -MURAL.base - 8 };
+const MURAL_TITLE_Y = -MURAL.base - MURAL.h + 12.5;
+const CORK = { x: 2, top: -MURAL.base - MURAL.h + 23, bottom: -MURAL.base - 17 };
 
 export class NotesBoard extends FeatureSpot {
   readonly spotId = "notes";
-  readonly focusSize = { w: 360, h: 300 };
+  readonly focusSize = { w: 300, h: 300 };
 
   constructor(text: LobbyText) {
     const { gx, gy, d } = NOTES_BOARD;
     // anchored at the mural's front end on the floor; it runs back along gy
     super(iso(gx, gy + d), depth(gx, gy + d / 2));
 
-    this.addChild(piece("notes-board", () => this.buildMural()));
+    this.addChild(contactShadow(-0.4, -d - 0.1, 0.8, d + 0.2), piece("notes-board", () => this.buildMural()));
 
     // title and a "coming soon" ribbon across the cork board, laid flat on the mural face
     const flatD = flatLength(d);
     const face = new Container();
     face.skew.y = -WALL_SKEW;
     face.zIndex = 0.5;
-    const title = label(text.notesSign, { fontSize: 11, fontWeight: "800", fill: PALETTE.ink });
+    const title = label(text.notesSign, { fontSize: 9, fontWeight: "800", fill: PALETTE.ink });
     title.anchor.set(0.5);
-    title.scale.set(Math.min(1, (flatD - 20) / title.width));
+    title.scale.set(Math.min(1, (flatD - 12) / title.width));
     title.position.set(flatD / 2, MURAL_TITLE_Y);
-    const soon = label(text.comingSoon, { fontSize: 10, fontWeight: "800", fill: PALETTE.navy, letterSpacing: 1.5 });
+    const soon = label(text.comingSoon, { fontSize: 8, fontWeight: "800", fill: PALETTE.navy, letterSpacing: 1 });
     soon.anchor.set(0.5);
-    const rw = soon.width + 26;
+    soon.scale.set(Math.min(1, (flatD - 14) / soon.width));
+    const rw = soon.width + 12;
     const ribbon = new Container();
-    ribbon.addChild(new Graphics().rect(-rw / 2, -9, rw, 18).fill(PALETTE.glow).stroke({ width: 1, color: 0xc99a3a }), soon);
+    ribbon.addChild(new Graphics().rect(-rw / 2, -7, rw, 14).fill(PALETTE.glow).stroke({ width: 1, color: 0xc99a3a }), soon);
     ribbon.position.set(flatD / 2, (CORK.top + CORK.bottom) / 2);
-    ribbon.rotation = -0.1;
+    ribbon.rotation = -0.14;
     face.addChild(title, ribbon);
     this.addChild(face);
 
@@ -126,7 +137,6 @@ export class NotesBoard extends FeatureSpot {
     const { d } = NOTES_BOARD;
     const c = new Container();
     const g = new Graphics();
-    g.ellipse(iso(0.2, -d / 2).x, iso(0.2, -d / 2).y, 64, 16).fill({ color: 0x000000, alpha: 0.08 });
     box(g, -0.3, -d, 0.4, d, MURAL.base, PALETTE.woodDark);
     box(g, -MURAL.thick, -d, MURAL.thick, d, MURAL.h, NOTES_BOARD.color, MURAL.base);
     c.addChild(g);
@@ -140,9 +150,9 @@ export class NotesBoard extends FeatureSpot {
     board.rect(CORK.x + 3, CORK.top + 3, bw - 6, bh - 6).fill(0xd6b48a);
     const colors = [0xffe28a, 0xffb8a8, 0xbfe3c0, 0xa8d4f0, 0xf6c1e0];
     for (let row = 0; row < 3; row++) {
-      for (let col = 0; col < 6; col++) {
-        const x = CORK.x + 8 + col * ((bw - 16) / 6) + (row % 2) * 4;
-        board.rect(x, CORK.top + 7 + row * 17, 12, 12).fill(colors[(row * 6 + col) % colors.length]);
+      for (let col = 0; col < 4; col++) {
+        const x = CORK.x + 7 + col * ((bw - 14) / 4) + (row % 2) * 3;
+        board.rect(x, CORK.top + 6 + row * 19, 11, 11).fill(colors[(row * 4 + col) % colors.length]);
       }
     }
     face.addChild(board);
@@ -153,10 +163,12 @@ export class NotesBoard extends FeatureSpot {
 
 // --- Most visited sections board -----------------------------------------------------------------
 
-const SCREEN_LEGS = 16;
-const SCREEN_H = 78;
-/** Chart area inside the screen, below the title strip (screen-face coordinates, from the screen top). */
-const CHART = { top: 18, bottom: 6 };
+const SCREEN_LEGS = 10;
+const SCREEN_H = 90;
+/** Chart area inside the frame (screen-face coordinates, from the screen top); the title sits on the top frame bar. */
+const CHART = { top: 11, bottom: 6 };
+/** Cones in front of the screen, in world px from the anchor (where they stand in the art). */
+const CONES = [[1, -2], [125, 53]];
 
 export class StatsBoard extends FeatureSpot {
   readonly spotId = "stats";
@@ -166,7 +178,9 @@ export class StatsBoard extends FeatureSpot {
     const { gx, gy, w } = STATS_BOARD;
     super(iso(gx, gy), depth(gx + w / 2, gy));
 
-    this.addChild(piece("stats-board", () => this.buildBoard()));
+    const shadow = contactShadow(-0.15, -0.5, w + 0.3, 1);
+    for (const [x, y] of CONES) shadow.ellipse(x + 2, y + 1, 7, 3).fill({ color: 0x000000, alpha: 0.14 });
+    this.addChild(shadow, piece("stats-board", () => this.buildBoard()));
 
     // screen title and the "under construction" plate, laid flat on the screen face
     const flatW = flatLength(w);
@@ -174,17 +188,17 @@ export class StatsBoard extends FeatureSpot {
     const face = new Container();
     face.skew.y = WALL_SKEW;
     face.zIndex = 0.5;
-    const title = label(text.statsTitle, { fontSize: 6.5, fontWeight: "800", fill: 0xffffff, letterSpacing: 1 });
+    const title = label(text.statsTitle, { fontSize: 6, fontWeight: "800", fill: 0xffffff, letterSpacing: 1 });
     title.anchor.set(0.5);
-    title.scale.set(Math.min(1, (flatW - 20) / title.width));
-    title.position.set(flatW / 2, top + 10);
+    title.scale.set(Math.min(1, (flatW - 30) / title.width));
+    title.position.set(flatW / 2, top + 5);
     const warn = label(text.underConstruction, { fontSize: 8, fontWeight: "800", fill: 0x1f1a17, letterSpacing: 1 });
     warn.anchor.set(0.5);
     const pw = warn.width + 18;
     const plate = new Container();
     const pg = new Graphics().roundRect(-pw / 2, -9, pw, 18, 3).fill(0xf2c230).stroke({ width: 1.5, color: 0x1f1a17 });
     plate.addChild(pg, warn);
-    plate.position.set(flatW / 2, top + (CHART.top + SCREEN_H - CHART.bottom) / 2);
+    plate.position.set(flatW / 2, top + SCREEN_H / 2);
     plate.rotation = -0.05;
     face.addChild(title, plate);
     this.addChild(face);
@@ -211,9 +225,8 @@ export class StatsBoard extends FeatureSpot {
     const { w } = STATS_BOARD;
     const c = new Container();
     const g = new Graphics();
-    g.ellipse(iso(w / 2, 0.2).x, iso(w / 2, 0.2).y, 70, 14).fill({ color: 0x000000, alpha: 0.08 });
-    box(g, 0.35, -0.12, 0.1, 0.1, SCREEN_LEGS, PALETTE.navy);
-    box(g, w - 0.45, -0.12, 0.1, 0.1, SCREEN_LEGS, PALETTE.navy);
+    box(g, 0.1, -0.4, 0.3, 0.8, SCREEN_LEGS, PALETTE.navy);
+    box(g, w - 0.4, -0.4, 0.3, 0.8, SCREEN_LEGS, PALETTE.navy);
     box(g, 0, -0.14, w, 0.14, SCREEN_H, PALETTE.navy, SCREEN_LEGS);
     c.addChild(g);
 
@@ -222,7 +235,7 @@ export class StatsBoard extends FeatureSpot {
     const face = new Container();
     face.skew.y = WALL_SKEW;
     const s = new Graphics();
-    s.rect(4, top + CHART.top, flatW - 8, SCREEN_H - CHART.top - CHART.bottom).fill(0x16203a);
+    s.rect(5, top + CHART.top, flatW - 10, SCREEN_H - CHART.top - CHART.bottom).fill(0x16203a);
     const chartTop = top + CHART.top + 8;
     const base = -SCREEN_LEGS - CHART.bottom - 5;
     const bars: [number, number][] = [[0.95, PALETTE.glow], [0.7, 0x7f9ccf], [0.8, 0x8fb9a8], [0.5, 0xc9a27a], [0.35, 0xe9e2d7]];
@@ -239,7 +252,7 @@ export class StatsBoard extends FeatureSpot {
       const len = flatW + 10;
       tape.rect(-len / 2, -4, len, 8).fill(0xf2c230);
       for (let x = -len / 2; x < len / 2; x += 10) tape.poly([x, -4, x + 5, -4, x + 1, 4, x - 4, 4]).fill(0x1f1a17);
-      tape.position.set(flatW / 2, top + (CHART.top + SCREEN_H - CHART.bottom) / 2);
+      tape.position.set(flatW / 2, top + SCREEN_H / 2);
       tape.rotation = angle;
       face.addChild(tape);
     }
@@ -247,8 +260,8 @@ export class StatsBoard extends FeatureSpot {
 
     // traffic cones in front of the screen
     const cones = new Graphics();
-    for (const [x, y] of [[0.5, 0.9], [w - 0.5, 0.9]]) {
-      const p = iso(x, y);
+    for (const [x, y] of CONES) {
+      const p = { x, y };
       cones.ellipse(p.x, p.y, 6, 3).fill(0xe8742c);
       cones.poly([p.x - 4, p.y - 1, p.x + 4, p.y - 1, p.x + 1, p.y - 14, p.x - 1, p.y - 14]).fill(0xf28c3a);
       cones.rect(p.x - 3, p.y - 8, 6, 2).fill(0xffffff);
@@ -260,9 +273,11 @@ export class StatsBoard extends FeatureSpot {
 
 // --- Anima's desk --------------------------------------------------------------------------------
 
-const DESK_H = 30;
-/** Horseshoe desk radii (tiles): small enough that its front hides Anima up to the waist. */
-const DESK_R = { outer: 0.75, inner: 0.5 };
+const DESK_H = 26;
+/** Desk radii (tiles), matching the art: about 90 px wide, like the booth desks. */
+const DESK_R = { outer: 1, inner: 0.68 };
+/** Where Anima stands inside the desk (tiles from its centre): just behind the front counter. */
+const ANIMA_SPOT = { gx: 0.2, gy: -0.25 };
 const pick = <T,>(list: T[], avoid?: T) => {
   const options = list.length > 1 ? list.filter((item) => item !== avoid) : list;
   return options[Math.floor(Math.random() * options.length)];
@@ -293,12 +308,18 @@ export class AnimaDesk extends FeatureSpot {
     floor.ellipse(0, 0, outer.rx, outer.ry).fill({ color: PALETTE.navy, alpha: 0.1 });
     floor.ellipse(0, 0, outer.rx, outer.ry).stroke({ width: 2, color: PALETTE.glow, alpha: 0.7 });
     floor.ellipse(0, 0, inner.rx, inner.ry).stroke({ width: 1, color: 0xd8cdbd });
-    floor.zIndex = -1;
+    floor.zIndex = -2;
     this.addChild(floor);
 
-    // Anima stands inside the horseshoe desk, near its front so the counter reaches her waist
+    const deskShadow = new Graphics();
+    const foot = isoCircle(DESK_R.outer);
+    for (const [grow, a] of [[10, 0.07], [3, 0.14]]) deskShadow.ellipse(0, 2, foot.rx + grow, foot.ry + grow / 2).fill({ color: 0x000000, alpha: a });
+    deskShadow.zIndex = -1;
+    this.addChild(deskShadow);
+
+    // Anima stands inside the desk, just behind its front so the counter reaches her waist
     this.receptionist = new Chibi({ ...ANIMA_DESK.receptionist, backpack: false, sheet: "staff-anima" });
-    const rp = iso(0.1, 0.1);
+    const rp = iso(ANIMA_SPOT.gx, ANIMA_SPOT.gy);
     this.receptionist.position.set(rp.x, rp.y);
     this.receptionist.zIndex = 1;
     this.addChild(this.receptionist);
@@ -316,7 +337,7 @@ export class AnimaDesk extends FeatureSpot {
     role.y = 6.5;
     const pw = Math.max(name.width, role.width) + 8;
     plate.addChild(new Graphics().roundRect(-pw / 2, -6, pw, 17, 2).fill(0x16203a).stroke({ width: 0.8, color: PALETTE.glow }), name, role);
-    plate.position.set(0, isoCircle(DESK_R.outer).ry - DESK_H + 11);
+    plate.position.set(2, -6);
     plate.zIndex = 3;
     this.addChild(plate);
 
@@ -368,7 +389,7 @@ export class AnimaDesk extends FeatureSpot {
     }
   }
 
-  /** Placeholder navy horseshoe desk, open at the back, around the ring's centre. */
+  /** Placeholder navy desk, open at the back, around the ring's centre. */
   private buildDesk(): Container {
     const c = new Container();
     const g = new Graphics();
