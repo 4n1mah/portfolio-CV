@@ -55,6 +55,13 @@ export const ASSETS = {
   "sofa": { src: "/lobby/sofa.webp", anchor: { x: 0.502, y: 1 }, width: 78, groundOffset: 17, footprint: { w: 1.6, d: 0.7 } },
   // Street lamp; the halo around the bulb is drawn by code.
   "lamp": { src: "/lobby/lamp.webp", anchor: { x: 0.498, y: 1 }, width: 10.5, groundOffset: 1.8, shadow: { rx: 7, ry: 3, alpha: 0.15 }, glow: { y: 54, r: 13 } },
+  // Upcoming features (layers/Features.ts); titles, "coming soon" and "under construction" labels are drawn by code.
+  // Visitor notes booth: walls, floor, cork board and a note table. Anchor = far corner, like the booths.
+  "stand-notes": { src: null, anchor: { x: 0.5, y: 0.5 } },
+  // Stats screen with its bar chart and caution tape. Anchor = bottom of the screen's left leg line (gx, gy).
+  "stats-board": { src: null, anchor: { x: 0.5, y: 1 } },
+  // Anima's horseshoe desk, open at the back. Anchor = centre of the ring on the floor.
+  "desk-anima": { src: null, anchor: { x: 0.5, y: 0.5 } },
 } satisfies Record<string, AssetEntry>;
 
 export type AssetKey = keyof typeof ASSETS;

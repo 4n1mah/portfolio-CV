@@ -39,6 +39,19 @@ Las plantillas de `art/reference/` las genera el código con la geometría exact
 
 > Los stands se colocan sobre las posiciones de `STANDS` en `src/lobby/config.ts`. Si tu imagen no cae exacto, ajusta el `anchor` en vez de mover la lógica.
 
+## Funciones en construcción
+
+Tres espacios entre los stands (`src/lobby/layers/Features.ts`, posiciones en `NOTES_BOOTH`, `STATS_BOARD` y `ANIMA_DESK` de `config.ts`). Se iluminan al pasar el mouse y al hacer click abren un panel "En construcción". Todos los textos (título, "Próximamente", "En construcción", el cartel de Anima) los dibuja el código en el idioma activo, así que las imágenes van **sin texto**.
+
+| Key | Qué es | Plantilla (`art/reference/`) | Referencia de estilo |
+|---|---|---|---|
+| `stand-notes` | Stand pequeño del muro de visitantes: paredes, suelo, corcho con notas y mesita | `stand-notes.png` | `art/lobby/stand-about.png` |
+| `stats-board` | Pantalla con gráfico de barras, cinta de precaución y conos | `stats-board.png` | `art/lobby/desk.png` |
+| `desk-anima` | Mostrador azul marino en herradura, abierto por detrás | `desk-anima.png` | `art/lobby/desk.png` |
+| `staff-anima` | Anima (hoja de personaje: de frente · saludando) | — | `art/lobby/staff-about.png` |
+
+La correspondencia de cada plantilla con el mundo está en `art/reference/features-mapping.json`.
+
 ## Personajes
 
 Los generadores de imágenes no mantienen bien a un personaje a lo largo de muchos fotogramas, así que cada personaje es **una hoja con poses fijas** y la animación la hace el código: rebote al caminar, balanceo, saludo y espejo horizontal para las otras dos direcciones. La clase `Chibi` (`src/lobby/layers/Chibi.ts`) solo expone `setFacing`, `wave`, `update` y `headY`, así que una versión con sprites se conecta sin tocar el resto del motor.

@@ -68,6 +68,20 @@
   color: #fff;
 }
 
+/* "Under construction" badge on upcoming features */
+.construction {
+  display: inline-block;
+  margin: 0 0 14px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: repeating-linear-gradient(-45deg, #f2c230 0 12px, #e8b41c 12px 24px);
+  color: #1f1a17;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .tags {
   margin: 8px 0;
 }

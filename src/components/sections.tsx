@@ -1,7 +1,7 @@
 "use client";
 
 import { profile, type Content } from "@/content/sections";
-import { lobbyStore, useContent, type StandId } from "@/lobby/store";
+import { isFeature, lobbyStore, useContent, type FeatureId, type SpotId, type StandId } from "@/lobby/store";
 import styles from "./sections.module.css";
 
 function About({ c }: { c: Content }) {
@@ -148,6 +148,23 @@ function Experience({ c }: { c: Content }) {
   );
 }
 
+/** Placeholder body for a feature that is not built yet. */
+function ComingSoon({ c, id }: { c: Content; id: FeatureId }) {
+  const feature = c.features[id];
+  return (
+    <>
+      <p className={styles.construction}>🚧 {c.ui.underConstruction}</p>
+      <p className={styles.lead}>{feature.description}</p>
+      <h3 className={styles.h3}>{c.ui.whatsComing}</h3>
+      <ul className={styles.achievements}>
+        {feature.plans.map((p) => (
+          <li key={p}>{p}</li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
 const BODIES: Record<StandId, (props: { c: Content }) => React.ReactNode> = {
   about: About,
   portfolio: Portfolio,
@@ -157,9 +174,15 @@ const BODIES: Record<StandId, (props: { c: Content }) => React.ReactNode> = {
 
 export const SECTION_ORDER: StandId[] = ["about", "portfolio", "skills", "experience"];
 
-/** Title, kicker, preview list and body of a section in the current language. */
-export function useSection(id: StandId) {
+/** Title, kicker and preview list of a section or feature. */
+export function spotInfo(c: Content, id: SpotId) {
+  return isFeature(id) ? c.features[id] : c[id];
+}
+
+/** Title, kicker, preview list and body of a section (or an upcoming feature) in the current language. */
+export function useSection(id: SpotId) {
   const c = useContent();
+  if (isFeature(id)) return { ...c.features[id], body: <ComingSoon c={c} id={id} /> };
   const Body = BODIES[id];
   return { ...c[id], body: <Body c={c} /> };
 }

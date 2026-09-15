@@ -1,8 +1,8 @@
 "use client";
 
 import { profile } from "@/content/sections";
-import { lobbyStore, useContent, useLobby, type StandId } from "@/lobby/store";
-import { SECTION_ORDER } from "./sections";
+import { lobbyStore, useContent, useLobby, type SpotId } from "@/lobby/store";
+import { SECTION_ORDER, spotInfo } from "./sections";
 import styles from "./lobby.module.css";
 
 export default function Hud() {
@@ -14,7 +14,7 @@ export default function Hud() {
   const nameLinksOpen = useLobby((s) => s.nameLinksOpen);
   const c = useContent();
   const { open, setSimpleMode, setLocale, setNameLinks, closeNameLinksSoon } = lobbyStore.getState();
-  const preview = hovered ? c[hovered] : null;
+  const preview = hovered ? spotInfo(c, hovered) : null;
   const touch = pointer === "touch";
 
   return (
@@ -65,7 +65,7 @@ export default function Hud() {
 
       <div className={styles.bottomBar}>
         {preview && touch ? (
-          <button className={styles.enter} onClick={() => open(hovered as StandId)}>
+          <button className={styles.enter} onClick={() => open(hovered as SpotId)}>
             {c.ui.enter} {preview.title} →
           </button>
         ) : (

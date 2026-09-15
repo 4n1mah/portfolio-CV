@@ -1,5 +1,5 @@
 import { Container, Graphics } from "pixi.js";
-import { PALETTE, PLAZA_CENTER, SITTERS, WORLD_SIZE } from "../config";
+import { NOTES_BOOTH, PALETTE, PLAZA_CENTER, SITTERS, WORLD_SIZE } from "../config";
 import { depth, iso, isoCircle, rectPoly } from "../engine/iso";
 import { piece } from "../assets";
 import { bench, box, lamp, planter, plant } from "./draw";
@@ -54,8 +54,8 @@ export function buildDecor(entities: Container) {
   place(entities, piece("planter-center", () => planter(2.2)), PLAZA_CENTER.gx, PLAZA_CENTER.gy);
 
   // Plants sit on the centres of the outer ring of floor tiles, mirrored across the vertical axis
-  // (gx <-> gy), in the gaps between booths: one accent at each back gap, and from each side corner
-  // a row alternating round and tall plants along the front edge, stopping short of Experience's lamps.
+  // (gx <-> gy), in the gaps between booths: one accent at the back gap About–Skills, and from each side
+  // corner a row alternating round and tall plants along the front edge, stopping short of Experience's lamps.
   const T = WORLD_SIZE / 8;
   const tile = (i: number) => (i + 0.5) * T;
   const half: [number, number, number, number][] = [
@@ -63,7 +63,12 @@ export function buildDecor(entities: Container) {
     [tile(0), tile(6), 1.1, 1], [tile(0), tile(7), 1.2, 0], [tile(1), tile(7), 1.1, 1],
     [tile(2), tile(7), 1, 0], [tile(3), tile(7), 1.1, 1], [tile(4), tile(7), 1, 0],
   ];
-  const plants = half.flatMap(([gx, gy, s, v]) => [[gx, gy, s, v], [gy, gx, s, v]]);
+  // the visitor notes booth takes the back gap between About and Portfolio
+  const clear = (gx: number, gy: number) => {
+    const b = NOTES_BOOTH;
+    return !(gx > b.gx - 1 && gx < b.gx + b.w + 1 && gy > b.gy - 1 && gy < b.gy + b.d + 1);
+  };
+  const plants = half.flatMap(([gx, gy, s, v]) => [[gx, gy, s, v], [gy, gx, s, v]]).filter(([gx, gy]) => clear(gx, gy));
   plants.forEach(([gx, gy, s, v]) => place(entities, piece(v === 0 ? "plant-a" : "plant-b", () => plant(s, v), s), gx, gy));
 
   const lamps: [number, number][] = [

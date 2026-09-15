@@ -3,8 +3,9 @@ import gsap from "gsap";
 import { content, type Locale } from "@/content/sections";
 import { PALETTE, PLAZA_CENTER, SITTERS, VISITORS, WAYPOINTS, WORLD_SIZE, standsFor } from "../config";
 import { ASSETS, loadAssets } from "../assets";
-import { lobbyStore, type StandId } from "../store";
+import { lobbyStore, type SpotId, type StandId } from "../store";
 import { DETAIL, fonts } from "../layers/draw";
+import { AnimaDesk, NotesBooth, StatsBoard, type FeatureSpot } from "../layers/Features";
 import { buildDecor, buildFloor } from "../layers/Scene";
 import { Stand } from "../layers/Stand";
 import { Sitter, Visitor } from "../layers/Npc";
@@ -90,6 +91,11 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     entities.addChild(stand);
   }
 
+  // upcoming features: they hover, open and zoom like the booths
+  const features: FeatureSpot[] = [new NotesBooth(text), new StatsBoard(text), new AnimaDesk(text, bubbles, !reducedMotion)];
+  features.forEach((f) => entities.addChild(f));
+  const spots = new Map<SpotId, Stand | FeatureSpot>([...stands, ...features.map((f) => [f.spotId, f] as const)]);
+
   // "Sadiel’s Plaza" plate centred on the front band of the central planter, above its light strip
   const nameSign = new NameSign(text.plazaSign);
   const plaza = iso(PLAZA_CENTER.gx, PLAZA_CENTER.gy);
@@ -169,15 +175,16 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
   app.renderer.on("resize", onResize);
 
   // --- interaction ---
-  const focus = (id: StandId, duration: number) => {
-    const stand = stands.get(id)!;
+  const focus = (id: SpotId, duration: number) => {
+    const spot = spots.get(id)!;
+    const size = spot instanceof Stand ? { w: 480, h: 400 } : spot.focusSize;
     const { width, height } = app.screen;
     const cover = panelCover(width, height);
     const availW = width - cover.x;
     const availH = height - cover.y;
-    const scale = Math.min(availW / 480, availH / 400, 2.4);
+    const scale = Math.min(availW / size.w, availH / size.h, 2.4);
     camera.locked = true;
-    camera.flyTo({ ...stand.focusPoint, scale, offsetX: -cover.x / 2, offsetY: -cover.y / 2 }, duration);
+    camera.flyTo({ ...spot.focusPoint, scale, offsetX: -cover.x / 2, offsetY: -cover.y / 2 }, duration);
   };
 
   app.stage.eventMode = "static";
@@ -203,16 +210,16 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     s.setNameLinks(!s.nameLinksOpen || s.pointer === "mouse");
   });
 
-  for (const [id, stand] of stands) {
-    stand.on("pointerover", (e: FederatedPointerEvent) => {
+  for (const [id, spot] of spots) {
+    spot.on("pointerover", (e: FederatedPointerEvent) => {
       const s = store.getState();
       if (e.pointerType === "mouse" && !s.active) s.setHovered(id);
     });
-    stand.on("pointerout", (e: FederatedPointerEvent) => {
+    spot.on("pointerout", (e: FederatedPointerEvent) => {
       const s = store.getState();
       if (e.pointerType === "mouse" && s.hovered === id) s.setHovered(null);
     });
-    stand.on("pointertap", (e: FederatedPointerEvent) => {
+    spot.on("pointertap", (e: FederatedPointerEvent) => {
       if (camera.wasDrag) return;
       const s = store.getState();
       if (s.active) {
@@ -224,10 +231,10 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     });
   }
 
-  const dimAll = (keep: StandId | null, gray: number, duration: number) => {
+  const dimAll = (keep: SpotId | null, gray: number, duration: number) => {
     tweenTint(floor, keep ? gray : 1, duration);
     for (const child of entities.children) {
-      const isKept = keep && child === stands.get(keep);
+      const isKept = keep && child === spots.get(keep);
       tweenTint(child, isKept ? 1 : gray, duration);
     }
   };
@@ -246,24 +253,25 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
       if (state.nameLinksOpen) placeNameLinks();
     }
     if (state.hovered !== prev.hovered) {
-      if (prev.hovered) stands.get(prev.hovered)!.setHover(false, reducedMotion);
+      if (prev.hovered) spots.get(prev.hovered)!.setHover(false, reducedMotion);
       if (state.hovered) {
-        const stand = stands.get(state.hovered)!;
-        stand.setHover(true, reducedMotion);
-        if (stand.cfg.npcLine && !reducedMotion) nearestVisitor(stand)?.say(stand.cfg.npcLine);
+        const spot = spots.get(state.hovered)!;
+        spot.setHover(true, reducedMotion);
+        if (spot instanceof Stand && spot.cfg.npcLine && !reducedMotion) nearestVisitor(spot)?.say(spot.cfg.npcLine);
       }
       if (!state.active) dimAll(state.hovered, state.hovered ? 0.86 : 1, dur);
     }
     if (state.active !== prev.active) {
       if (state.active) {
         if (!prev.active) camera.save();
-        const stand = stands.get(state.active)!;
-        stands.forEach((s) => s !== stand && s.setHover(false, reducedMotion));
-        stand.setHover(true, reducedMotion, text.activeGreeting);
+        const spot = spots.get(state.active)!;
+        spots.forEach((s) => s !== spot && s.setHover(false, reducedMotion));
+        // booths welcome you into their section; Anima answers with one of her own lines
+        spot.setHover(true, reducedMotion, spot instanceof Stand ? text.activeGreeting : undefined);
         focus(state.active, reducedMotion ? 0 : 0.95);
         dimAll(state.active, 0.55, reducedMotion ? 0 : 0.6);
       } else {
-        stands.forEach((s) => s.setHover(false, reducedMotion));
+        spots.forEach((s) => s.setHover(false, reducedMotion));
         camera.restore(reducedMotion ? 0 : 0.85);
         dimAll(null, 1, reducedMotion ? 0 : 0.5);
       }
@@ -275,7 +283,8 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
   if (openAtStart) {
     camera.view = { ...start };
     camera.save();
-    stands.get(openAtStart)!.setHover(true, true, text.activeGreeting);
+    const spot = spots.get(openAtStart)!;
+    spot.setHover(true, true, spot instanceof Stand ? text.activeGreeting : undefined);
     focus(openAtStart, 0);
     dimAll(openAtStart, 0.55, 0);
   }
@@ -309,6 +318,7 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     // small print fades in once the zoom makes it legible (~1x), independent of screen size
     const zoomDetail = smoothstep(0.95, 1.3, world.scale.x);
     stands.forEach((s) => s.update(dt, zoomDetail));
+    features.forEach((f) => f.update(dt));
     if (Math.abs(zoomDetail - detailLevel) > 0.001) {
       detailLevel += (zoomDetail - detailLevel) * Math.min(1, dt / 140);
       for (const node of detailNodes) node.alpha = detailLevel;
@@ -326,7 +336,7 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
 
   // an older instance that finishes loading late must not clobber the live one
   if (instance === instances) {
-    if (process.env.NODE_ENV !== "production") Object.assign(globalThis, { __lobby: { app, camera, stands, visitors } });
+    if (process.env.NODE_ENV !== "production") Object.assign(globalThis, { __lobby: { app, camera, stands, spots, visitors } });
     store.getState().setReady(true);
   }
 

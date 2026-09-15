@@ -64,6 +64,15 @@ export function standsFor(text: Content["lobby"]): StandConfig[] {
   return STAND_LAYOUT.map((layout) => ({ ...layout, ...text.stands[layout.id] }));
 }
 
+// Upcoming features in three of the gaps between booths (drawn in layers/Features.ts).
+// Visitor notes: a smaller L-shaped booth between About and Portfolio (far corner + size, like the booths).
+export const NOTES_BOOTH = { gx: 2, gy: 11.4, w: 4.5, d: 3.5, sideWall: 0xd9b25f };
+// Most visited sections: a freestanding screen between Portfolio and Experience. It runs along gx from
+// (gx, gy) and faces down-left, like the booths' main walls.
+export const STATS_BOARD = { gx: 12, gy: 26, w: 4 };
+// Anima's round desk, between Skills and Experience: the stats board's centre mirrored across the vertical axis.
+export const ANIMA_DESK = { gx: 26, gy: 14, receptionist: { hair: 0xe3c68f, shirt: 0x1f2a44 } };
+
 // Walkable graph for visitors: a ring around the central planter plus a few spurs.
 export const WAYPOINTS: Record<string, { gx: number; gy: number; links: string[]; faces?: StandId }> = {
   r0: { gx: 20.6, gy: 15, links: ["r1", "r7"] },
@@ -96,9 +105,10 @@ export const VISITORS = [
 // Seated visitors and the seat under each one. Their lines come from content.lobby.sitterLines.
 // The visitor sits a touch in front of the seat centre, facing away from the backrest side:
 // benches along gy face down-right (dir +1), the sofa along gx faces down-left (dir -1).
+// The sofa is a lounge corner in front of Skills, looking over the plaza.
 // seat.h is the seat top height in world px, measured on the seat art.
 export const SITTERS = [
   { sheet: "sitter-1", gx: 12.24, gy: 15.7, dir: 1, hair: 0x2d2420, shirt: 0x2f3b5c, laptop: true, seat: { kind: "bench", gx: 12.1, gy: 15.4, h: 11 } },
   { sheet: "sitter-2", gx: 17.94, gy: 14.6, dir: 1, hair: 0xe3c68f, shirt: 0xd9d2c5, bun: true, seat: { kind: "bench", gx: 17.8, gy: 14.6, h: 11 } },
-  { sheet: "sitter-3", gx: 15.2, gy: 24.2, dir: -1, hair: 0x3b2a22, shirt: 0x8a6a52, laptop: true, seat: { kind: "sofa", gx: 15.2, gy: 24, h: 9 } },
+  { sheet: "sitter-3", gx: 22.5, gy: 11.5, dir: -1, hair: 0x3b2a22, shirt: 0x8a6a52, laptop: true, seat: { kind: "sofa", gx: 22.5, gy: 11.3, h: 9 } },
 ];

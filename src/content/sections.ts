@@ -1,7 +1,7 @@
 // Contenido del portafolio en español e inglés.
 // Todo el sitio (lobby, vista previa, paneles y modo simple) lee de aquí.
 
-import type { StandId } from "@/lobby/store";
+import type { FeatureId, StandId } from "@/lobby/store";
 
 export type Locale = "es" | "en";
 
@@ -36,6 +36,15 @@ interface StandText {
   npcLine?: string;
 }
 
+/** An upcoming feature: shown in the lobby and in its panel as "under construction". */
+interface FeatureText {
+  title: string;
+  kicker: string;
+  preview: string[];
+  description: string;
+  plans: string[];
+}
+
 const es = {
   ui: {
     role: "Desarrollador de Software",
@@ -57,6 +66,8 @@ const es = {
     contactTitle: "¿Hablamos?",
     writeMe: "Escríbeme",
     findMe: "Encuéntrame en",
+    underConstruction: "En construcción",
+    whatsComing: "Lo que viene",
     headings: {
       story: "Mi historia",
       values: "Lo que me mueve",
@@ -235,6 +246,38 @@ const es = {
       { title: "Técnico en Informática", place: "Centro de Tecnología Universal (CENTU)", period: "2018 — 2019" },
     ],
   },
+  features: {
+    notes: {
+      title: "Muro de visitantes",
+      kicker: "Notas · Comentarios · Comunidad",
+      preview: ["Deja una nota sobre la plaza", "Lee lo que escriben otros", "Moderado y seguro"],
+      description: "Muy pronto podrás dejar una nota o un comentario sobre la plaza y leer lo que han escrito otros visitantes.",
+      plans: [
+        "Notas cortas con tu nombre o de forma anónima",
+        "Cada texto se filtra y se limpia antes de publicarse",
+        "Todo se guarda en una base de datos",
+      ],
+    },
+    stats: {
+      title: "Lo más visitado",
+      kicker: "Clicks · Secciones · Tendencias",
+      preview: ["Secciones más visitadas", "Basado en los clicks", "Tendencias de la plaza"],
+      description: "Aquí verás qué secciones de la plaza visitan más las personas, según sus clicks.",
+      plans: [
+        "Gráfico de barras con las secciones más visitadas",
+        "Cuenta clicks por sección, no personas",
+        "Se actualiza a medida que llegan visitantes",
+      ],
+    },
+    anima: {
+      title: "Anima",
+      kicker: "Asistente virtual · En entrenamiento",
+      preview: ["Pregúntale sobre mi CV", "Respuestas al instante", "En entrenamiento"],
+      description:
+        "Anima es la nueva asistente de la plaza. Todavía la están entrenando, pero pronto podrá responder tus preguntas sobre mi experiencia, proyectos y habilidades.",
+      plans: ["Respuestas basadas en mi CV", "Conversación en español y en inglés"],
+    },
+  } as Record<FeatureId, FeatureText>,
   lobby: {
     stands: {
       about: {
@@ -268,6 +311,18 @@ const es = {
     visitorLines: ["Qué interesante 👏", "¡Mira este proyecto! 😍", "Me encanta este lugar", "¿Ya viste Habilidades?", "Qué buena idea 💡", "Voy a Experiencias"],
     sitterLines: [["Qué interesante 👏"], ["Mira este proyecto 😍"], ["Buenas ideas ✨", "Me quedo un rato más"]],
     plazaSign: "Sadiel’s Plaza",
+    notesSign: "Muro de visitantes",
+    comingSoon: "PRÓXIMAMENTE",
+    statsTitle: "SECCIONES MÁS VISITADAS",
+    underConstruction: "EN CONSTRUCCIÓN",
+    animaRole: "ASISTENTE · EN ENTRENAMIENTO",
+    animaLines: [
+      "¡Hola! Soy Anima 👋",
+      "Soy nueva en la plaza ✨",
+      "Todavía me están entrenando…",
+      "Pronto podré responder preguntas sobre el CV de Sadiel.",
+      "Estoy aprendiendo mucho, ¡vuelve pronto! 📚",
+    ],
   },
 };
 
@@ -294,6 +349,8 @@ const en: Content = {
     contactTitle: "Let's talk?",
     writeMe: "Email me",
     findMe: "Find me on",
+    underConstruction: "Under construction",
+    whatsComing: "What's coming",
     headings: {
       story: "My story",
       values: "What drives me",
@@ -472,6 +529,38 @@ const en: Content = {
       { title: "IT Technician", place: "Centro de Tecnología Universal (CENTU)", period: "2018 — 2019" },
     ],
   },
+  features: {
+    notes: {
+      title: "Visitor wall",
+      kicker: "Notes · Comments · Community",
+      preview: ["Leave a note about the plaza", "Read what others write", "Moderated and safe"],
+      description: "Soon you'll be able to leave a note or a comment about the plaza and read what other visitors have written.",
+      plans: [
+        "Short notes, signed or anonymous",
+        "Every text is filtered and cleaned before it's published",
+        "Everything is stored in a database",
+      ],
+    },
+    stats: {
+      title: "Most visited",
+      kicker: "Clicks · Sections · Trends",
+      preview: ["Most visited sections", "Based on clicks", "Plaza trends"],
+      description: "Here you'll see which sections of the plaza people visit the most, based on their clicks.",
+      plans: [
+        "Bar chart of the most visited sections",
+        "Counts clicks per section, not people",
+        "Updates as visitors come in",
+      ],
+    },
+    anima: {
+      title: "Anima",
+      kicker: "Virtual assistant · In training",
+      preview: ["Ask her about my CV", "Instant answers", "In training"],
+      description:
+        "Anima is the plaza's new assistant. She's still in training, but soon she'll answer your questions about my experience, projects and skills.",
+      plans: ["Answers based on my CV", "Chat in English and Spanish"],
+    },
+  },
   lobby: {
     stands: {
       about: {
@@ -505,6 +594,18 @@ const en: Content = {
     visitorLines: ["How interesting 👏", "Check out this project! 😍", "I love this place", "Seen the Skills booth?", "Great idea 💡", "Heading to Experience"],
     sitterLines: [["How interesting 👏"], ["Look at this project 😍"], ["Good ideas ✨", "I'll stay a bit longer"]],
     plazaSign: "Sadiel’s Plaza",
+    notesSign: "Visitor wall",
+    comingSoon: "COMING SOON",
+    statsTitle: "MOST VISITED SECTIONS",
+    underConstruction: "UNDER CONSTRUCTION",
+    animaRole: "ASSISTANT · IN TRAINING",
+    animaLines: [
+      "Hi! I'm Anima 👋",
+      "I'm new to the plaza ✨",
+      "They're still training me…",
+      "Soon I'll answer questions about Sadiel's CV.",
+      "I'm learning a lot, come back soon! 📚",
+    ],
   },
 };
 

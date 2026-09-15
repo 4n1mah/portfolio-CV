@@ -3,12 +3,22 @@ import { useStore } from "zustand";
 import { content, type Content, type Locale } from "@/content/sections";
 
 export type StandId = "about" | "portfolio" | "skills" | "experience";
+/** Upcoming features shown in the lobby as "under construction" spots. */
+export type FeatureId = "notes" | "stats" | "anima";
+/** Anything in the lobby that can be hovered and opened. */
+export type SpotId = StandId | FeatureId;
 export type PointerKind = "mouse" | "touch";
+
+export const FEATURE_IDS: FeatureId[] = ["notes", "stats", "anima"];
+
+export function isFeature(id: SpotId): id is FeatureId {
+  return (FEATURE_IDS as SpotId[]).includes(id);
+}
 
 export interface LobbyState {
   ready: boolean;
-  hovered: StandId | null;
-  active: StandId | null;
+  hovered: SpotId | null;
+  active: SpotId | null;
   pointer: PointerKind;
   simpleMode: boolean;
   locale: Locale;
@@ -17,8 +27,8 @@ export interface LobbyState {
   /** True while the camera is zoomed in or panned away from the overview. */
   exploring: boolean;
   setReady: (ready: boolean) => void;
-  setHovered: (id: StandId | null) => void;
-  open: (id: StandId) => void;
+  setHovered: (id: SpotId | null) => void;
+  open: (id: SpotId) => void;
   close: () => void;
   setPointer: (pointer: PointerKind) => void;
   setSimpleMode: (simple: boolean) => void;

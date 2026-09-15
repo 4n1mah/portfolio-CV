@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { lobbyStore, useContent, useLobby, type StandId } from "@/lobby/store";
+import { lobbyStore, useContent, useLobby, type SpotId } from "@/lobby/store";
 import { ContactFooter, useSection } from "./sections";
 import styles from "./lobby.module.css";
 
-function PanelContent({ id, closeRef }: { id: StandId; closeRef: React.RefObject<HTMLButtonElement | null> }) {
+function PanelContent({ id, closeRef }: { id: SpotId; closeRef: React.RefObject<HTMLButtonElement | null> }) {
   const section = useSection(id);
   const { ui } = useContent();
   return (
@@ -30,7 +30,7 @@ function PanelContent({ id, closeRef }: { id: StandId; closeRef: React.RefObject
 export default function SectionPanel() {
   const active = useLobby((s) => s.active);
   // keep the last section rendered while the panel slides out
-  const [shown, setShown] = useState<StandId | null>(active);
+  const [shown, setShown] = useState<SpotId | null>(active);
   const closeRef = useRef<HTMLButtonElement>(null);
 
   if (active && active !== shown) setShown(active);
