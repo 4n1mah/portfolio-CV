@@ -7,6 +7,8 @@ export type StandId = "about" | "portfolio" | "skills" | "experience";
 export type FeatureId = "notes" | "stats" | "anima";
 /** Anything in the lobby that can be hovered and opened. */
 export type SpotId = StandId | FeatureId;
+/** Where visitors walk to: every spot plus the plaza around the central planter. */
+export type PlaceId = SpotId | "plaza";
 export type PointerKind = "mouse" | "touch";
 
 export const FEATURE_IDS: FeatureId[] = ["notes", "stats", "anima"];

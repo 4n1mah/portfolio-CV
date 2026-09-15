@@ -1,7 +1,7 @@
 // Contenido del portafolio en español e inglés.
 // Todo el sitio (lobby, vista previa, paneles y modo simple) lee de aquí.
 
-import type { FeatureId, StandId } from "@/lobby/store";
+import type { FeatureId, PlaceId, StandId } from "@/lobby/store";
 
 export type Locale = "es" | "en";
 
@@ -33,7 +33,16 @@ interface StandText {
   subtitle: string;
   sideText: string[];
   greeting: string[];
-  npcLine?: string;
+}
+
+/** How visitors talk about a place they walk to. */
+interface PlaceText {
+  /** "¿Ya viste {name}?" */
+  name: string;
+  /** "Voy {to}" */
+  to: string;
+  /** Said on arrival, or when you hover the place while they are there. */
+  lines: string[];
 }
 
 /** An upcoming feature: shown in the lobby and in its panel as "under construction". */
@@ -291,14 +300,12 @@ const es = {
         subtitle: "PROYECTOS · CASOS · RESULTADOS",
         sideText: ["IDEAS", "PROYECTOS", "SOLUCIONES", "REALES"],
         greeting: ["Aquí están mis proyectos reales.", "Haz click para ver los casos."],
-        npcLine: "¡Mira este proyecto! 😍",
       },
       skills: {
         title: "Habilidades",
         subtitle: "HERRAMIENTAS · CONOCIMIENTOS · CRECIMIENTO",
         sideText: ["APRENDER", "CREAR", "MEJORAR", "REPETIR"],
         greeting: ["Aquí están mis habilidades 🙂", "Haz click para ver más."],
-        npcLine: "¡Python y FastAPI! 🐍",
       },
       experience: {
         title: "Experiencias",
@@ -308,8 +315,24 @@ const es = {
       },
     } as Record<StandId, StandText>,
     activeGreeting: "¡Bienvenida/o! Aquí tienes todo 👉",
-    visitorLines: ["Qué interesante 👏", "¡Mira este proyecto! 😍", "Me encanta este lugar", "¿Ya viste Habilidades?", "Qué buena idea 💡", "Voy a Experiencias"],
-    sitterLines: [["Qué interesante 👏"], ["Mira este proyecto 😍"], ["Buenas ideas ✨", "Me quedo un rato más"]],
+    // Visitors only announce where they are really going, and comment on the place they are at.
+    crowd: {
+      going: ["Voy {to}", "Ahora {to} 👉"],
+      ask: "¿Ya viste {name}?",
+      agree: ["¡Voy para allá!", "¡Buena idea! 👍"],
+      places: {
+        about: { name: "Sobre mí", to: "a Sobre mí", lines: ["Más que un CV 👏", "Qué buena historia ✨", "Me cae bien 🙂"] },
+        portfolio: { name: "el Portafolio", to: "al Portafolio", lines: ["¡Mira este proyecto! 😍", "Proyectos reales 👏", "Qué buena idea 💡"] },
+        skills: { name: "Habilidades", to: "a Habilidades", lines: ["¡Python y FastAPI! 🐍", "Buen stack 🛠️", "Aprender, crear, mejorar 💪"] },
+        experience: { name: "Experiencias", to: "a Experiencias", lines: ["Qué trayectoria 👏", "Buena experiencia 💼", "Interesante recorrido"] },
+        notes: { name: "el muro de visitantes", to: "al muro de visitantes", lines: ["Pronto dejo mi nota 📝", "¿Cuándo abren el muro?"] },
+        stats: { name: "las estadísticas", to: "a ver las estadísticas", lines: ["¿Qué será lo más visitado? 📊", "Sigue en construcción 🚧"] },
+        anima: { name: "a Anima", to: "a saludar a Anima", lines: ["¡Hola, Anima! 👋", "¿Qué tal el entrenamiento?"] },
+        plaza: { name: "la plaza", to: "a la plaza", lines: ["Qué bonita la plaza 🌳", "Me encanta este lugar"] },
+      } as Record<PlaceId, PlaceText>,
+    },
+    // one list per seated visitor: laptop on the bench, coffee on the other bench, laptop on the sofa by Skills
+    sitterLines: [["Revisando proyectos 💻", "Qué interesante 👏"], ["Un cafecito en la plaza ☕", "Qué bonito lugar 🌳"], ["Tomo notas de Habilidades 📝", "Me quedo un rato más"]],
     plazaSign: "Sadiel’s Plaza",
     notesSign: "Muro de visitantes",
     comingSoon: "PRÓXIMAMENTE",
@@ -323,6 +346,8 @@ const es = {
       "Pronto podré responder preguntas sobre el CV de Sadiel.",
       "Estoy aprendiendo mucho, ¡vuelve pronto! 📚",
     ],
+    /** Anima answering a visitor who says hello. */
+    animaReplies: ["¡Hola! 👋", "¡Hola! Aún estoy aprendiendo ✨"],
   },
 };
 
@@ -574,14 +599,12 @@ const en: Content = {
         subtitle: "PROJECTS · CASES · RESULTS",
         sideText: ["IDEAS", "PROJECTS", "REAL", "SOLUTIONS"],
         greeting: ["Here are my real projects.", "Click to see the cases."],
-        npcLine: "Check out this project! 😍",
       },
       skills: {
         title: "Skills",
         subtitle: "TOOLS · KNOWLEDGE · GROWTH",
         sideText: ["LEARN", "BUILD", "IMPROVE", "REPEAT"],
         greeting: ["Here are my skills 🙂", "Click to see more."],
-        npcLine: "Python and FastAPI! 🐍",
       },
       experience: {
         title: "Experience",
@@ -591,8 +614,22 @@ const en: Content = {
       },
     },
     activeGreeting: "Welcome! Here's everything 👉",
-    visitorLines: ["How interesting 👏", "Check out this project! 😍", "I love this place", "Seen the Skills booth?", "Great idea 💡", "Heading to Experience"],
-    sitterLines: [["How interesting 👏"], ["Look at this project 😍"], ["Good ideas ✨", "I'll stay a bit longer"]],
+    crowd: {
+      going: ["Heading {to}", "Off {to} 👉"],
+      ask: "Seen {name}?",
+      agree: ["On my way!", "Good idea! 👍"],
+      places: {
+        about: { name: "the About booth", to: "to About me", lines: ["More than a CV 👏", "What a story ✨", "Seems nice 🙂"] },
+        portfolio: { name: "the Portfolio", to: "to the Portfolio", lines: ["Check out this project! 😍", "Real projects 👏", "Great idea 💡"] },
+        skills: { name: "the Skills booth", to: "to Skills", lines: ["Python and FastAPI! 🐍", "Nice stack 🛠️", "Learn, build, improve 💪"] },
+        experience: { name: "the Experience booth", to: "to Experience", lines: ["What a career 👏", "Solid experience 💼", "Interesting path"] },
+        notes: { name: "the visitor wall", to: "to the visitor wall", lines: ["I'll leave a note soon 📝", "When does the wall open?"] },
+        stats: { name: "the stats board", to: "to the stats board", lines: ["What's the most visited? 📊", "Still under construction 🚧"] },
+        anima: { name: "Anima", to: "to say hi to Anima", lines: ["Hi, Anima! 👋", "How's the training going?"] },
+        plaza: { name: "the plaza", to: "to the plaza", lines: ["Lovely plaza 🌳", "I love this place"] },
+      },
+    },
+    sitterLines: [["Browsing projects 💻", "How interesting 👏"], ["Coffee in the plaza ☕", "Lovely spot 🌳"], ["Taking notes on Skills 📝", "I'll stay a bit longer"]],
     plazaSign: "Sadiel’s Plaza",
     notesSign: "Visitor wall",
     comingSoon: "COMING SOON",
@@ -606,6 +643,7 @@ const en: Content = {
       "Soon I'll answer questions about Sadiel's CV.",
       "I'm learning a lot, come back soon! 📚",
     ],
+    animaReplies: ["Hi there! 👋", "Hi! I'm still learning ✨"],
   },
 };
 

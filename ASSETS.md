@@ -60,7 +60,7 @@ Los generadores de imágenes no mantienen bien a un personaje a lo largo de much
 |---|---|---|---|
 | ✅ `staff-about`, `staff-portfolio`, `staff-skills`, `staff-experience` | Recepcionistas | De frente · saludando | 1536 × 1024 |
 | ✅ `visitor-1` … `visitor-7` | Visitantes que caminan | De frente hacia abajo a la derecha, quieto · de espaldas hacia arriba a la derecha, a medio paso | 1536 × 1024 |
-| `visitor-N-walk` (N = 1 … 7) | Visitantes, poses que faltan | De frente hacia abajo a la derecha, a medio paso · de espaldas hacia arriba a la derecha, quieto | 1536 × 1024 |
+| ✅ `visitor-N-walk` (N = 1 … 7) | Visitantes, poses que faltan | De frente hacia abajo a la derecha, a medio paso · de espaldas hacia arriba a la derecha, quieto | 1536 × 1024 |
 | `visitor-N-walk-alt`, `visitor-N-back-alt` (opcionales) | Zancada con la otra pierna, editando una pose ya hecha | Una sola pose útil por imagen | 1536 × 1024 |
 | ✅ `sitter-1`, `sitter-2`, `sitter-3` | Sentados (banca, banca, sofá) | Sentado sobre un asiento invisible, mirando abajo a la derecha | 1024 × 1024 (ChatGPT las entrega de 1254 × 1254) |
 
@@ -108,6 +108,8 @@ Revisar antes de guardar:
 - que la de espaldas esté quieta, con los dos pies apoyados.
 
 Si la de frente sale mirando a la izquierda, se voltea al prepararla.
+
+Al prepararlas, `visitor-N.png` y `visitor-N-walk.png` se unen en un solo `visitor-N.webp` con 4 poses (`front`, `backWalk1`, `walk1`, `back`). Cada hoja se escala por su pose quieta, para que ambas midan lo mismo aunque el generador dibuje a otro tamaño, y todas las poses comparten el punto entre los pies. Las zancadas opcionales se agregarían como `walk2` y `backWalk2`.
 
 Descripciones:
 

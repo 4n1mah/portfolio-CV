@@ -1,6 +1,6 @@
 import { Container, Graphics, Polygon } from "pixi.js";
 import gsap from "gsap";
-import { PALETTE, type StandConfig } from "../config";
+import { PALETTE, receptionistSpot, type StandConfig } from "../config";
 import { depth, iso, rectPoly, TILE_W, WALL_SKEW, type Point } from "../engine/iso";
 import { piece } from "../assets";
 import { Bubble } from "./Bubble";
@@ -71,8 +71,7 @@ export class Stand extends Container {
     this.addChild(signage);
 
     // receptionist + desk
-    const rx = gx + w * 0.5;
-    const ry = gy + d * 0.42;
+    const { gx: rx, gy: ry } = receptionistSpot(cfg);
     this.receptionist = new Chibi({ ...cfg.receptionist, backpack: false, sheet: `staff-${cfg.id}` });
     const rp = iso(rx, ry);
     this.receptionist.position.set(rp.x, rp.y);

@@ -1,5 +1,5 @@
 import type { Content } from "@/content/sections";
-import type { StandId } from "./store";
+import type { PlaceId, StandId } from "./store";
 
 // Everything about the world layout lives here, in grid units.
 // Tweak positions/lines without touching engine code.
@@ -64,6 +64,12 @@ export function standsFor(text: Content["lobby"]): StandConfig[] {
   return STAND_LAYOUT.map((layout) => ({ ...layout, ...text.stands[layout.id] }));
 }
 
+/** Where a booth's receptionist stands (the desk is 0.85 tiles in front, towards +gy). */
+export function receptionistSpot({ gx, gy, w, d }: Pick<StandLayout, "gx" | "gy" | "w" | "d">) {
+  return { gx: gx + w * 0.5, gy: gy + d * 0.42 };
+}
+const standDesk = (id: StandId) => receptionistSpot(STAND_LAYOUT.find((s) => s.id === id)!);
+
 // Upcoming features in three of the gaps between booths (drawn in layers/Features.ts).
 // Visitor notes: a freestanding mural centred in the gap between About and Portfolio. It runs along gy from
 // (gx, gy) for `d` tiles and faces down-right, towards the plaza.
@@ -74,22 +80,58 @@ export const STATS_BOARD = { gx: 12, gy: 26, w: 4 };
 // Anima's round desk, in the middle of the gap between Skills and Experience.
 export const ANIMA_DESK = { gx: 23.4, gy: 15.6, receptionist: { hair: 0xe3c68f, shirt: 0x1f2a44 } };
 
-// Walkable graph for visitors: a ring around the central planter plus a few spurs.
-export const WAYPOINTS: Record<string, { gx: number; gy: number; links: string[]; faces?: StandId }> = {
+// Walkable graph for visitors (links go both ways). A ring circles the plaza; spurs lead to the viewing spot of
+// every place. Each straight link was checked to clear the planter, benches, lamps, booth walls, the stats screen
+// and Anima's desk by about a tile, which leaves room for the walking lanes and the side-by-side slots.
+export const WAYPOINTS: Record<string, { gx: number; gy: number; links: string[] }> = {
   r0: { gx: 20.6, gy: 15, links: ["r1", "r7"] },
-  r1: { gx: 19, gy: 19, links: ["r0", "r2"] },
+  r1: { gx: 19, gy: 19, links: ["r0", "r2", "lounge", "anima"] },
   r2: { gx: 15, gy: 20.6, links: ["r1", "r3", "lounge"] },
-  r3: { gx: 11, gy: 19, links: ["r2", "r4", "port"] },
-  r4: { gx: 9.4, gy: 15, links: ["r3", "r5", "port"] },
-  r5: { gx: 11, gy: 11, links: ["r4", "r6", "about"] },
-  r6: { gx: 15, gy: 9.4, links: ["r5", "r7", "about", "skill"] },
-  r7: { gx: 19, gy: 11, links: ["r6", "r0", "skill"] },
-  about: { gx: 10.4, gy: 10, links: ["r5", "r6"], faces: "about" },
-  port: { gx: 11.2, gy: 20.4, links: ["r3", "r4"], faces: "portfolio" },
-  skill: { gx: 19.5, gy: 9.8, links: ["r6", "r7"], faces: "skills" },
-  // Experience opens away from the plaza, so its visitors walk round the side wall to the front
-  exp: { gx: 21.9, gy: 28.6, links: ["lounge"], faces: "experience" },
-  lounge: { gx: 17, gy: 22.2, links: ["r2", "exp"] },
+  r3: { gx: 11, gy: 19, links: ["r2", "r4", "portGate"] },
+  r4: { gx: 9.4, gy: 15, links: ["r3", "r5", "notes"] },
+  r5: { gx: 11, gy: 11, links: ["r4", "r6", "about", "notes"] },
+  r6: { gx: 15, gy: 9.4, links: ["r5", "r7", "about", "skills"] },
+  r7: { gx: 19, gy: 11, links: ["r6", "r0", "skills"] },
+  // booth desks face +gy, so visitors stand in front of them; Portfolio and Experience open away from the plaza
+  about: { gx: 6.5, gy: 9.6, links: ["r5", "r6", "notes"] },
+  skills: { gx: 19.6, gy: 9.9, links: ["r6", "r7"] },
+  portGate: { gx: 10.8, gy: 24.2, links: ["r3", "portfolio", "statsL"] },
+  portfolio: { gx: 6.9, gy: 24.2, links: ["portGate"] },
+  lounge: { gx: 17, gy: 22.2, links: ["r1", "r2", "anima", "statsR", "expGate"] },
+  expGate: { gx: 21, gy: 28.3, links: ["lounge", "statsR", "experience"] },
+  experience: { gx: 24.55, gy: 28.1, links: ["expGate"] },
+  // upcoming features: in front of the mural, of the screen (walking round its cones) and at the edge of Anima's ring
+  notes: { gx: 8.4, gy: 13.6, links: ["r4", "r5", "about"] },
+  statsL: { gx: 10.3, gy: 27.3, links: ["portGate", "stats"] },
+  stats: { gx: 14, gy: 27.5, links: ["statsL", "statsR"] },
+  statsR: { gx: 17.6, gy: 27.2, links: ["stats", "lounge", "expGate"] },
+  anima: { gx: 24.6, gy: 17.4, links: ["r1", "lounge"] },
+};
+
+export interface PlaceLayout {
+  /** Waypoints a visitor can stand at to look at the place. */
+  spots: string[];
+  /** What they look at (a receptionist, the mural, the tree…). */
+  look: { gx: number; gy: number };
+  /** Tiles from the spot towards `look`: spots are on the walkways, so visitors step off them to stand and look. */
+  step: number;
+  /** How often it is chosen, relative to the others. */
+  weight: number;
+  /** Seconds spent there. */
+  dwell: [number, number];
+}
+
+// Destinations. Each spot holds two visitors side by side (see engine/crowd.ts).
+export const PLACES: Record<PlaceId, PlaceLayout> = {
+  about: { spots: ["about"], look: standDesk("about"), step: 0.7, weight: 3, dwell: [3, 6] },
+  portfolio: { spots: ["portfolio"], look: standDesk("portfolio"), step: 0.7, weight: 3, dwell: [3, 6] },
+  skills: { spots: ["skills"], look: standDesk("skills"), step: 0.7, weight: 3, dwell: [3, 6] },
+  experience: { spots: ["experience"], look: standDesk("experience"), step: 0.7, weight: 3, dwell: [3, 6] },
+  notes: { spots: ["notes"], look: { gx: NOTES_BOARD.gx, gy: NOTES_BOARD.gy + NOTES_BOARD.d / 2 }, step: 0.7, weight: 1.5, dwell: [2.5, 4.5] },
+  stats: { spots: ["stats"], look: { gx: STATS_BOARD.gx + STATS_BOARD.w / 2, gy: STATS_BOARD.gy }, step: 0.7, weight: 1.5, dwell: [2.5, 4.5] },
+  anima: { spots: ["anima"], look: { gx: ANIMA_DESK.gx + 0.2, gy: ANIMA_DESK.gy - 0.25 }, step: 0.4, weight: 2, dwell: [3, 5] },
+  // r1 and r5 are left out: their step inwards lands next to the plaza lamps; Anima steps less, her desk is close
+  plaza: { spots: ["r0", "r2", "r3", "r4", "r6", "r7"], look: PLAZA_CENTER, step: 1.1, weight: 1.5, dwell: [2, 4] },
 };
 
 // `sheet` is the character art (CHARACTERS in assets.ts); the colors draw the vector chibi while it is missing.

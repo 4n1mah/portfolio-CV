@@ -295,6 +295,7 @@ export class AnimaDesk extends FeatureSpot {
   readonly bubble = new Bubble(true);
   private lastLine = "";
   private cooldown = 4000 + Math.random() * 5000;
+  private waveLeft = 0;
 
   constructor(
     private text: LobbyText,
@@ -381,9 +382,20 @@ export class AnimaDesk extends FeatureSpot {
     else this.say(0);
   }
 
+  /** A visitor said hello: Anima waves and answers, unless you are the one talking to her. */
+  greetBack() {
+    if (!this.animated || this.hovered) return;
+    this.lastLine = pick(this.text.animaReplies, this.lastLine);
+    this.bubble.show(this.lastLine, 2.6);
+    this.receptionist.wave(true);
+    this.waveLeft = 1700;
+    this.cooldown = Math.max(this.cooldown, 7000);
+  }
+
   update(dt: number) {
     super.update(dt);
     this.receptionist.update(dt, false);
+    if (this.waveLeft > 0 && (this.waveLeft -= dt) <= 0 && !this.hovered) this.receptionist.wave(false);
     if (!this.animated || this.hovered) return;
     this.cooldown -= dt;
     if (this.cooldown <= 0) {

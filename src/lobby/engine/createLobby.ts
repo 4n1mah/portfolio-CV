@@ -11,6 +11,7 @@ import { Stand } from "../layers/Stand";
 import { Sitter, Visitor } from "../layers/Npc";
 import { NameSign } from "../layers/NameSign";
 import { Camera } from "./camera";
+import { Crowd } from "./crowd";
 import { depth, iso, isoCircle, TILE_H, TILE_W } from "./iso";
 
 export const PANEL = { breakpoint: 768, width: 480, widthVw: 0.44, sheetVh: 0.64 };
@@ -109,12 +110,15 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
   entities.addChild(nameSign);
 
   const occluders = [...stands.values()].map(({ cfg }) => ({ gx: cfg.gx, gy: cfg.gy, w: cfg.w, d: cfg.d, z: depth(cfg.gx, cfg.gy) }));
-  const starts = Object.keys(WAYPOINTS).filter((k) => k.startsWith("r"));
+  // visitors start spread round the plaza ring; the crowd sends them from place to place
+  const starts = VISITORS.map((_, i) => `r${i % 8}`);
   const visitors = VISITORS.map((look, i) => {
-    const v = new Visitor(look, starts[i % starts.length], reducedMotion, bubbles, text.visitorLines, occluders);
+    const v = new Visitor(look, WAYPOINTS[starts[i]], reducedMotion, bubbles, occluders);
     entities.addChild(v);
     return v;
   });
+  const anima = features.find((f): f is AnimaDesk => f instanceof AnimaDesk);
+  const crowd = new Crowd(visitors, starts, text.crowd, { animated: !reducedMotion, onGreetAnima: () => anima?.greetBack() });
   const sitters = SITTERS.map((spot, i) => {
     const s = new Sitter(spot, text.sitterLines[i % text.sitterLines.length], !reducedMotion, bubbles);
     entities.addChild(s);
@@ -244,13 +248,6 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
     }
   };
 
-  const nearestVisitor = (stand: Stand) => {
-    const fp = stand.focusPoint;
-    return visitors
-      .map((v) => ({ v, d: Math.hypot(v.x - fp.x, v.y - fp.y) }))
-      .sort((a, b) => a.d - b.d)[0]?.v;
-  };
-
   const unsubscribe = store.subscribe((state, prev) => {
     const dur = reducedMotion ? 0 : 0.35;
     if (state.nameLinksOpen !== prev.nameLinksOpen) {
@@ -262,7 +259,8 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
       if (state.hovered) {
         const spot = spots.get(state.hovered)!;
         spot.setHover(true, reducedMotion);
-        if (spot instanceof Stand && spot.cfg.npcLine && !reducedMotion) nearestVisitor(spot)?.say(spot.cfg.npcLine);
+        // only visitors at (or on their way to) the hovered place talk about it
+        if (!reducedMotion) crowd.react(state.hovered);
       }
       if (!state.active) dimAll(state.hovered, state.hovered ? 0.86 : 1, dur);
     }
@@ -318,7 +316,7 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
   // --- loop ---
   app.ticker.add((ticker) => {
     const dt = Math.min(ticker.deltaMS, 50);
-    visitors.forEach((v) => v.update(dt));
+    crowd.update(dt);
     sitters.forEach((s) => s.update(dt));
     // small print fades in once the zoom makes it legible (~1x), independent of screen size
     const zoomDetail = smoothstep(0.95, 1.3, world.scale.x);
@@ -341,7 +339,7 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
 
   // an older instance that finishes loading late must not clobber the live one
   if (instance === instances) {
-    if (process.env.NODE_ENV !== "production") Object.assign(globalThis, { __lobby: { app, camera, stands, spots, visitors } });
+    if (process.env.NODE_ENV !== "production") Object.assign(globalThis, { __lobby: { app, camera, stands, spots, visitors, crowd } });
     store.getState().setReady(true);
   }
 

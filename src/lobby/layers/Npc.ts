@@ -1,15 +1,24 @@
 import { Container, Graphics } from "pixi.js";
-import { WAYPOINTS } from "../config";
 import { depth, iso } from "../engine/iso";
 import { Bubble } from "./Bubble";
 import { Chibi, type ChibiLook } from "./Chibi";
 import { box } from "./draw";
 
 const SPEED = 0.0011; // grid units per ms
+// Tiles to the right of a link: people walking opposite ways pass side by side instead of through each other.
+const LANE = 0.28;
+// Someone in front, closer than PERSONAL and within BODY of the line of travel (tiles), makes a visitor react.
+const PERSONAL = 0.8;
+const BODY = 0.5;
+// Corners are cut this close to a waypoint, so turns read as curves.
+const CORNER = 0.35;
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
-const pick = <T,>(list: T[]) => list[Math.floor(Math.random() * list.length)];
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
-type State = "walk" | "idle";
+export interface GridPoint {
+  gx: number;
+  gy: number;
+}
 
 /** Booth footprint (far corner + size) and its draw order. */
 export interface Occluder {
@@ -23,37 +32,70 @@ export interface Occluder {
 // How far behind a wall (in grid units) a visitor still overlaps it on screen.
 const WALL_SHADOW = 4;
 
-/** A visitor that wanders the waypoint graph, pauses at stands and chats. */
+/**
+ * A visitor walking the plaza. It only knows how to follow a route, keep to its lane, make way for others,
+ * look at something and talk; where to go and what to say is decided by the crowd (engine/crowd.ts).
+ */
 export class Visitor extends Container {
   readonly chibi: Chibi;
   readonly bubble = new Bubble();
   gx: number;
   gy: number;
-  private target: string;
-  private previous: string;
-  private state: State = "walk";
-  private timer = 0;
+  /** Unit direction of travel in grid units while walking, (0, 0) when still. */
+  readonly heading = { x: 0, y: 0 };
+  private route: GridPoint[] = [];
+  private from: GridPoint;
+  private hold = 0;
+  private talk = 0;
+  private blocked = 0;
+  private moved = false;
 
   constructor(
     look: ChibiLook,
-    start: string,
+    start: GridPoint,
     private frozen: boolean,
     bubbleLayer: Container,
-    private lines: string[],
     private occluders: Occluder[] = [],
   ) {
     super();
     this.chibi = new Chibi(look);
     this.addChild(this.chibi);
-    const wp = WAYPOINTS[start];
-    this.gx = wp.gx + rand(-0.3, 0.3);
-    this.gy = wp.gy + rand(-0.3, 0.3);
-    this.previous = start;
-    this.target = pick(wp.links);
-    if (frozen) this.state = "idle";
-    this.timer = rand(0, 1500);
+    this.gx = start.gx;
+    this.gy = start.gy;
+    this.from = start;
     bubbleLayer.addChild(this.bubble);
     this.sync();
+  }
+
+  /** Walking right now (not waiting, talking with a hold, or standing at a place). */
+  get walking() {
+    return this.route.length > 0 && this.hold <= 0;
+  }
+
+  /** A bubble is showing. */
+  get talking() {
+    return this.talk > 0;
+  }
+
+  /** Follow the points in order: waypoints on the right-hand lane, the last one exactly (a slot at a place). */
+  walk(route: GridPoint[]) {
+    if (this.frozen) return;
+    this.route = route;
+    this.from = { gx: this.gx, gy: this.gy };
+  }
+
+  /** Turn towards a grid point. */
+  lookAt(p: GridPoint) {
+    const dx = p.gx - this.gx;
+    const dy = p.gy - this.gy;
+    this.chibi.setFacing(dx - dy, dx + dy > 0);
+  }
+
+  /** Show a line; `stop` also halts the walk while it is showing (e.g. when you hover the place they are going to). */
+  say(line: string, seconds = 2.6, stop = false) {
+    this.bubble.show(line, seconds);
+    this.talk = seconds * 1000;
+    if (stop) this.hold = seconds * 1000;
   }
 
   private sync() {
@@ -77,59 +119,80 @@ export class Visitor extends Container {
     return z;
   }
 
-  /** Stop and say something (used when a stand asks a nearby visitor to react). */
-  say(line: string, seconds = 2.6) {
-    this.state = "idle";
-    this.timer = seconds * 1000 + 400;
-    this.chibi.setFacing(this.chibi.scale.x, true);
-    this.bubble.show(line, seconds);
-  }
-
-  update(dt: number) {
-    if (this.state === "idle") {
-      this.timer -= dt;
-      this.chibi.update(dt, false);
-      if (this.timer <= 0 && !this.frozen) this.state = "walk";
-      this.sync();
-      return;
-    }
-
-    const wp = WAYPOINTS[this.target];
-    const dx = wp.gx - this.gx;
-    const dy = wp.gy - this.gy;
-    const dist = Math.hypot(dx, dy);
-    const step = SPEED * dt;
-    if (dist <= step) {
-      this.gx = wp.gx;
-      this.gy = wp.gy;
-      this.arrive();
-    } else {
-      this.gx += (dx / dist) * step;
-      this.gy += (dy / dist) * step;
-      this.chibi.setFacing(dx - dy, dx + dy > 0);
-    }
-    this.chibi.update(dt, this.state === "walk");
+  /** Advance one frame among `others`. Returns true on the frame the route's last point is reached. */
+  update(dt: number, others: Visitor[]): boolean {
+    this.talk = Math.max(0, this.talk - dt);
+    this.hold = Math.max(0, this.hold - dt);
+    this.moved = false;
+    const arrived = this.route.length > 0 && this.hold <= 0 && this.step(dt, others);
+    // legs only move while actually covering ground, not while waiting behind someone
+    this.chibi.update(dt, this.moved);
+    if (!this.walking) this.heading.x = this.heading.y = 0;
     this.sync();
+    return arrived;
   }
 
-  private arrive() {
-    const here = this.target;
-    const wp = WAYPOINTS[here];
-    const options = wp.links.filter((l) => l !== this.previous);
-    this.previous = here;
-    this.target = pick(options.length ? options : wp.links);
-
-    if (wp.faces) {
-      // look at the stand for a moment
-      this.state = "idle";
-      this.timer = rand(1800, 4200);
-      this.chibi.setFacing(this.chibi.scale.x, false);
-      if (Math.random() < 0.35) this.bubble.show(pick(this.lines), 2.4);
-    } else if (Math.random() < 0.3) {
-      this.state = "idle";
-      this.timer = rand(600, 1800);
-      if (Math.random() < 0.3) this.bubble.show(pick(this.lines), 2.2);
+  private step(dt: number, others: Visitor[]): boolean {
+    const next = this.route[0];
+    const last = this.route.length === 1;
+    // the lane runs along the current link, to the right of its direction
+    const lx = next.gx - this.from.gx;
+    const ly = next.gy - this.from.gy;
+    const len = Math.hypot(lx, ly) || 1;
+    const tx = next.gx - (last ? 0 : (ly / len) * LANE);
+    const ty = next.gy + (last ? 0 : (lx / len) * LANE);
+    let dx = tx - this.gx;
+    let dy = ty - this.gy;
+    const dist = Math.hypot(dx, dy);
+    if (dist <= (last ? 0.02 : CORNER)) {
+      this.from = next;
+      this.route.shift();
+      if (last) {
+        this.gx = next.gx;
+        this.gy = next.gy;
+      }
+      return last;
     }
+    dx /= dist;
+    dy /= dist;
+
+    // make way for whoever is in the way ("right" is the lane side, as in the lane offset above)
+    let speed = SPEED;
+    let side = 0;
+    for (const o of others) {
+      if (o === this) continue;
+      const ox = o.gx - this.gx;
+      const oy = o.gy - this.gy;
+      const ahead = ox * dx + oy * dy;
+      const right = -ox * dy + oy * dx;
+      if (ahead <= 0 || ahead > PERSONAL || Math.abs(right) > BODY) continue;
+      const along = o.heading.x * dx + o.heading.y * dy;
+      if (o.walking && along > 0.5) {
+        // same way: follow at a distance
+        speed = Math.min(speed, SPEED * clamp01((ahead - 0.4) / 0.35));
+      } else if (o.walking && along > -0.5 && right > 0) {
+        // crossing from the right: give way (the other one sees us on its left and carries on)
+        speed = Math.min(speed, SPEED * clamp01((ahead - 0.35) / 0.4));
+      } else {
+        // standing, or coming the other way: step away from them, to the left when they are dead ahead
+        side += right > -0.05 ? -1 : 1;
+        speed = Math.min(speed, SPEED * 0.7);
+      }
+    }
+    side = Math.sign(side);
+    // never wait forever: after a moment of being blocked, carry on slowly
+    this.blocked = speed < SPEED * 0.2 ? this.blocked + dt : 0;
+    if (this.blocked > 1500) speed = SPEED * 0.5;
+
+    const move = Math.min(dist, speed * dt);
+    const sidestep = side * SPEED * 0.5 * dt;
+    this.gx += dx * move - dy * sidestep;
+    this.gy += dy * move + dx * sidestep;
+    this.heading.x = dx;
+    this.heading.y = dy;
+    this.moved = move > SPEED * dt * 0.15;
+    if (this.moved) this.chibi.setFacing(dx - dy, dx + dy > 0);
+    return false;
   }
 }
 
