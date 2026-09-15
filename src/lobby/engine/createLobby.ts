@@ -76,10 +76,12 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
   // --- layers ---
   const world = new Container();
   const floor = buildFloor();
+  // floor marks that must stay under everything standing on them
+  const ground = new Container();
   const entities = new Container();
   entities.sortableChildren = true;
   const bubbles = new Container();
-  world.addChild(floor, entities, bubbles);
+  world.addChild(floor, ground, entities, bubbles);
   app.stage.addChild(world);
 
   buildDecor(entities);
@@ -93,7 +95,10 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
 
   // upcoming features: they hover, open and zoom like the booths
   const features: FeatureSpot[] = [new NotesBoard(text), new StatsBoard(text), new AnimaDesk(text, bubbles, !reducedMotion)];
-  features.forEach((f) => entities.addChild(f));
+  features.forEach((f) => {
+    ground.addChild(f.ground);
+    entities.addChild(f);
+  });
   const spots = new Map<SpotId, Stand | FeatureSpot>([...stands, ...features.map((f) => [f.spotId, f] as const)]);
 
   // "Sadiel’s Plaza" plate centred on the front band of the central planter, above its light strip

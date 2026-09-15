@@ -54,12 +54,13 @@ La correspondencia de cada plantilla con el mundo está en `art/reference/featur
 
 ## Personajes
 
-Los generadores de imágenes no mantienen bien a un personaje a lo largo de muchos fotogramas, así que cada personaje es **una hoja con poses fijas** y la animación la hace el código: rebote al caminar, balanceo, saludo y espejo horizontal para las otras dos direcciones. La clase `Chibi` (`src/lobby/layers/Chibi.ts`) solo expone `setFacing`, `wave`, `update` y `headY`, así que una versión con sprites se conecta sin tocar el resto del motor.
+Los generadores de imágenes no mantienen bien a un personaje a lo largo de muchos fotogramas, así que cada personaje es **una hoja con poses fijas** y la animación la hace el código: pasos alternando las poses, rebote al caminar, balanceo, saludo y espejo horizontal para las otras dos direcciones. La clase `Chibi` (`src/lobby/layers/Chibi.ts`) solo expone `setFacing`, `wave`, `update` y `headY`, así que una versión con sprites se conecta sin tocar el resto del motor.
 
 | Archivo | Quién | Poses (de izquierda a derecha) | Lienzo |
 |---|---|---|---|
 | ✅ `staff-about`, `staff-portfolio`, `staff-skills`, `staff-experience` | Recepcionistas | De frente · saludando | 1536 × 1024 |
-| ✅ `visitor-1` … `visitor-7` | Visitantes que caminan | De frente hacia abajo a la derecha · de espaldas hacia arriba a la derecha | 1536 × 1024 |
+| ✅ `visitor-1` … `visitor-7` | Visitantes que caminan | De frente hacia abajo a la derecha, quieto · de espaldas hacia arriba a la derecha, a medio paso | 1536 × 1024 |
+| `visitor-1-walk` … `visitor-7-walk` | Los mismos visitantes, poses de caminar | De frente, pie izquierdo adelante · de frente, pie derecho adelante · de espaldas, quieto · de espaldas, con el otro pie adelante | 1536 × 1024 |
 | ✅ `sitter-1`, `sitter-2`, `sitter-3` | Sentados (banca, banca, sofá) | Sentado sobre un asiento invisible, mirando abajo a la derecha | 1024 × 1024 (ChatGPT las entrega de 1254 × 1254) |
 
 Al prepararla, cada hoja se corta en celdas iguales (una por pose) que comparten el punto de apoyo y se guarda en WebP a 6 px por px del mundo (unos 400 px de alto). El punto de apoyo es el centro entre los pies o, en los sentados, el punto donde tocan el asiento (medido a mano sobre la imagen). La entrada de `CHARACTERS` en `src/lobby/assets.ts` guarda las poses, ese punto, el ancho de la celda y la altura de la cabeza: de pie miden 62 px como los chibis vectoriales (65 con moño alto) y sentados 48 px desde el asiento (52 con moño). Mientras un personaje no tenga imagen, se sigue dibujando el chibi vectorial.
@@ -80,6 +81,17 @@ Poses para `[POSES]`:
 - Sentados: *One pose, centered: sitting in mid-air on an invisible seat (do not draw any chair, bench, sofa, cushion or floor), body and face turned 45° toward the lower right of the image, thighs horizontal and lower legs hanging straight down. No lanyard or badge.*
 
 Adjuntar siempre `art/lobby/staff-about.png`; los visitantes 2 a 7 llevan además `visitor-1` aprobado, que es el primero con vista de espaldas.
+
+### Poses de caminar de los visitantes
+
+La primera hoja de cada visitante tiene una pose quieta de frente y una a medio paso de espaldas. Así, al caminar hacia abajo no se mueven las piernas, y al detenerse de espaldas se quedan congelados a medio paso. La hoja `visitor-N-walk` completa las poses. Con ella, `Chibi` hace un paso de cuatro tiempos en cada dirección: zancada, pose quieta (pasando), la otra zancada y pose quieta otra vez. El rebote del código coincide con esos tiempos. Si a una hoja le falta alguna pose, el código usa lo que haya: con una sola zancada alterna zancada y pose quieta; sin zancadas, balancea al personaje.
+
+Se pide adjuntando **la hoja aprobada del mismo visitante** (`art/lobby/visitor-N.png`) y guardando el resultado como `public/lobby/visitor-N-walk.png`. El script lo une con la primera hoja en un solo WebP de 6 poses. Para que el personaje no cambie de tamaño entre fotogramas, todas las poses se igualan por el ancho de la cabeza.
+
+**Prompt de caminar (adjuntar `visitor-N.png`):**
+> Using the attached character sheet as the exact reference for this character (same face, hair, clothes, backpack, colors), style, proportions, camera angle and lighting, create a new sheet of the SAME character with 4 poses in one row, on a transparent background, 1536×1024. All four poses full body, exactly the same scale (about 600 px tall when standing), feet on the same horizontal line, evenly spaced with clear empty space between them so they never touch or overlap. Pose 1: walking toward the lower right of the image, facing the viewer like the front pose of the attached sheet, mid-stride with the character's left leg forward and the right arm swinging forward. Pose 2: the same, mid-stride with the right leg forward and the left arm swinging forward. Pose 3: seen from behind, body turned 45° toward the upper right like the back pose of the attached sheet, but standing still with the feet a small step apart and the arms relaxed at the sides; we see the back of the head, the backpack and a sliver of the cheek, no face. Pose 4: seen from behind, walking away toward the upper right, mid-stride with the opposite leg forward compared with the back pose of the attached sheet. Natural small steps suited to a chibi (short legs, feet never leave the ground by much). No floor, no ground shadow, no glow, no text, no labels, no frames, no other objects.
+
+Revisar antes de guardarla: que sea el mismo personaje, que las 4 poses tengan el mismo tamaño y no se toquen, y que en las poses 1 y 2 adelanten piernas distintas.
 
 Descripciones:
 

@@ -34,6 +34,7 @@ export class Chibi extends Container {
   private sprite: Sprite | null = null;
   private frames: Partial<Record<CharacterPose, Texture>> | null;
   private waving = false;
+  private moving = false;
 
   constructor(private look: ChibiLook) {
     super();
@@ -121,11 +122,28 @@ export class Chibi extends Container {
     if (glasses) f.circle(-5, y + 16, 4).stroke({ width: 1.2, color: 0x1d1a18 }).circle(5, y + 16, 4).stroke({ width: 1.2, color: 0x1d1a18 });
   }
 
-  /** Standing pose for the current direction (sheets without a back view keep the front one). */
+  /** Stride frames for the current direction, one per leg (empty when the sheet has none). */
+  private strides(): Texture[] {
+    const f = this.frames!;
+    const list = this.towardViewer ? [f.walk1, f.walk2] : [f.backWalk1, f.backWalk2];
+    return list.filter((t): t is Texture => !!t);
+  }
+
+  /**
+   * Pose for the current direction. Walking runs a four-beat step: stride, passing (the standing pose), the other
+   * stride, passing. The beats follow the bob in `update`, so each stride lands low and the passing pose rides high.
+   * Sheets missing a pose fall back: no back standing pose → the back stride, no back view at all → the front one.
+   */
   private poseTexture(): Texture {
     const f = this.frames!;
     if (this.look.seated && f.seated) return f.seated;
-    return (!this.towardViewer && f.back) || f.front || f.seated!;
+    const strides = this.strides();
+    if (this.moving && strides.length) {
+      const beat = Math.floor(this.phase / (Math.PI / 2) + 0.5) % 4;
+      if (beat % 2 === 0) return strides[(beat / 2) % strides.length];
+    }
+    const standing = this.towardViewer ? f.front : (f.back ?? f.backWalk1);
+    return standing ?? f.front ?? f.seated!;
   }
 
   /** dirX: +1 right / -1 left. towardViewer: face visible (moving down-screen). */
@@ -170,9 +188,11 @@ export class Chibi extends Container {
   update(dt: number, moving: boolean) {
     this.phase += dt * (moving ? 0.012 : 0.003);
     this.rig.y = moving ? -Math.abs(Math.sin(this.phase)) * 2.5 : Math.sin(this.phase) * 0.6;
+    this.moving = moving;
     if (this.sprite) {
-      // a sheet has no walk frames: a light waddle around the feet stands in for the steps
-      this.rig.rotation = moving ? Math.sin(this.phase) * 0.06 : 0;
+      // with stride frames the waddle is only a hint of weight shift; without them it stands in for the steps
+      this.rig.rotation = moving ? Math.sin(this.phase) * (this.strides().length ? 0.02 : 0.06) : 0;
+      if (!this.waving) this.sprite.texture = this.poseTexture();
     } else if (!this.look.seated) {
       this.legs.scale.y = moving ? 1 - Math.abs(Math.cos(this.phase)) * 0.2 : 1;
     }

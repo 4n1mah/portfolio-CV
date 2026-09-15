@@ -33,6 +33,8 @@ export abstract class FeatureSpot extends Container {
   abstract readonly spotId: FeatureId;
   /** World area the camera fits when the spot is opened. */
   abstract readonly focusSize: { w: number; h: number };
+  /** Marks painted on the floor (rings, glows): the lobby puts it in its ground layer, under every character and prop. */
+  readonly ground = new Container();
   protected glow = new Container();
   protected hovered = false;
   private t = Math.random() * 10;
@@ -40,6 +42,7 @@ export abstract class FeatureSpot extends Container {
   constructor(anchor: Point, z: number) {
     super();
     this.position.set(anchor.x, anchor.y);
+    this.ground.position.set(anchor.x, anchor.y);
     this.zIndex = z;
     this.sortableChildren = true;
     this.eventMode = "static";
@@ -49,12 +52,13 @@ export abstract class FeatureSpot extends Container {
   /** World point the camera centres on. */
   abstract get focusPoint(): Point;
 
-  protected addGlow(g: Graphics) {
+  /** `onFloor` glows lie flat under the spot; the others outline its upright art and draw on top of it. */
+  protected addGlow(g: Graphics, onFloor = false) {
     g.blendMode = "add";
     this.glow.addChild(g);
     this.glow.alpha = 0;
     this.glow.zIndex = 5;
-    this.addChild(this.glow);
+    (onFloor ? this.ground : this).addChild(this.glow);
   }
 
   setHover(on: boolean, reducedMotion: boolean, message?: string) {
@@ -308,14 +312,17 @@ export class AnimaDesk extends FeatureSpot {
     floor.ellipse(0, 0, outer.rx, outer.ry).fill({ color: PALETTE.navy, alpha: 0.1 });
     floor.ellipse(0, 0, outer.rx, outer.ry).stroke({ width: 2, color: PALETTE.glow, alpha: 0.7 });
     floor.ellipse(0, 0, inner.rx, inner.ry).stroke({ width: 1, color: 0xd8cdbd });
-    floor.zIndex = -2;
-    this.addChild(floor);
+
+    // the hover glow lights the same patch of floor, between the ring and the desk's shadow
+    const g = new Graphics();
+    g.ellipse(0, 0, outer.rx, outer.ry).fill({ color: PALETTE.glow, alpha: 0.12 }).stroke({ width: 3, color: PALETTE.glow });
 
     const deskShadow = new Graphics();
     const foot = isoCircle(DESK_R.outer);
     for (const [grow, a] of [[10, 0.07], [3, 0.14]]) deskShadow.ellipse(0, 2, foot.rx + grow, foot.ry + grow / 2).fill({ color: 0x000000, alpha: a });
-    deskShadow.zIndex = -1;
-    this.addChild(deskShadow);
+    this.ground.addChild(floor);
+    this.addGlow(g, true);
+    this.ground.addChild(deskShadow);
 
     // Anima stands inside the desk, just behind its front so the counter reaches her waist
     this.receptionist = new Chibi({ ...ANIMA_DESK.receptionist, backpack: false, sheet: "staff-anima" });
@@ -340,10 +347,6 @@ export class AnimaDesk extends FeatureSpot {
     plate.position.set(2, -6);
     plate.zIndex = 3;
     this.addChild(plate);
-
-    const g = new Graphics();
-    g.ellipse(0, 0, outer.rx, outer.ry).fill({ color: PALETTE.glow, alpha: 0.12 }).stroke({ width: 3, color: PALETTE.glow });
-    this.addGlow(g);
 
     const ring: number[] = [];
     for (let i = 0; i <= 12; i++) {
