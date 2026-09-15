@@ -1,13 +1,13 @@
 import { Container, Graphics, Polygon } from "pixi.js";
 import gsap from "gsap";
 import type { Content } from "@/content/sections";
-import { ANIMA_DESK, NOTES_BOOTH, PALETTE, STATS_BOARD } from "../config";
+import { ANIMA_DESK, NOTES_BOARD, PALETTE, STATS_BOARD } from "../config";
 import { depth, iso, isoCircle, rectPoly, TILE_W, WALL_SKEW, type Point } from "../engine/iso";
 import { piece } from "../assets";
 import type { FeatureId } from "../store";
 import { Bubble } from "./Bubble";
 import { Chibi } from "./Chibi";
-import { box, label, wallX, wallY } from "./draw";
+import { box, label } from "./draw";
 
 // Upcoming features shown as "under construction" spots between the booths. Like the booths they
 // glow on hover and open a panel on click; their art slots in through `piece()` (see ASSETS.md),
@@ -65,91 +65,89 @@ export abstract class FeatureSpot extends Container {
   }
 }
 
-// --- Visitor notes booth -------------------------------------------------------------------------
+// --- Visitor notes mural -------------------------------------------------------------------------
 
-const NOTES_WALL_H = 90;
-/** Cork board on the main wall, in wall-face coordinates (x along the wall from the far corner, y up). */
-const NOTE_BOARD = { x: 12, y: -60, h: 44 };
+/** Freestanding mural on a low base; its face looks down-right, towards the plaza. */
+const MURAL = { base: 6, h: 86, thick: 0.2 };
+/** Title strip and cork board on the mural face (x along the mural from its front end, y up). */
+const MURAL_TITLE_Y = -MURAL.base - MURAL.h + 10;
+const CORK = { x: 8, top: -MURAL.base - MURAL.h + 22, bottom: -MURAL.base - 8 };
 
-export class NotesBooth extends FeatureSpot {
+export class NotesBoard extends FeatureSpot {
   readonly spotId = "notes";
-  readonly focusSize = { w: 380, h: 320 };
+  readonly focusSize = { w: 360, h: 300 };
 
   constructor(text: LobbyText) {
-    const { gx, gy, w, d } = NOTES_BOOTH;
-    super(iso(gx, gy), depth(gx, gy));
+    const { gx, gy, d } = NOTES_BOARD;
+    // anchored at the mural's front end on the floor; it runs back along gy
+    super(iso(gx, gy + d), depth(gx, gy + d / 2));
 
-    this.addChild(piece("stand-notes", () => this.buildShell()));
+    this.addChild(piece("notes-board", () => this.buildMural()));
 
-    // title above the board and a "coming soon" ribbon across it, on the main wall face
-    const flatW = flatLength(w);
+    // title and a "coming soon" ribbon across the cork board, laid flat on the mural face
+    const flatD = flatLength(d);
     const face = new Container();
-    face.skew.y = WALL_SKEW;
+    face.skew.y = -WALL_SKEW;
     face.zIndex = 0.5;
-    const title = label(text.notesSign, { fontSize: 15, fontWeight: "800", fill: PALETTE.ink });
-    title.scale.set(Math.min(1, (flatW - 24) / title.width));
-    title.position.set(NOTE_BOARD.x, -NOTES_WALL_H + 5);
+    const title = label(text.notesSign, { fontSize: 11, fontWeight: "800", fill: PALETTE.ink });
+    title.anchor.set(0.5);
+    title.scale.set(Math.min(1, (flatD - 20) / title.width));
+    title.position.set(flatD / 2, MURAL_TITLE_Y);
     const soon = label(text.comingSoon, { fontSize: 10, fontWeight: "800", fill: PALETTE.navy, letterSpacing: 1.5 });
     soon.anchor.set(0.5);
     const rw = soon.width + 26;
     const ribbon = new Container();
     ribbon.addChild(new Graphics().rect(-rw / 2, -9, rw, 18).fill(PALETTE.glow).stroke({ width: 1, color: 0xc99a3a }), soon);
-    ribbon.position.set(flatW / 2, NOTE_BOARD.y + NOTE_BOARD.h / 2);
-    ribbon.rotation = -0.12;
+    ribbon.position.set(flatD / 2, (CORK.top + CORK.bottom) / 2);
+    ribbon.rotation = -0.1;
     face.addChild(title, ribbon);
     this.addChild(face);
 
+    const top = -MURAL.base - MURAL.h;
+    const back = iso(0, -d);
     const g = new Graphics();
-    g.poly(rectPoly(0, 0, w, d, 6)).fill({ color: PALETTE.glow, alpha: 0.12 }).stroke({ width: 3, color: PALETTE.glow });
-    const a = iso(0, d);
-    const e = iso(w, 0);
-    g.moveTo(a.x, a.y - NOTES_WALL_H).lineTo(0, -NOTES_WALL_H).lineTo(e.x, e.y - NOTES_WALL_H).stroke({ width: 4, color: PALETTE.glow });
+    g.poly([0, top, back.x, back.y + top, back.x, back.y, 0, 0]).fill({ color: PALETTE.glow, alpha: 0.1 }).stroke({ width: 3, color: PALETTE.glow });
+    g.poly(rectPoly(0, -d, 1.3, d)).fill({ color: PALETTE.glow, alpha: 0.12 });
     this.addGlow(g);
 
-    const q = (x: number, y: number, z: number) => {
-      const p = iso(x, y);
-      return [p.x, p.y - z];
-    };
-    this.hitArea = new Polygon([...q(0, 0, NOTES_WALL_H), ...q(w, 0, NOTES_WALL_H), ...q(w, 0, 0), ...q(w, d, 0), ...q(0, d, 0), ...q(0, d, NOTES_WALL_H)]);
+    const f1 = iso(1.3, -d);
+    const f2 = iso(1.3, 0);
+    this.hitArea = new Polygon([0, top, back.x, back.y + top, back.x, back.y, f1.x, f1.y, f2.x, f2.y]);
   }
 
   get focusPoint(): Point {
-    const { gx, gy, w, d } = NOTES_BOOTH;
-    const p = iso(gx + w / 2, gy + d / 2);
-    return { x: p.x, y: p.y - 35 };
+    const { gx, gy, d } = NOTES_BOARD;
+    const p = iso(gx, gy + d / 2);
+    return { x: p.x, y: p.y - MURAL.base - MURAL.h / 2 + 10 };
   }
 
-  /** Placeholder walls, floor, cork board with sticky notes and a note table, relative to the far corner. */
-  private buildShell(): Container {
-    const { w, d, sideWall } = NOTES_BOOTH;
-    const shell = new Container();
+  /** Placeholder mural: mustard panel on a wooden base with a cork board full of sticky notes. */
+  private buildMural(): Container {
+    const { d } = NOTES_BOARD;
+    const c = new Container();
     const g = new Graphics();
-    box(g, 0, 0, w, d, 6, 0xf7f2ea);
-    wallY(g, 0, 0, d, NOTES_WALL_H, sideWall);
-    wallX(g, 0, 0, w, NOTES_WALL_H, PALETTE.wall);
-    wallX(g, 0, -0.02, w, 10, sideWall, 0.2);
-    // standing table with note pads near the open corner
-    box(g, w - 1.6, d - 1.5, 0.8, 0.8, 22, PALETTE.wood);
-    box(g, w - 1.45, d - 1.35, 0.25, 0.25, 1.5, 0xffe28a, 22);
-    box(g, w - 1.1, d - 1.1, 0.25, 0.25, 1.5, 0xa8d4f0, 22);
-    shell.addChild(g);
+    g.ellipse(iso(0.2, -d / 2).x, iso(0.2, -d / 2).y, 64, 16).fill({ color: 0x000000, alpha: 0.08 });
+    box(g, -0.3, -d, 0.4, d, MURAL.base, PALETTE.woodDark);
+    box(g, -MURAL.thick, -d, MURAL.thick, d, MURAL.h, NOTES_BOARD.color, MURAL.base);
+    c.addChild(g);
 
+    const flatD = flatLength(d);
     const face = new Container();
-    face.skew.y = WALL_SKEW;
-    const flatW = flatLength(w);
-    const bw = flatW - NOTE_BOARD.x * 2;
-    const board = new Graphics().roundRect(NOTE_BOARD.x, NOTE_BOARD.y, bw, NOTE_BOARD.h, 3).fill(PALETTE.woodDark);
-    board.rect(NOTE_BOARD.x + 3, NOTE_BOARD.y + 3, bw - 6, NOTE_BOARD.h - 6).fill(0xd6b48a);
+    face.skew.y = -WALL_SKEW;
+    const bw = flatD - CORK.x * 2;
+    const bh = CORK.bottom - CORK.top;
+    const board = new Graphics().roundRect(CORK.x, CORK.top, bw, bh, 3).fill(PALETTE.woodDark);
+    board.rect(CORK.x + 3, CORK.top + 3, bw - 6, bh - 6).fill(0xd6b48a);
     const colors = [0xffe28a, 0xffb8a8, 0xbfe3c0, 0xa8d4f0, 0xf6c1e0];
-    for (let row = 0; row < 2; row++) {
+    for (let row = 0; row < 3; row++) {
       for (let col = 0; col < 6; col++) {
-        const x = NOTE_BOARD.x + 8 + col * ((bw - 16) / 6) + (row % 2) * 4;
-        board.rect(x, NOTE_BOARD.y + 7 + row * 18, 13, 13).fill(colors[(row * 6 + col) % colors.length]);
+        const x = CORK.x + 8 + col * ((bw - 16) / 6) + (row % 2) * 4;
+        board.rect(x, CORK.top + 7 + row * 17, 12, 12).fill(colors[(row * 6 + col) % colors.length]);
       }
     }
     face.addChild(board);
-    shell.addChild(face);
-    return shell;
+    c.addChild(face);
+    return c;
   }
 }
 

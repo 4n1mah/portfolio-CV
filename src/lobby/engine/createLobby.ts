@@ -5,7 +5,7 @@ import { PALETTE, PLAZA_CENTER, SITTERS, VISITORS, WAYPOINTS, WORLD_SIZE, stands
 import { ASSETS, loadAssets } from "../assets";
 import { lobbyStore, type SpotId, type StandId } from "../store";
 import { DETAIL, fonts } from "../layers/draw";
-import { AnimaDesk, NotesBooth, StatsBoard, type FeatureSpot } from "../layers/Features";
+import { AnimaDesk, NotesBoard, StatsBoard, type FeatureSpot } from "../layers/Features";
 import { buildDecor, buildFloor } from "../layers/Scene";
 import { Stand } from "../layers/Stand";
 import { Sitter, Visitor } from "../layers/Npc";
@@ -92,7 +92,7 @@ export async function createLobby(host: HTMLElement, locale: Locale): Promise<()
   }
 
   // upcoming features: they hover, open and zoom like the booths
-  const features: FeatureSpot[] = [new NotesBooth(text), new StatsBoard(text), new AnimaDesk(text, bubbles, !reducedMotion)];
+  const features: FeatureSpot[] = [new NotesBoard(text), new StatsBoard(text), new AnimaDesk(text, bubbles, !reducedMotion)];
   features.forEach((f) => entities.addChild(f));
   const spots = new Map<SpotId, Stand | FeatureSpot>([...stands, ...features.map((f) => [f.spotId, f] as const)]);
 

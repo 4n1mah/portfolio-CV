@@ -65,13 +65,14 @@ export function standsFor(text: Content["lobby"]): StandConfig[] {
 }
 
 // Upcoming features in three of the gaps between booths (drawn in layers/Features.ts).
-// Visitor notes: a smaller L-shaped booth between About and Portfolio (far corner + size, like the booths).
-export const NOTES_BOOTH = { gx: 2, gy: 11.4, w: 4.5, d: 3.5, sideWall: 0xd9b25f };
+// Visitor notes: a freestanding mural between About and Portfolio. It runs along gy from (gx, gy) for `d` tiles
+// and faces down-right, towards the plaza.
+export const NOTES_BOARD = { gx: 4.8, gy: 11.6, d: 4, color: 0xd9b25f };
 // Most visited sections: a freestanding screen between Portfolio and Experience. It runs along gx from
 // (gx, gy) and faces down-left, like the booths' main walls.
 export const STATS_BOARD = { gx: 12, gy: 26, w: 4 };
-// Anima's round desk, between Skills and Experience: the stats board's centre mirrored across the vertical axis.
-export const ANIMA_DESK = { gx: 26, gy: 14, receptionist: { hair: 0xe3c68f, shirt: 0x1f2a44 } };
+// Anima's round desk, in the middle of the gap between Skills and Experience.
+export const ANIMA_DESK = { gx: 23.4, gy: 15.6, receptionist: { hair: 0xe3c68f, shirt: 0x1f2a44 } };
 
 // Walkable graph for visitors: a ring around the central planter plus a few spurs.
 export const WAYPOINTS: Record<string, { gx: number; gy: number; links: string[]; faces?: StandId }> = {

@@ -45,7 +45,7 @@ Tres espacios entre los stands (`src/lobby/layers/Features.ts`, posiciones en `N
 
 | Key | Qué es | Plantilla (`art/reference/`) | Referencia de estilo |
 |---|---|---|---|
-| `stand-notes` | Stand pequeño del muro de visitantes: paredes, suelo, corcho con notas y mesita | `stand-notes.png` | `art/lobby/stand-about.png` |
+| `notes-board` | Mural independiente del muro de visitantes (mira hacia la plaza): panel mostaza sobre base de madera con corcho y notas | `notes-board.png` | `art/lobby/desk.png` |
 | `stats-board` | Pantalla con gráfico de barras, cinta de precaución y conos | `stats-board.png` | `art/lobby/desk.png` |
 | `desk-anima` | Mostrador azul marino en herradura, abierto por detrás | `desk-anima.png` | `art/lobby/desk.png` |
 | `staff-anima` | Anima (hoja de personaje: de frente · saludando) | — | `art/lobby/staff-about.png` |
