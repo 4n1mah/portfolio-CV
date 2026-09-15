@@ -60,8 +60,8 @@ Los generadores de imágenes no mantienen bien a un personaje a lo largo de much
 |---|---|---|---|
 | ✅ `staff-about`, `staff-portfolio`, `staff-skills`, `staff-experience` | Recepcionistas | De frente · saludando | 1536 × 1024 |
 | ✅ `visitor-1` … `visitor-7` | Visitantes que caminan | De frente hacia abajo a la derecha, quieto · de espaldas hacia arriba a la derecha, a medio paso | 1536 × 1024 |
-| `visitor-N-walk-front` (N = 1 … 7) | Zancadas de frente | Pierna del lado derecho de la imagen adelante · pierna del lado izquierdo adelante | 1536 × 1024 |
-| `visitor-N-walk-back` (N = 1 … 7) | De espaldas | Quieto · zancada con las piernas al revés que en la primera hoja | 1536 × 1024 |
+| `visitor-N-walk` (N = 1 … 7) | Visitantes, poses que faltan | De frente hacia abajo a la derecha, a medio paso · de espaldas hacia arriba a la derecha, quieto | 1536 × 1024 |
+| `visitor-N-walk-alt`, `visitor-N-back-alt` (opcionales) | Zancada con la otra pierna, editando una pose ya hecha | Una sola pose útil por imagen | 1536 × 1024 |
 | ✅ `sitter-1`, `sitter-2`, `sitter-3` | Sentados (banca, banca, sofá) | Sentado sobre un asiento invisible, mirando abajo a la derecha | 1024 × 1024 (ChatGPT las entrega de 1254 × 1254) |
 
 Al prepararla, cada hoja se corta en celdas iguales (una por pose) que comparten el punto de apoyo y se guarda en WebP a 6 px por px del mundo (unos 400 px de alto). El punto de apoyo es el centro entre los pies o, en los sentados, el punto donde tocan el asiento (medido a mano sobre la imagen). La entrada de `CHARACTERS` en `src/lobby/assets.ts` guarda las poses, ese punto, el ancho de la celda y la altura de la cabeza: de pie miden 62 px como los chibis vectoriales (65 con moño alto) y sentados 48 px desde el asiento (52 con moño). Mientras un personaje no tenga imagen, se sigue dibujando el chibi vectorial.
@@ -85,30 +85,29 @@ Adjuntar siempre `art/lobby/staff-about.png`; los visitantes 2 a 7 llevan ademá
 
 ### Poses de caminar de los visitantes
 
-La primera hoja de cada visitante tiene una pose quieta de frente y una a medio paso de espaldas. Así, al caminar hacia abajo no se mueven las piernas, y al detenerse de espaldas se quedan congelados a medio paso. Dos hojas más completan las poses. Con ellas, `Chibi` hace un paso de cuatro tiempos en cada dirección: zancada, pose quieta (pasando), la otra zancada y pose quieta otra vez. El rebote del código coincide con esos tiempos. Si a una hoja le falta alguna pose, el código usa lo que haya: con una sola zancada alterna zancada y pose quieta; sin zancadas, balancea al personaje.
+La primera hoja de cada visitante tiene una pose quieta de frente y otra a medio paso de espaldas. Eso causa dos problemas: al caminar hacia abajo no mueve las piernas, y al detenerse de espaldas se queda congelado a medio paso. Una segunda hoja, `visitor-N-walk`, completa las poses que faltan.
 
-Cada hoja lleva **2 poses, como la primera**. En un primer intento se pidieron las 4 poses en una sola imagen y ChatGPT falló:
-- dibujó los personajes demasiado grandes y pegados a los bordes;
-- las dos zancadas salieron casi iguales;
-- las poses de frente miraban a la izquierda.
+`Chibi` alterna, en cada dirección, zancada y pose quieta al ritmo del rebote del código. Con dos zancadas por dirección (una por pierna) hace el paso completo de cuatro tiempos. Si a una hoja le falta alguna pose, el código usa lo que haya; sin zancadas, balancea al personaje.
 
-Por eso las piernas se describen por **lado de la imagen** y no por la izquierda o derecha del personaje, que el generador confunde. En las 7 hojas aprobadas, la zancada de espaldas tiene atrás la pierna del lado izquierdo de la imagen (el pie más abajo, con la suela visible), así que la nueva lleva atrás la del lado derecho.
+**Lo que no funciona:** pedir en una misma imagen dos poses casi iguales que solo cambian de pierna. El generador copia la primera pose en la segunda, aunque las piernas se describan por lado de la imagen. Tampoco caben 4 poses en una fila: salen gigantes y pegadas al borde. Por eso cada hoja lleva **2 poses bien distintas entre sí** (una de frente y otra de espaldas), y la zancada con la otra pierna, si se quiere, se consigue editando una imagen ya hecha.
 
-Se piden adjuntando **la hoja aprobada del mismo visitante** (`art/lobby/visitor-N.png`) y se guardan en `public/lobby/`. El script las une con la primera hoja en un solo WebP de 6 poses. Para que el personaje no cambie de tamaño entre fotogramas, todas las poses se igualan por el ancho de la cabeza.
+**Prompt → `public/lobby/visitor-N-walk.png` (adjuntar `art/lobby/visitor-N.png`):**
+> Using the attached character sheet as the exact reference for this character (same face, hair, clothes, backpack, colors), style, proportions, size, camera angle, lighting and layout, create a new sheet of the SAME character with 2 different poses side by side, on a transparent background, 1536×1024. Each pose is full body, the same size as in the attached sheet, centred in its half of the image with plenty of empty space around it; nothing touches the image edges or the other pose. Pose 1 (left half): walking toward the LOWER RIGHT corner of the image, seen from the front like the left pose of the attached sheet (body and face turned 45° toward the lower right), mid-stride with one foot forward and the other foot back on its toes, arms swinging. Pose 2 (right half): seen from behind like the right pose of the attached sheet (body turned 45° toward the UPPER RIGHT corner, we see the back of the head, the backpack and a sliver of the cheek, no face), but standing completely still: both feet side by side, flat on the ground, a small step apart, arms relaxed at the sides. No floor, no ground shadow, no glow, no text, no labels, no frames, no other objects.
 
-**Prompt de zancadas de frente → `visitor-N-walk-front.png` (adjuntar `visitor-N.png`):**
-> Using the attached character sheet as the exact reference for this character (same face, hair, clothes, backpack, colors), style, proportions, size, camera angle, lighting and layout, create a new sheet of the SAME character with 2 walking poses side by side, on a transparent background, 1536×1024. Both poses are seen from the front exactly like the LEFT pose of the attached sheet: body, face and feet turned 45° toward the LOWER RIGHT corner of the image, never toward the left. Each pose is full body, the same size as in the attached sheet, centred in its half of the image with plenty of empty space around it; nothing touches the image edges or the other pose. Pose 1 (left half): mid-stride, the leg on the RIGHT side of the image steps forward (its foot lower in the image, heel on the ground) and the leg on the LEFT side of the image stays back (its foot higher in the image, on its toes); the arm on the LEFT side of the image swings forward. Pose 2 (right half): the same, with the legs and arms swapped: the leg on the LEFT side of the image steps forward (foot lower in the image) and the leg on the RIGHT side stays back on its toes; the arm on the RIGHT side of the image swings forward. The two poses must be clearly different. Small natural chibi steps. No floor, no ground shadow, no glow, no text, no labels, no frames, no other objects.
+**Opcional, la zancada con la otra pierna (paso completo):** usar *Edit* sobre la imagen y editar una sola pose. Así el generador parte de esa pose y solo cambia las piernas.
+- De frente: sobre `visitor-N-walk.png`, pose izquierda → guardar como `visitor-N-walk-alt.png`.
+- De espaldas: sobre `visitor-N.png`, pose derecha → guardar como `visitor-N-back-alt.png`.
 
-**Prompt de espaldas → `visitor-N-walk-back.png` (adjuntar `visitor-N.png`):**
-> Using the attached character sheet as the exact reference for this character (same hair, clothes, backpack, colors), style, proportions, size, camera angle, lighting and layout, create a new sheet of the SAME character with 2 poses side by side, on a transparent background, 1536×1024. Both poses are seen from behind exactly like the RIGHT pose of the attached sheet: body turned 45° toward the UPPER RIGHT corner of the image; we see the back of the head, the backpack and a sliver of the cheek, no face. Each pose is full body, the same size as in the attached sheet, centred in its half of the image with plenty of empty space around it; nothing touches the image edges or the other pose. Pose 1 (left half): standing still, feet side by side a small step apart and both flat on the ground, arms relaxed at the sides. Pose 2 (right half): walking away, mid-stride, with the legs the OTHER way round from the attached back pose: the leg on the LEFT side of the image steps forward (its foot higher in the image) and the leg on the RIGHT side of the image stays back (its foot lower in the image, on its toes, the sole slightly visible); the arm on the RIGHT side of the image swings forward. Small natural chibi steps. No floor, no ground shadow, no glow, no text, no labels, no frames, no other objects.
+> Edit only the [LEFT / RIGHT] pose: swap the legs. The foot that is now in front goes back and rests on its toes, and the foot that is now at the back steps forward, heel on the ground. Swap the arm swing too. Keep the character, size, position, direction, camera and everything else exactly the same.
 
-Revisar antes de guardarlas:
+Si la edición sale igual que la original, no se usa: el personaje camina igual con una zancada por dirección.
+
+Revisar antes de guardar:
 - que sea el mismo personaje;
-- que las de frente miren abajo a la derecha;
-- que las dos zancadas de frente adelanten piernas distintas;
-- que en la zancada de espaldas el pie con la suela visible esté en el lado derecho, al revés que en la primera hoja.
+- que la pose de frente mire abajo a la derecha;
+- que la de espaldas esté quieta, con los dos pies apoyados.
 
-Si una sale mal, conviene regenerarla. Si solo sale al revés hacia la izquierda, el script puede voltearla.
+Si la de frente sale mirando a la izquierda, se voltea al prepararla.
 
 Descripciones:
 
