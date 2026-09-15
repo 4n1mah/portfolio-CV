@@ -13,10 +13,34 @@ const script = Caveat({
   subsets: ["latin"],
 });
 
+const title = "Sadiel Rojas Padilla — Desarrollador de Software";
+const description =
+  "Portafolio interactivo de Sadiel Rojas Padilla, desarrollador de software enfocado en backend con Python, FastAPI y Next.js.";
+
+// Las tarjetas de LinkedIn, WhatsApp, Slack, etc. necesitan URLs absolutas.
+// En Vercel se puede sobrescribir con NEXT_PUBLIC_SITE_URL sin tocar el código.
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sadielcurricullum.vercel.app";
+
 export const metadata: Metadata = {
-  title: "Sadiel Rojas Padilla — Desarrollador de Software",
-  description:
-    "Portafolio interactivo de Sadiel Rojas Padilla, desarrollador de software enfocado en backend con Python, FastAPI y Next.js.",
+  metadataBase: new URL(siteUrl),
+  title,
+  description,
+  // La imagen de la tarjeta sale de src/app/opengraph-image.jpg (convención de Next).
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Sadiel Rojas Padilla",
+    title,
+    description:
+      "Recorre un lobby isométrico donde cada stand es una sección de mi CV: sobre mí, portafolio, habilidades y experiencia.",
+    locale: "es_ES",
+    alternateLocale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
 };
 
 export const viewport: Viewport = {
