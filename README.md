@@ -6,6 +6,17 @@ An interactive portfolio designed as a living isometric lobby: visitors walk aro
 
 > 🇪🇸 [Versión en español más abajo](#-español)
 
+## 📸 A look inside
+
+![The complete lobby seen from above: the About me, Portfolio, Skills and Experience booths arranged around the central plaza, with visitors walking between them and a speech bubble reading "Heading to the Portfolio"](docs/screenshots/lobby-en.jpg)
+
+*The whole lobby. Each booth is a section of the CV, and the visitors move around on their own.*
+
+| | |
+| :---: | :---: |
+| ![Close-up of the central plaza: a tree in a round planter, benches, lamps and a golden plaque reading "Sadiel's Plaza", with two visitors sitting down](docs/screenshots/plaza.jpg) | ![Close-up of the Skills booth with its receptionist behind the desk, and Anima's reception desk marked "Assistant · in training"](docs/screenshots/skills-anima.jpg) |
+| **Sadiel's Plaza** — the center of the lobby: planter, benches and lamps where visitors sit down and chat. | **Skills booth & Anima** — every booth has its own receptionist, and Anima welcomes you at the entrance. |
+
 ## ✨ Features
 
 - **Hover** a booth → it lights up, the receptionist greets you and a preview card appears.
@@ -94,6 +105,10 @@ The code is released under the [MIT License](LICENSE). The personal content (bio
 ## 🇪🇸 Español
 
 Portafolio interactivo diseñado como un lobby isométrico vivo: los visitantes caminan solos, cada stand es una sección de mi CV y la navegación se hace solo con el mouse (o el dedo).
+
+![El lobby completo con la cartelería en español: los stands Sobre mí, Portafolio, Habilidades y Experiencias alrededor de la plaza central](docs/screenshots/lobby-es.jpg)
+
+*La cartelería del lobby también cambia de idioma: el mismo espacio, en español.*
 
 **Funcionalidades:** hover con glow y saludo de la recepcionista, zoom de cámara al hacer click, NPCs con rutas automáticas, versión en español e inglés, soporte táctil, modo simple accesible y respeto por `prefers-reduced-motion`.
 
