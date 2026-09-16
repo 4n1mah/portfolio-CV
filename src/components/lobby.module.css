@@ -223,6 +223,11 @@
   color: #c9c1b4;
 }
 
+/* One line on a desktop ("name · role"); two stacked lines on a phone, where the name leads */
+.brandRole::before {
+  content: " · ";
+}
+
 .brandScript {
   margin: 10px 0 0;
   font-family: var(--font-script), cursive;
@@ -596,19 +601,57 @@
     top: 6px;
     left: 6px;
     padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    /* leaves room for the toolbar on the right; the box still shrinks to fit its text */
+    max-width: max(152px, calc(100vw - 196px));
   }
 
   .brand[data-compact="true"] {
     transform: scale(0.75);
   }
 
-  /* leaves room for the toolbar on a 375px phone */
-  .brandTitle {
-    font-size: 1rem;
-    letter-spacing: 0.06em;
+  /* On a phone the name comes first: it is the one thing a recruiter has to read */
+  .brandMeta {
+    order: -1;
+    margin: 0 0 6px;
+    /* the desktop rule caps it at 4em, which would cut a wrapped name on a narrow screen */
+    max-height: none;
   }
 
-  .brandMeta,
+  .brandName {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: #f7f2ea;
+  }
+
+  .brandRole {
+    display: block;
+    font-size: 0.72rem;
+    line-height: 1.3;
+  }
+
+  .brandRole::before {
+    content: none;
+  }
+
+  .brandTitle {
+    font-size: 0.74rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: 0.1em;
+    color: #cbc2b2;
+  }
+
+  /* the name stays while the visitor pans or zooms; only the greeting goes away */
+  .brand[data-compact="true"] .brandMeta {
+    opacity: 1;
+    max-height: none;
+    margin: 0 0 6px;
+  }
+
   .brandScript {
     display: none;
   }

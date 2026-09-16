@@ -26,7 +26,8 @@ export default function Hud() {
           {c.ui.tagline[1]}
         </p>
         <p className={styles.brandMeta}>
-          {profile.name} · {c.ui.role}
+          <span className={styles.brandName}>{profile.name}</span>
+          <span className={styles.brandRole}>{c.ui.role}</span>
         </p>
         <p className={styles.brandScript}>{c.ui.welcome}</p>
       </header>
