@@ -26,7 +26,7 @@ An interactive portfolio designed as a living isometric lobby: visitors walk aro
 - **Mobile** → drag to pan, pinch to zoom, tap to highlight and tap again to enter.
 - **Intro** → on the first load the camera flies down from far away while the clouds part.
 - **Recruiter shortcuts** → language, music, simple mode and a one-page Harvard-style CV (PDF, ES / EN) in the top-right corner.
-- **Background music** → a lo-fi loop synthesized live with the Web Audio API, with a mute button.
+- **Background music** → "Pulso nocturno", an original four-bar loop synthesized live with the Web Audio API — no audio file, no licence — kept low and with a mute button.
 - **Simple mode** → a plain, accessible, linear version of all the content.
 - **Accessible** → keyboard navigation, `Esc` to close, and support for `prefers-reduced-motion`.
 
