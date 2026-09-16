@@ -1,14 +1,17 @@
+import { Fragment } from "react";
 import type { Metadata } from "next";
-import { EB_Garamond } from "next/font/google";
+import { Source_Sans_3, Source_Serif_4 } from "next/font/google";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cv, cvContact } from "@/content/cv";
 import { profile, type Locale } from "@/content/sections";
 import styles from "./cv.module.css";
 
-// One-page CV in the Harvard format. The same page is printed to the PDFs in public/downloads (npm run cv:pdf).
+// One-page CV: a single column so any ATS reads it, with the portfolio's navy and gold for hierarchy.
+// The same page is printed to the PDFs in public/downloads (npm run cv:pdf).
 
-const garamond = EB_Garamond({ subsets: ["latin"], weight: ["400", "500", "600", "700"], style: ["normal", "italic"] });
+const sans = Source_Sans_3({ subsets: ["latin"], display: "swap" });
+const serif = Source_Serif_4({ subsets: ["latin"], display: "swap" });
 
 const isLocale = (lang: string): lang is Locale => lang === "es" || lang === "en";
 
@@ -37,48 +40,38 @@ export default async function CvPage({ params }: PageProps<"/cv/[lang]">) {
         </a>
       </nav>
 
-      <main className={`${styles.page} ${garamond.className}`} lang={lang}>
+      <main className={`${styles.page} ${sans.className}`} lang={lang}>
         <header className={styles.header}>
-          <h1>{profile.name}</h1>
-          <p>
-            {c.location}
+          <h1 className={serif.className}>{profile.name}</h1>
+          <p className={styles.role}>{c.role}</p>
+          <p className={styles.contact}>
+            <span>{c.location}</span>
             {cvContact.map((link) => (
-              <span key={link.href}>
-                {" • "}
-                <a href={link.href}>{link.label}</a>
-              </span>
+              <a key={link.href} href={link.href}>
+                {link.label}
+              </a>
             ))}
           </p>
         </header>
 
         <section>
-          <h2>{c.headings.education}</h2>
-          {c.education.map((e) => (
-            <div key={e.org} className={styles.entry}>
-              <div className={styles.line}>
-                <strong>{e.org}</strong>
-                <span>{e.dates}</span>
-              </div>
-              <div className={styles.line}>
-                <em>{e.degree}</em>
-              </div>
-            </div>
-          ))}
+          <h2 className={serif.className}>{c.headings.summary}</h2>
+          <p className={styles.summary}>{c.summary}</p>
         </section>
 
         <section>
-          <h2>{c.headings.experience}</h2>
+          <h2 className={serif.className}>{c.headings.experience}</h2>
           {c.experience.map((job) => (
             <div key={job.org} className={styles.entry}>
               <div className={styles.line}>
-                <strong>{job.org}</strong>
-                <span>{job.dates}</span>
+                <strong className={styles.org}>{job.org}</strong>
+                <span className={styles.dates}>{job.dates}</span>
               </div>
               {job.roles.map((role) => (
-                <div key={role.title} className={styles.role}>
+                <div key={role.title} className={styles.role2}>
                   <div className={styles.line}>
-                    <em>{role.title}</em>
-                    {role.dates && <span>{role.dates}</span>}
+                    <span className={styles.title}>{role.title}</span>
+                    {role.dates && <span className={styles.dates}>{role.dates}</span>}
                   </div>
                   <ul>
                     {role.bullets.map((b) => (
@@ -92,14 +85,19 @@ export default async function CvPage({ params }: PageProps<"/cv/[lang]">) {
         </section>
 
         <section>
-          <h2>{c.headings.projects}</h2>
+          <h2 className={serif.className}>{c.headings.projects}</h2>
           {c.projects.map((p) => (
             <div key={p.name} className={styles.entry}>
               <div className={styles.line}>
                 <span>
-                  <strong>{p.name}</strong> <em>| {p.stack}</em>
+                  <strong className={styles.org}>{p.name}</strong>
+                  <span className={styles.stack}>{p.stack}</span>
                 </span>
-                {p.link && <a href={p.link.href}>{p.link.label}</a>}
+                {p.link && (
+                  <a className={styles.dates} href={p.link.href}>
+                    {p.link.label}
+                  </a>
+                )}
               </div>
               <ul>
                 {p.bullets.map((b) => (
@@ -111,14 +109,28 @@ export default async function CvPage({ params }: PageProps<"/cv/[lang]">) {
         </section>
 
         <section>
-          <h2>{c.headings.skills}</h2>
-          <ul className={styles.skills}>
+          <h2 className={serif.className}>{c.headings.skills}</h2>
+          <dl className={styles.skills}>
             {c.skills.map((s) => (
-              <li key={s.label}>
-                <strong>{s.label}:</strong> {s.items}
-              </li>
+              <Fragment key={s.label}>
+                <dt>{s.label}</dt>
+                <dd>{s.items}</dd>
+              </Fragment>
             ))}
-          </ul>
+          </dl>
+        </section>
+
+        <section>
+          <h2 className={serif.className}>{c.headings.education}</h2>
+          {c.education.map((e) => (
+            <div key={e.org} className={`${styles.line} ${styles.study}`}>
+              <span>
+                <strong className={styles.org}>{e.org}</strong>
+                <span className={styles.stack}>{e.degree}</span>
+              </span>
+              <span className={styles.dates}>{e.dates}</span>
+            </div>
+          ))}
         </section>
       </main>
     </div>

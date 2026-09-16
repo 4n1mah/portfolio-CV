@@ -22,7 +22,11 @@ export interface Cv {
   download: string;
   file: string;
   location: string;
-  headings: { education: string; experience: string; projects: string; skills: string };
+  /** Headline under the name: the job being applied for, in three words. */
+  role: string;
+  /** The three lines a recruiter reads before deciding to keep reading. */
+  summary: string;
+  headings: { summary: string; education: string; experience: string; projects: string; skills: string };
   education: { org: string; degree: string; dates: string }[];
   experience: CvEntry[];
   projects: { name: string; stack: string; link?: { label: string; href: string }; bullets: string[] }[];
@@ -43,7 +47,10 @@ const es: Cv = {
   download: "Descargar PDF",
   file: "/downloads/CV-Sadiel-Rojas-Padilla-ES.pdf",
   location: "República Dominicana",
-  headings: { education: "Educación", experience: "Experiencia", projects: "Proyectos", skills: "Habilidades e idiomas" },
+  role: "Desarrollador de Software · Backend",
+  summary:
+    "Desarrollador backend (Python · FastAPI · PostgreSQL) que llega al código desde la operación. Diseñé y lideré una plataforma de automatización por WhatsApp hoy en producción —API, panel web y app Android— y reportes automatizados que ahorran más de 13 horas por semana. Tres años atendiendo clientes y equipos en Estados Unidos, en inglés.",
+  headings: { summary: "Perfil", education: "Educación", experience: "Experiencia", projects: "Proyectos", skills: "Habilidades e idiomas" },
   education: [
     { org: "Instituto Tecnológico de las Américas (ITLA)", degree: "Tecnólogo en Desarrollo de Software, enfoque Backend", dates: "2023 – Actualidad" },
     { org: "INFOTEP", degree: "Técnico en Mecatrónica", dates: "2022 – 2023" },
@@ -58,9 +65,9 @@ const es: Cv = {
           title: "Líder Técnico y Arquitecto",
           dates: "",
           bullets: [
-            "Diseñé y lideré un sistema de automatización por WhatsApp: API en FastAPI, panel web en Next.js y app Android, en tres repositorios integrados con PostgreSQL.",
-            "Desarrollé el chatbot de atención al cliente (Gemini API, WhatsApp Cloud API) que resuelve preguntas frecuentes, delivery y cotizaciones, y escala a una persona los casos que requieren criterio.",
-            "Construí el sitio público y el panel administrativo (Next.js, TypeScript, Prisma, Firebase), en producción: catálogo con carrito, cotizaciones, seguimiento de pedidos y reportes de ventas.",
+            "Diseñé y lideré la plataforma completa: API en FastAPI, panel en Next.js y app Android sobre PostgreSQL.",
+            "Desarrollé el chatbot (Gemini, WhatsApp Cloud API): resuelve pedidos y cotizaciones y escala el resto.",
+            "Construí el sitio y el panel administrativo (Next.js, Prisma, Firebase): catálogo, pedidos y reportes de ventas.",
             "Lideré requerimientos, pruebas funcionales y la auditoría previa al despliegue: 100% de casos de prueba cubiertos.",
           ],
         },
@@ -74,7 +81,7 @@ const es: Cv = {
           title: "Analista de Enrutamiento de Leads",
           dates: "Feb 2026 – Jul 2026",
           bullets: [
-            "Enruté leads en Salesforce y AWS en una operación de más de 500 agentes y más de 20,000 leads diarios, ajustando la distribución en tiempo real según el desempeño.",
+            "Enruté más de 20,000 leads diarios en Salesforce y AWS para una operación de más de 500 agentes.",
             "Alineé la estrategia de enrutamiento con los líderes de Ventas e Ingresos para priorizar las metas del negocio.",
           ],
         },
@@ -82,7 +89,7 @@ const es: Cv = {
           title: "Analista de Tiempo Real (Workforce Management)",
           dates: "Oct 2025 – Feb 2026",
           bullets: [
-            "Creé un reporte de SLA automatizado en Excel (Power Query, Power Pivot) que consolida más de 10 departamentos; adoptado en toda la empresa, ahorra más de 13 horas por semana.",
+            "Automaticé el reporte de SLA de 10+ departamentos (Power Query, Power Pivot): ahorra 13 horas semanales.",
             "Mantuve el SLA sobre 90% en todos los departamentos, monitoreando adherencia y ocupación en Aspect WFM.",
             "Gestioné ~60 tickets operativos diarios y envié reportes diarios de KPI a los departamentos a mi cargo.",
           ],
@@ -91,7 +98,7 @@ const es: Cv = {
           title: "Ejecutivo de Cuentas de Ventas",
           dates: "May 2025 – Oct 2025",
           bullets: [
-            "Llevé cada venta de principio a fin para clientes de EE. UU. (descubrimiento, objeciones, cierre e inscripción), con desempeño constante en o por encima del promedio del equipo.",
+            "Cerré ventas de principio a fin para clientes de EE. UU., con desempeño sobre el promedio del equipo.",
           ],
         },
       ],
@@ -105,7 +112,7 @@ const es: Cv = {
           dates: "",
           bullets: [
             "Brindé soporte técnico y coaching en inglés a agentes de primera línea para clientes de Verizon en EE. UU.",
-            "Construí una automatización en Slack que enviaba métricas individuales a cada agente y dashboards automatizados en Google Sheets para un equipo de 15 agentes.",
+            "Automaticé en Slack el envío de métricas individuales y los dashboards de un equipo de 15 agentes.",
           ],
         },
       ],
@@ -117,7 +124,7 @@ const es: Cv = {
       stack: "Python, FastAPI, Groq (Llama 3.3), SQLAlchemy, pytest",
       link: { label: "github.com/4n1mah/finance-bot", href: "https://github.com/4n1mah/finance-bot" },
       bullets: [
-        "Bot de WhatsApp que registra gastos en lenguaje natural, responde consultas por período o categoría y controla pagos fijos; desplegado en producción en Railway.",
+        "Bot de WhatsApp que registra gastos en lenguaje natural y controla pagos fijos; en producción en Railway.",
       ],
     },
     {
@@ -143,7 +150,10 @@ const en: Cv = {
   download: "Download PDF",
   file: "/downloads/CV-Sadiel-Rojas-Padilla-EN.pdf",
   location: "Dominican Republic",
-  headings: { education: "Education", experience: "Experience", projects: "Projects", skills: "Skills & Languages" },
+  role: "Software Developer · Backend",
+  summary:
+    "Backend developer (Python · FastAPI · PostgreSQL) who came to code through operations. Designed and led a WhatsApp automation platform now in production —API, web panel and Android app— and automated reporting that saves more than 13 hours a week. Three years supporting United States customers and teams, in English.",
+  headings: { summary: "Profile", education: "Education", experience: "Experience", projects: "Projects", skills: "Skills & Languages" },
   education: [
     { org: "Instituto Tecnológico de las Américas (ITLA)", degree: "Associate Degree in Software Development, Backend focus", dates: "2023 – Present" },
     { org: "INFOTEP", degree: "Mechatronics Technician", dates: "2022 – 2023" },
@@ -158,10 +168,10 @@ const en: Cv = {
           title: "Technical Lead & Architect",
           dates: "",
           bullets: [
-            "Designed and led a WhatsApp automation system: FastAPI backend, Next.js web panel and Android app, across three repositories integrated with PostgreSQL.",
-            "Built the customer service chatbot (Gemini API, WhatsApp Cloud API) that handles FAQs, delivery and quotes, and escalates cases that need judgment to a person.",
-            "Built the public website and admin panel (Next.js, TypeScript, Prisma, Firebase), live in production: catalog with cart, quotes, order tracking and sales reports.",
-            "Led requirements, functional testing and the pre-deployment audit, reaching 100% test case coverage before production.",
+            "Designed and led the whole platform: FastAPI backend, Next.js panel and Android app over PostgreSQL.",
+            "Built the support chatbot (Gemini, WhatsApp Cloud API): handles orders and quotes, escalates the rest.",
+            "Built the public site and admin panel (Next.js, Prisma, Firebase): catalog, orders and sales reports.",
+            "Led requirements, functional testing and the pre-deployment audit: 100% test case coverage.",
           ],
         },
       ],
@@ -174,7 +184,7 @@ const en: Cv = {
           title: "Lead Routing Analyst",
           dates: "Feb 2026 – Jul 2026",
           bullets: [
-            "Routed leads through Salesforce and AWS in an operation of 500+ agents and 20,000+ leads per day, adjusting distribution in real time based on performance.",
+            "Routed 20,000+ leads a day through Salesforce and AWS for an operation of 500+ agents.",
             "Aligned routing strategy with Sales and Revenue leadership to prioritize business goals.",
           ],
         },
@@ -182,8 +192,8 @@ const en: Cv = {
           title: "Real-Time Analyst (Workforce Management)",
           dates: "Oct 2025 – Feb 2026",
           bullets: [
-            "Built an automated SLA report in Excel (Power Query, Power Pivot) consolidating 10+ departments; adopted company-wide, it saves 13+ hours per week.",
-            "Kept SLA above 90% in every department by monitoring adherence and occupancy across 5–6 campaigns in Aspect WFM.",
+            "Automated the SLA report for 10+ departments (Power Query, Power Pivot): saves 13+ hours a week.",
+            "Kept SLA above 90% in every department, monitoring adherence and occupancy in Aspect WFM.",
             "Handled ~60 operational tickets per day and sent daily KPI reports to the departments I supported.",
           ],
         },
@@ -191,7 +201,7 @@ const en: Cv = {
           title: "Sales Account Executive",
           dates: "May 2025 – Oct 2025",
           bullets: [
-            "Owned every sale end to end for U.S. customers (discovery, objections, closing, enrollment), at or above the team average.",
+            "Owned every sale end to end for U.S. customers, at or above the team average.",
           ],
         },
       ],
@@ -204,8 +214,8 @@ const en: Cv = {
           title: "Support Coach",
           dates: "",
           bullets: [
-            "Provided technical support and coaching in English to front-line agents serving Verizon customers in the U.S.",
-            "Built a Slack automation sending individual metrics to each agent, and automated Google Sheets dashboards for 15 agents.",
+            "Supported and coached front-line agents in English for Verizon customers in the U.S.",
+            "Automated the Slack delivery of individual metrics and the Google Sheets dashboards for 15 agents.",
           ],
         },
       ],
@@ -216,13 +226,13 @@ const en: Cv = {
       name: "Finance Bot",
       stack: "Python, FastAPI, Groq (Llama 3.3), SQLAlchemy, pytest",
       link: { label: "github.com/4n1mah/finance-bot", href: "https://github.com/4n1mah/finance-bot" },
-      bullets: ["WhatsApp bot that logs expenses in natural language, answers queries by period or category and tracks fixed payments; deployed to production on Railway."],
+      bullets: ["WhatsApp bot that logs expenses in natural language and tracks fixed payments; live on Railway."],
     },
     {
       name: "Interactive portfolio",
       stack: "Next.js, TypeScript, PixiJS, GSAP, Zustand",
       link: { label: "github.com/4n1mah/portfolio-CV", href: "https://github.com/4n1mah/portfolio-CV" },
-      bullets: ["Bilingual isometric plaza with booths, animated characters walking around it and an accessible simple version; deployed on Vercel."],
+      bullets: ["Bilingual isometric plaza with booths, animated characters and an accessible simple version; on Vercel."],
     },
   ],
   skills: [
