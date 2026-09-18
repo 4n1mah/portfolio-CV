@@ -329,7 +329,7 @@
   white-space: nowrap;
 }
 
-/* ---------- Toolbar: language, music, simple mode, CV ---------- */
+/* ---------- Toolbar: language, simple mode, CV ---------- */
 
 .toolbar {
   display: flex;
@@ -394,10 +394,6 @@
   white-space: nowrap;
   cursor: pointer;
   transition: background-color 0.2s ease;
-}
-
-.toolButton[data-music-toggle] {
-  padding: 0;
 }
 
 .toolButton:hover,
@@ -656,7 +652,7 @@
     display: none;
   }
 
-  /* two rows next to the title: language, music and simple mode (icon only), then the CV */
+  /* two rows next to the title: language and simple mode (icon only), then the CV */
   .toolbar[data-variant="lobby"] {
     top: 8px;
     right: 8px;

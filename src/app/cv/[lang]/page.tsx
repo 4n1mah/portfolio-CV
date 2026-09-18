@@ -43,9 +43,10 @@ export default async function CvPage({ params }: PageProps<"/cv/[lang]">) {
       <main className={`${styles.page} ${sans.className}`} lang={lang}>
         <header className={styles.header}>
           <h1 className={serif.className}>{profile.name}</h1>
-          <p className={styles.role}>{c.role}</p>
+          <p className={styles.role}>
+            {c.role} · {c.location}
+          </p>
           <p className={styles.contact}>
-            <span>{c.location}</span>
             {cvContact.map((link) => (
               <a key={link.href} href={link.href}>
                 {link.label}

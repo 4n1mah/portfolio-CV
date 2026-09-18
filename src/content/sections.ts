@@ -7,6 +7,7 @@ export type Locale = "es" | "en";
 
 export const profile = {
   name: "Sadiel Rojas Padilla",
+  site: "https://sadielrojas.vercel.app",
   email: "sadielrojas08@gmail.com",
   // Solo se usa para el enlace de WhatsApp; no se muestra en la página.
   whatsapp: "18095195688",
@@ -72,8 +73,6 @@ const es = {
     backToInteractive: "Volver al lobby interactivo",
     sections: "Secciones",
     language: "Idioma",
-    musicOn: "Silenciar música",
-    musicOff: "Activar música",
     downloadCv: "Descargar CV",
     cvFile: "/downloads/CV-Sadiel-Rojas-Padilla-ES.pdf",
     contactTitle: "¿Hablamos?",
@@ -375,8 +374,6 @@ const en: Content = {
     backToInteractive: "Back to the interactive lobby",
     sections: "Sections",
     language: "Language",
-    musicOn: "Mute music",
-    musicOff: "Play music",
     downloadCv: "Download CV",
     cvFile: "/downloads/CV-Sadiel-Rojas-Padilla-EN.pdf",
     contactTitle: "Let's talk?",

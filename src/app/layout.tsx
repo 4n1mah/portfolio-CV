@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Caveat, Plus_Jakarta_Sans } from "next/font/google";
+import { profile } from "@/content/sections";
 import "./globals.css";
 
 const sans = Plus_Jakarta_Sans({
@@ -19,7 +20,7 @@ const description =
 
 // Las tarjetas de LinkedIn, WhatsApp, Slack, etc. necesitan URLs absolutas.
 // En Vercel se puede sobrescribir con NEXT_PUBLIC_SITE_URL sin tocar el código.
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sadielcurricullum.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? profile.site;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

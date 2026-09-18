@@ -34,6 +34,7 @@ export interface Cv {
 }
 
 export const cvContact = [
+  { label: profile.site.replace("https://", ""), href: profile.site },
   { label: profile.email, href: `mailto:${profile.email}` },
   { label: "linkedin.com/in/sadielrojaspadilla", href: profile.links[0].href },
   { label: "github.com/4n1mah", href: profile.links[1].href },

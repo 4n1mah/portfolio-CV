@@ -25,8 +25,7 @@ An interactive portfolio designed as a living isometric lobby: visitors walk aro
 - **Bilingual** → Spanish / English, including the signage inside the lobby. The choice is remembered.
 - **Mobile** → drag to pan, pinch to zoom, tap to highlight and tap again to enter.
 - **Intro** → on the first load the camera flies down from far away while the clouds part.
-- **Recruiter shortcuts** → language, music, simple mode and a one-page Harvard-style CV (PDF, ES / EN) in the top-right corner.
-- **Background music** → "Pulso nocturno", an original four-bar loop synthesized live with the Web Audio API — no audio file, no licence — kept low and with a mute button.
+- **Recruiter shortcuts** → language, simple mode and a one-page Harvard-style CV (PDF, ES / EN) in the top-right corner.
 - **Simple mode** → a plain, accessible, linear version of all the content.
 - **Accessible** → keyboard navigation, `Esc` to close, and support for `prefers-reduced-motion`.
 
@@ -115,7 +114,7 @@ Portafolio interactivo diseñado como un lobby isométrico vivo: los visitantes 
 
 *La cartelería del lobby también cambia de idioma: el mismo espacio, en español.*
 
-**Funcionalidades:** animación de entrada entre nubes, hover con glow y saludo de la recepcionista, zoom de cámara al hacer click, NPCs que recorren la plaza, música de fondo con botón de silencio, CV estilo Harvard descargable en PDF, versión en español e inglés, soporte táctil, modo simple accesible y respeto por `prefers-reduced-motion`.
+**Funcionalidades:** animación de entrada entre nubes, hover con glow y saludo de la recepcionista, zoom de cámara al hacer click, NPCs que recorren la plaza, CV estilo Harvard descargable en PDF, versión en español e inglés, soporte táctil, modo simple accesible y respeto por `prefers-reduced-motion`.
 
 **Ejecutar en local:**
 
