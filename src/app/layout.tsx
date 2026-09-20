@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Caveat, Plus_Jakarta_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import { profile } from "@/content/sections";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const sans = Plus_Jakarta_Sans({
@@ -15,18 +15,18 @@ const script = Caveat({
   subsets: ["latin"],
 });
 
-const title = "Sadiel Rojas Padilla — Desarrollador de Software";
+// Estos textos son los únicos que no siguen el idioma del visitante: se generan en el servidor,
+// antes de saber quién abre la página. Van en inglés porque es lo que ve Google y lo que muestra
+// la tarjeta de LinkedIn, donde el público es internacional.
+const title = "Sadiel Rojas Padilla — Backend Developer";
 const description =
-  "Portafolio interactivo de Sadiel Rojas Padilla, desarrollador de software enfocado en backend con Python, FastAPI y Next.js.";
-
-// Las tarjetas de LinkedIn, WhatsApp, Slack, etc. necesitan URLs absolutas.
-// En Vercel se puede sobrescribir con NEXT_PUBLIC_SITE_URL sin tocar el código.
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? profile.site;
+  "Backend developer (Python, FastAPI, PostgreSQL) from the Dominican Republic. An isometric lobby where every stand is a section of my CV.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title,
   description,
+  alternates: { canonical: "/" },
   // La imagen de la tarjeta sale de src/app/opengraph-image.jpg (convención de Next).
   openGraph: {
     type: "website",
@@ -34,9 +34,9 @@ export const metadata: Metadata = {
     siteName: "Sadiel Rojas Padilla",
     title,
     description:
-      "Recorre un lobby isométrico donde cada stand es una sección de mi CV: sobre mí, portafolio, habilidades y experiencia.",
-    locale: "es_ES",
-    alternateLocale: "en_US",
+      "Walk through an isometric lobby where every stand is a section of my CV: about me, portfolio, skills and experience.",
+    locale: "en_US",
+    alternateLocale: "es_ES",
   },
   twitter: {
     card: "summary_large_image",

@@ -23,7 +23,13 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/cv/[lang]">): Promise<Metadata> {
   const { lang } = await params;
-  return { title: isLocale(lang) ? cv[lang].pageTitle : profile.name };
+  if (!isLocale(lang)) return { title: profile.name };
+  return {
+    title: cv[lang].pageTitle,
+    // hreflang: le dice a Google que estas dos páginas son el mismo CV en otro idioma,
+    // para que muestre la inglesa a quien busca en inglés y no las tome por duplicadas.
+    alternates: { canonical: `/cv/${lang}`, languages: { es: "/cv/es", en: "/cv/en" } },
+  };
 }
 
 export default async function CvPage({ params }: PageProps<"/cv/[lang]">) {

@@ -33,6 +33,10 @@ export default function LobbyExperience() {
 
   useEffect(() => {
     if (simpleMode || !hostRef.current) return;
+    // On the first paint the store still holds the default language; the effect above resolves the
+    // visitor's one and a render with it is already on the way. Building now would throw away a
+    // whole scene (and a WebGL context) a moment later, so this run waits for that render.
+    if (lobbyStore.getState().locale !== locale) return;
     const host = hostRef.current;
     let destroy: (() => void) | null = null;
     let cancelled = false;

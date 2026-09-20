@@ -94,14 +94,19 @@ export const lobbyStore = createStore<LobbyState>((set) => ({
 
 export const LOCALE_KEY = "portfolio-locale";
 
-/** Saved language, or the browser's language on a first visit. */
+/** The language in the link (?lang=en), the saved one, or the browser's, in that order. */
 export function initialLocale(): Locale {
+  // A shareable link wins over everything, so ?lang=en opens in English on any browser.
+  const asked = new URLSearchParams(window.location.search).get("lang");
+  if (asked === "en" || asked === "es") return asked;
   let saved: string | null = null;
   try {
     saved = localStorage.getItem(LOCALE_KEY);
   } catch {}
   if (saved === "en" || saved === "es") return saved;
-  return navigator.language.startsWith("en") ? "en" : "es";
+  // Only a Spanish browser gets Spanish: someone reading in French or Portuguese is far more
+  // likely to follow the English version than the Spanish one.
+  return navigator.language.startsWith("es") ? "es" : "en";
 }
 
 export function useLobby<T>(selector: (state: LobbyState) => T): T {
