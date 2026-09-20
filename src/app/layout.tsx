@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Caveat, Plus_Jakarta_Sans } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { profile } from "@/content/sections";
 import "./globals.css";
 
@@ -51,7 +52,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${sans.variable} ${script.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* Métricas de tráfico de Vercel: solo cuenta páginas vistas, sin cookies. */}
+        <Analytics />
+      </body>
     </html>
   );
 }

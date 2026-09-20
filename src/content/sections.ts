@@ -272,13 +272,13 @@ const es = {
     },
     stats: {
       title: "Lo más visitado",
-      kicker: "Clicks · Secciones · Tendencias",
-      preview: ["Secciones más visitadas", "Basado en los clicks", "Tendencias de la plaza"],
-      description: "Aquí verás qué secciones de la plaza visitan más las personas, según sus clicks.",
+      kicker: "Visitas · Secciones · En vivo",
+      preview: ["Secciones más visitadas", "Datos en vivo de la plaza", "Cuenta sesiones, no personas"],
+      description: "Cada vez que alguien abre una sección de la plaza se suma una visita. Esto es lo que llevamos.",
       plans: [
-        "Gráfico de barras con las secciones más visitadas",
-        "Cuenta clicks por sección, no personas",
-        "Se actualiza a medida que llegan visitantes",
+        "Se cuenta una visita por sección y por sesión del navegador",
+        "Si abres la misma sección dos veces, cuenta una",
+        "No se guardan cookies ni datos personales",
       ],
     },
     anima: {
@@ -290,6 +290,17 @@ const es = {
       plans: ["Respuestas basadas en mi CV", "Conversación en español y en inglés"],
     },
   } as Record<FeatureId, FeatureText>,
+  // Tablero de visitas: lo que rodea al gráfico, en el panel y en la pantalla del lobby.
+  statsBoard: {
+    windows: { all: "Desde el inicio", week: "Últimos 7 días" },
+    howItWorks: "Cómo se cuenta",
+    total: { one: "visita en total", many: "visitas en total" },
+    visits: { one: "visita", many: "visitas" },
+    updated: "Actualizado a las {time}",
+    loading: "Cargando las estadísticas…",
+    offline: "El tablero no está disponible en este momento. Inténtalo de nuevo en un rato.",
+    empty: "Todavía no hay visitas en este periodo. La tuya puede ser la primera.",
+  },
   lobby: {
     stands: {
       about: {
@@ -329,7 +340,7 @@ const es = {
         skills: { name: "Habilidades", to: "a Habilidades", lines: ["¡Python y FastAPI! 🐍", "Buen stack 🛠️", "Aprender, crear, mejorar 💪"] },
         experience: { name: "Experiencias", to: "a Experiencias", lines: ["Qué trayectoria 👏", "Buena experiencia 💼", "Interesante recorrido"] },
         notes: { name: "el muro de visitantes", to: "al muro de visitantes", lines: ["Pronto dejo mi nota 📝", "¿Cuándo abren el muro?"] },
-        stats: { name: "las estadísticas", to: "a ver las estadísticas", lines: ["¿Qué será lo más visitado? 📊", "Sigue en construcción 🚧"] },
+        stats: { name: "las estadísticas", to: "a ver las estadísticas", lines: ["¿Qué será lo más visitado? 📊", "Los números están en vivo 📈"] },
         anima: { name: "a Anima", to: "a saludar a Anima", lines: ["¡Hola, Anima! 👋", "¿Qué tal el entrenamiento?"] },
         plaza: { name: "la plaza", to: "a la plaza", lines: ["Qué bonita la plaza 🌳", "Me encanta este lugar"] },
       } as Record<PlaceId, PlaceText>,
@@ -573,13 +584,13 @@ const en: Content = {
     },
     stats: {
       title: "Most visited",
-      kicker: "Clicks · Sections · Trends",
-      preview: ["Most visited sections", "Based on clicks", "Plaza trends"],
-      description: "Here you'll see which sections of the plaza people visit the most, based on their clicks.",
+      kicker: "Visits · Sections · Live",
+      preview: ["Most visited sections", "Live data from the plaza", "Counts sessions, not people"],
+      description: "Every time someone opens a section of the plaza it counts as a visit. This is the tally so far.",
       plans: [
-        "Bar chart of the most visited sections",
-        "Counts clicks per section, not people",
-        "Updates as visitors come in",
+        "One visit per section and per browser session",
+        "Opening the same section twice counts once",
+        "No cookies and no personal data are stored",
       ],
     },
     anima: {
@@ -590,6 +601,16 @@ const en: Content = {
         "Anima is the plaza's new assistant. She's still in training, but soon she'll answer your questions about my experience, projects and skills.",
       plans: ["Answers based on my CV", "Chat in English and Spanish"],
     },
+  },
+  statsBoard: {
+    windows: { all: "Since the start", week: "Last 7 days" },
+    howItWorks: "How it's counted",
+    total: { one: "visit in total", many: "visits in total" },
+    visits: { one: "visit", many: "visits" },
+    updated: "Updated at {time}",
+    loading: "Loading the stats…",
+    offline: "The board isn't available right now. Try again in a little while.",
+    empty: "No visits in this period yet. Yours could be the first.",
   },
   lobby: {
     stands: {
@@ -629,7 +650,7 @@ const en: Content = {
         skills: { name: "the Skills booth", to: "to Skills", lines: ["Python and FastAPI! 🐍", "Nice stack 🛠️", "Learn, build, improve 💪"] },
         experience: { name: "the Experience booth", to: "to Experience", lines: ["What a career 👏", "Solid experience 💼", "Interesting path"] },
         notes: { name: "the visitor wall", to: "to the visitor wall", lines: ["I'll leave a note soon 📝", "When does the wall open?"] },
-        stats: { name: "the stats board", to: "to the stats board", lines: ["What's the most visited? 📊", "Still under construction 🚧"] },
+        stats: { name: "the stats board", to: "to the stats board", lines: ["What's the most visited? 📊", "The numbers are live 📈"] },
         anima: { name: "Anima", to: "to say hi to Anima", lines: ["Hi, Anima! 👋", "How's the training going?"] },
         plaza: { name: "the plaza", to: "to the plaza", lines: ["Lovely plaza 🌳", "I love this place"] },
       },

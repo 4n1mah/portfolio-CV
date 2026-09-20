@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { profile, type Content } from "@/content/sections";
-import { isFeature, lobbyStore, useContent, type FeatureId, type SpotId, type StandId } from "@/lobby/store";
+import { fetchStats, type Stats } from "@/lib/visits";
+import { isFeature, lobbyStore, useContent, useLobby, type FeatureId, type SpotId, type StandId } from "@/lobby/store";
 import styles from "./sections.module.css";
 
 function About({ c }: { c: Content }) {
@@ -148,6 +150,89 @@ function Experience({ c }: { c: Content }) {
   );
 }
 
+const plural = (n: number, word: { one: string; many: string }) => `${n} ${n === 1 ? word.one : word.many}`;
+
+/**
+ * Visitor stats: how many times each section was opened, live from the API.
+ * The board keeps working when the API is down; it just says so.
+ */
+function StatsBoard({ c }: { c: Content }) {
+  const t = c.statsBoard;
+  const locale = useLobby((s) => s.locale);
+  const [days, setDays] = useState<number | null>(null);
+  // What is on screen, and for which period: while they disagree, the numbers are still on their way.
+  const [loaded, setLoaded] = useState<{ days: number | null; stats: Stats | null } | null>(null);
+  const loading = loaded?.days !== days;
+  const stats = loading ? null : loaded!.stats;
+
+  useEffect(() => {
+    let current = true;
+    // fresh: the panel always shows the real numbers, not the cached ones
+    fetchStats({ days: days ?? undefined, fresh: true }).then((data) => {
+      if (current) setLoaded({ days, stats: data });
+    });
+    return () => {
+      current = false;
+    };
+  }, [days]);
+
+  const most = stats?.sections[0]?.visits ?? 0;
+
+  return (
+    <>
+      <p className={styles.lead}>{c.features.stats.description}</p>
+
+      <div className={styles.statsHead}>
+        <div className={styles.windowSwitch} role="group" aria-label={c.features.stats.title}>
+          {([null, 7] as const).map((value) => (
+            <button key={String(value)} aria-pressed={days === value} onClick={() => setDays(value)}>
+              {value === null ? t.windows.all : t.windows.week}
+            </button>
+          ))}
+        </div>
+        {stats && <span className={styles.statsTotal}>{plural(stats.total, t.total)}</span>}
+      </div>
+
+      {loading && <p className={styles.p}>{t.loading}</p>}
+      {!loading && !stats && <p className={styles.p}>{t.offline}</p>}
+      {!loading && stats && stats.total === 0 && <p className={styles.p}>{t.empty}</p>}
+
+      {!loading && stats && stats.total > 0 && (
+        <>
+          <ul className={styles.bars}>
+            {stats.sections.map((s) => (
+              <li key={s.section}>
+                <p className={styles.barLabel}>
+                  <span>{c[s.section].title}</span>
+                  <span>
+                    {plural(s.visits, t.visits)} · {Math.round((s.visits / stats.total) * 100)}%
+                  </span>
+                </p>
+                <div className={styles.bar}>
+                  <span style={{ width: `${most > 0 ? (s.visits / most) * 100 : 0}%` }} />
+                </div>
+              </li>
+            ))}
+          </ul>
+          <p className={styles.updated}>
+            {t.updated.replace(
+              "{time}",
+              new Date(stats.generated_at).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" }),
+            )}
+          </p>
+        </>
+      )}
+
+      <h3 className={styles.h3}>{t.howItWorks}</h3>
+      <ul className={styles.achievements}>
+        {c.features.stats.plans.map((p) => (
+          <li key={p}>{p}</li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
 /** Placeholder body for a feature that is not built yet. */
 function ComingSoon({ c, id }: { c: Content; id: FeatureId }) {
   const feature = c.features[id];
@@ -182,7 +267,9 @@ export function spotInfo(c: Content, id: SpotId) {
 /** Title, kicker, preview list and body of a section (or an upcoming feature) in the current language. */
 export function useSection(id: SpotId) {
   const c = useContent();
-  if (isFeature(id)) return { ...c.features[id], body: <ComingSoon c={c} id={id} /> };
+  if (isFeature(id)) {
+    return { ...c.features[id], body: id === "stats" ? <StatsBoard c={c} /> : <ComingSoon c={c} id={id} /> };
+  }
   const Body = BODIES[id];
   return { ...c[id], body: <Body c={c} /> };
 }

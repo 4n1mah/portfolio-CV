@@ -1,10 +1,11 @@
-import { Container, Graphics, Polygon } from "pixi.js";
+import { Container, Graphics, Polygon, type Text } from "pixi.js";
 import gsap from "gsap";
 import type { Content } from "@/content/sections";
+import type { Stats } from "@/lib/visits";
 import { ANIMA_DESK, NOTES_BOARD, PALETTE, STATS_BOARD } from "../config";
 import { depth, iso, isoCircle, rectPoly, TILE_W, WALL_SKEW, type Point } from "../engine/iso";
 import { piece } from "../assets";
-import type { FeatureId } from "../store";
+import type { FeatureId, StandId } from "../store";
 import { Bubble } from "./Bubble";
 import { Chibi } from "./Chibi";
 import { box, label } from "./draw";
@@ -171,23 +172,39 @@ const SCREEN_LEGS = 10;
 const SCREEN_H = 90;
 /** Chart area inside the frame (screen-face coordinates, from the screen top); the title sits on the top frame bar. */
 const CHART = { top: 11, bottom: 6 };
-/** Cones in front of the screen, in world px from the anchor (where they stand in the art). */
-const CONES = [[1, -2], [125, 53]];
+/** Always the same order, so a bar never jumps to another row when the numbers change. */
+const BAR_ORDER: StandId[] = ["about", "portfolio", "skills", "experience"];
+/** Each bar echoes its booth, in a tone that still reads on the dark screen. */
+const BAR_COLORS: Record<StandId, number> = {
+  about: 0xdcb68c,
+  portfolio: 0x7f9ccf,
+  skills: 0x8fb9a8,
+  experience: 0xd2a06e,
+};
+/**
+ * The chart columns on the screen face. They stand upright: a row laid across this wall would fall
+ * away to the right with the wall's slope, and its label would end up next to the bar below it.
+ */
+const COL = { side: 9, barW: 16, top: 12, bottom: 18 };
 
 export class StatsBoard extends FeatureSpot {
   readonly spotId = "stats";
   readonly focusSize = { w: 360, h: 300 };
+  private readonly flatW: number;
+  private readonly chart = new Graphics();
+  private readonly counts: Text[] = [];
+  /** Bar lengths actually drawn (0 to 1 of the track); they travel towards the real numbers. */
+  private readonly shown: number[] = BAR_ORDER.map(() => 0);
 
   constructor(text: LobbyText) {
     const { gx, gy, w } = STATS_BOARD;
     super(iso(gx, gy), depth(gx + w / 2, gy));
 
-    const shadow = contactShadow(-0.15, -0.5, w + 0.3, 1);
-    for (const [x, y] of CONES) shadow.ellipse(x + 2, y + 1, 7, 3).fill({ color: 0x000000, alpha: 0.14 });
-    this.addChild(shadow, piece("stats-board", () => this.buildBoard()));
+    this.addChild(contactShadow(-0.15, -0.5, w + 0.3, 1), piece("stats-board", () => this.buildBoard()));
 
-    // screen title and the "under construction" plate, laid flat on the screen face
+    // everything on the screen is drawn here, laid flat on its face
     const flatW = flatLength(w);
+    this.flatW = flatW;
     const top = -SCREEN_LEGS - SCREEN_H;
     const face = new Container();
     face.skew.y = WALL_SKEW;
@@ -196,15 +213,22 @@ export class StatsBoard extends FeatureSpot {
     title.anchor.set(0.5);
     title.scale.set(Math.min(1, (flatW - 30) / title.width));
     title.position.set(flatW / 2, top + 5);
-    const warn = label(text.underConstruction, { fontSize: 8, fontWeight: "800", fill: 0x1f1a17, letterSpacing: 1 });
-    warn.anchor.set(0.5);
-    const pw = warn.width + 18;
-    const plate = new Container();
-    const pg = new Graphics().roundRect(-pw / 2, -9, pw, 18, 3).fill(0xf2c230).stroke({ width: 1.5, color: 0x1f1a17 });
-    plate.addChild(pg, warn);
-    plate.position.set(flatW / 2, top + SCREEN_H / 2);
-    plate.rotation = -0.05;
-    face.addChild(title, plate);
+    face.addChild(title, this.chart);
+
+    // one column per section: the count above the bar, the section's name under it
+    BAR_ORDER.forEach((id, i) => {
+      const x = this.colX(i);
+      const name = label(text.stands[id].title, { fontSize: 5.5, fontWeight: "600", fill: 0xd7ddea });
+      name.anchor.set(0.5, 0);
+      name.scale.set(Math.min(1, (flatW - 2 * COL.side) / BAR_ORDER.length / (name.width + 7)));
+      name.position.set(x, this.chartBase() + 3);
+      const count = label("—", { fontSize: 6, fontWeight: "700", fill: 0xffffff });
+      count.anchor.set(0.5, 1);
+      count.position.set(x, this.chartBase() - 2);
+      this.counts.push(count);
+      face.addChild(name, count);
+    });
+    this.drawBars();
     this.addChild(face);
 
     const e = iso(w, 0);
@@ -224,7 +248,56 @@ export class StatsBoard extends FeatureSpot {
     return { x: p.x, y: p.y - SCREEN_LEGS - SCREEN_H / 2 + 12 };
   }
 
-  /** Placeholder screen on two legs with a bar chart behind caution tape, plus cones in front. */
+  /** Centre of column `i`, in screen-face coordinates. */
+  private colX(i: number): number {
+    const inner = this.flatW - COL.side * 2;
+    return COL.side + (inner / BAR_ORDER.length) * (i + 0.5);
+  }
+
+  /** Where the bars stand (the line under them) and how tall a full bar is. */
+  private chartBase(): number {
+    return -SCREEN_LEGS - CHART.bottom - COL.bottom;
+  }
+
+  private chartHeight(): number {
+    return SCREEN_H - CHART.top - CHART.bottom - COL.top - COL.bottom;
+  }
+
+  /**
+   * New numbers from the API. The bars travel to their new length instead of jumping,
+   * and a board with no data at all keeps its empty tracks and a dash for every count.
+   */
+  setStats(stats: Stats | null, reducedMotion: boolean) {
+    const byId = new Map(stats?.sections.map((s) => [s.section, s.visits]));
+    const counts = BAR_ORDER.map((id) => byId.get(id) ?? 0);
+    const most = Math.max(...counts, 1);
+
+    gsap.killTweensOf(this.shown);
+    counts.forEach((visits, i) => {
+      this.counts[i].text = stats ? String(visits) : "—";
+      const target = stats ? visits / most : 0;
+      if (reducedMotion) this.shown[i] = target;
+      else gsap.to(this.shown, { [i]: target, duration: 0.7, delay: i * 0.08, ease: "power2.out", onUpdate: () => this.drawBars() });
+    });
+    this.drawBars();
+  }
+
+  private drawBars() {
+    const base = this.chartBase();
+    const full = this.chartHeight();
+    this.chart.clear();
+    // the line the bars stand on, so an empty board still reads as a chart
+    this.chart.rect(COL.side, base, this.flatW - COL.side * 2, 0.8).fill({ color: 0x5b6680, alpha: 0.9 });
+    BAR_ORDER.forEach((id, i) => {
+      const x = this.colX(i) - COL.barW / 2;
+      this.chart.roundRect(x, base - full, COL.barW, full, 2).fill({ color: 0x2b3a5c, alpha: 0.85 });
+      const h = full * this.shown[i];
+      if (h > 1) this.chart.roundRect(x, base - h, COL.barW, h, 2).fill(BAR_COLORS[id]);
+      this.counts[i].y = base - Math.max(h, 2) - 2;
+    });
+  }
+
+  /** Placeholder screen on two legs, empty: the chart above is drawn on top of it either way. */
   private buildBoard(): Container {
     const { w } = STATS_BOARD;
     const c = new Container();
@@ -235,42 +308,14 @@ export class StatsBoard extends FeatureSpot {
     c.addChild(g);
 
     const flatW = flatLength(w);
-    const top = -SCREEN_LEGS - SCREEN_H;
     const face = new Container();
     face.skew.y = WALL_SKEW;
-    const s = new Graphics();
-    s.rect(5, top + CHART.top, flatW - 10, SCREEN_H - CHART.top - CHART.bottom).fill(0x16203a);
-    const chartTop = top + CHART.top + 8;
-    const base = -SCREEN_LEGS - CHART.bottom - 5;
-    const bars: [number, number][] = [[0.95, PALETTE.glow], [0.7, 0x7f9ccf], [0.8, 0x8fb9a8], [0.5, 0xc9a27a], [0.35, 0xe9e2d7]];
-    const bw = (flatW - 40) / bars.length - 6;
-    bars.forEach(([h, color], i) => {
-      const bh = (base - chartTop) * h;
-      s.rect(20 + i * (bw + 6), base - bh, bw, bh).fill(color);
-    });
-    s.rect(14, base, flatW - 28, 1.5).fill(0x5b6680);
-    face.addChild(s);
-    // two crossed caution tapes
-    for (const angle of [0.22, -0.22]) {
-      const tape = new Graphics();
-      const len = flatW + 10;
-      tape.rect(-len / 2, -4, len, 8).fill(0xf2c230);
-      for (let x = -len / 2; x < len / 2; x += 10) tape.poly([x, -4, x + 5, -4, x + 1, 4, x - 4, 4]).fill(0x1f1a17);
-      tape.position.set(flatW / 2, top + SCREEN_H / 2);
-      tape.rotation = angle;
-      face.addChild(tape);
-    }
+    face.addChild(
+      new Graphics()
+        .rect(5, -SCREEN_LEGS - SCREEN_H + CHART.top, flatW - 10, SCREEN_H - CHART.top - CHART.bottom)
+        .fill(0x16203a),
+    );
     c.addChild(face);
-
-    // traffic cones in front of the screen
-    const cones = new Graphics();
-    for (const [x, y] of CONES) {
-      const p = { x, y };
-      cones.ellipse(p.x, p.y, 6, 3).fill(0xe8742c);
-      cones.poly([p.x - 4, p.y - 1, p.x + 4, p.y - 1, p.x + 1, p.y - 14, p.x - 1, p.y - 14]).fill(0xf28c3a);
-      cones.rect(p.x - 3, p.y - 8, 6, 2).fill(0xffffff);
-    }
-    c.addChild(cones);
     return c;
   }
 }

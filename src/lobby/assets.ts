@@ -61,9 +61,10 @@ export const ASSETS = {
   // contact shadows are drawn by code. Measured on the art, not on the templates (the generator resized them).
   // Visitor notes mural, mirrored at export so it faces the plaza. Anchor = floor under the front end of its face.
   "notes-board": { src: "/lobby/notes-board.webp", anchor: { x: 0.1797, y: 0.9621 }, width: 85.68 },
-  // Stats screen with its bar chart and caution tape. Anchor = floor under the left end of the screen face;
-  // the art's edges run a little flatter than the lobby's 2:1 slope, hence the skew.
-  "stats-board": { src: "/lobby/stats-board.webp", anchor: { x: 0.0641, y: 0.6375 }, width: 145.34, skewY: 0.07 },
+  // Empty stats screen; the bars, the title and the totals are drawn live over its face (layers/Features.ts).
+  // Anchor = floor under the left end of the screen face; the art's edges run a little flatter than the
+  // lobby's 2:1 slope, hence the skew.
+  "stats-board": { src: "/lobby/stats-board.webp", anchor: { x: 0.0789, y: 0.6122 }, width: 145.66, skewY: 0.031 },
   // Anima's U-shaped desk, open at the back. Anchor = centre of its footprint; drawn from a lower camera, hence the stretch.
   "desk-anima": { src: "/lobby/desk-anima.webp", anchor: { x: 0.4989, y: 0.7403 }, width: 89.95, squashY: 1.15 },
 } satisfies Record<string, AssetEntry>;

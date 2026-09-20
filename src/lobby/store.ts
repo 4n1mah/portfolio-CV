@@ -1,4 +1,5 @@
 import { createStore } from "zustand/vanilla";
+import { fetchStats, recordVisit, type Stats } from "@/lib/visits";
 import { useStore } from "zustand";
 import { content, type Content, type Locale } from "@/content/sections";
 
@@ -28,6 +29,9 @@ export interface LobbyState {
   nameLinksOpen: boolean;
   /** True while the camera is zoomed in or panned away from the overview. */
   exploring: boolean;
+  /** Visits per section for the lobby screen; null until the API answers (or if it never does). */
+  stats: Stats | null;
+  loadStats: (fresh?: boolean) => void;
   setReady: (ready: boolean) => void;
   setHovered: (id: SpotId | null) => void;
   open: (id: SpotId) => void;
@@ -52,9 +56,21 @@ export const lobbyStore = createStore<LobbyState>((set) => ({
   locale: "es",
   nameLinksOpen: false,
   exploring: false,
+  stats: null,
+  loadStats: (fresh) => {
+    fetchStats({ fresh }).then((stats) => {
+      if (stats) set({ stats });
+    });
+  },
   setReady: (ready) => set({ ready }),
   setHovered: (hovered) => set({ hovered }),
-  open: (active) => set({ active, hovered: null, nameLinksOpen: false }),
+  open: (active) => {
+    set({ active, hovered: null, nameLinksOpen: false });
+    if (isFeature(active)) return;
+    recordVisit(active);
+    // La visita recién enviada tarda un instante en estar contada; la pantalla se actualiza después.
+    setTimeout(() => lobbyStore.getState().loadStats(true), 600);
+  },
   close: () => set({ active: null }),
   setPointer: (pointer) => set({ pointer }),
   setSimpleMode: (simpleMode) => set({ simpleMode, active: null, hovered: null }),

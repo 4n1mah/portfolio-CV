@@ -170,6 +170,55 @@
   background: #2f3b5c;
 }
 
+/* Visitor stats board: period switch, bars and the freshness line */
+.statsHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 16px 0 14px;
+}
+
+.windowSwitch {
+  display: flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+}
+
+.windowSwitch button {
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 13px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.windowSwitch button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.windowSwitch button[aria-pressed="false"]:hover {
+  color: var(--ink);
+}
+
+.statsTotal {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.updated {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  margin: 14px 0 0;
+}
+
 .bars {
   list-style: none;
   padding: 0;
@@ -200,7 +249,7 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--ink), #4f6b62);
+  background: linear-gradient(90deg, var(--ink), var(--accent));
   animation: grow 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   transform-origin: left;
 }

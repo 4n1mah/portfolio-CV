@@ -95,8 +95,9 @@ export async function createLobby(host: HTMLElement, locale: Locale, { intro = f
     entities.addChild(stand);
   }
 
-  // upcoming features: they hover, open and zoom like the booths
-  const features: FeatureSpot[] = [new NotesBoard(text), new StatsBoard(text), new AnimaDesk(text, bubbles, !reducedMotion)];
+  // the visitor notes mural and Anima are still to come; the stats screen already shows real numbers
+  const statsBoard = new StatsBoard(text);
+  const features: FeatureSpot[] = [new NotesBoard(text), statsBoard, new AnimaDesk(text, bubbles, !reducedMotion)];
   features.forEach((f) => {
     ground.addChild(f.ground);
     entities.addChild(f);
@@ -258,6 +259,7 @@ export async function createLobby(host: HTMLElement, locale: Locale, { intro = f
 
   const unsubscribe = store.subscribe((state, prev) => {
     const dur = reducedMotion ? 0 : 0.35;
+    if (state.stats !== prev.stats) statsBoard.setStats(state.stats, reducedMotion);
     if (state.nameLinksOpen !== prev.nameLinksOpen) {
       nameSign.setOpen(state.nameLinksOpen, reducedMotion);
       if (state.nameLinksOpen) placeNameLinks();
@@ -349,6 +351,9 @@ export async function createLobby(host: HTMLElement, locale: Locale, { intro = f
   if (instance === instances) {
     if (process.env.NODE_ENV !== "production") Object.assign(globalThis, { __lobby: { app, camera, stands, spots, visitors, crowd } });
     store.getState().setReady(true);
+    // the screen starts with empty tracks; it fills in as soon as the API answers
+    statsBoard.setStats(store.getState().stats, reducedMotion);
+    store.getState().loadStats();
   }
 
   return () => {
