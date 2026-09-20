@@ -50,7 +50,7 @@ const es: Cv = {
   location: "República Dominicana",
   role: "Desarrollador de Software · Backend",
   summary:
-    "Desarrollador backend (Python · FastAPI · PostgreSQL) que llega al código desde la operación. Diseñé y lideré una plataforma de automatización por WhatsApp hoy en producción —API, panel web y app Android— y reportes automatizados que ahorran más de 13 horas por semana. Tres años atendiendo clientes y equipos en Estados Unidos, en inglés.",
+    "Desarrollador backend (Python · FastAPI · PostgreSQL) que construye software para resolver problemas reales de negocio. Lideré el bot de WhatsApp y la plataforma web de Kan-M, una repostería en Santo Domingo, en producción y en uso diario. Vengo de operaciones de ventas y Workforce Management: parto del proceso de negocio, no del código. Inglés avanzado; abierto a roles backend y proyectos freelance.",
   headings: { summary: "Perfil", education: "Educación", experience: "Experiencia", projects: "Proyectos", skills: "Habilidades e idiomas" },
   education: [
     { org: "Instituto Tecnológico de las Américas (ITLA)", degree: "Tecnólogo en Desarrollo de Software, enfoque Backend", dates: "2023 – Actualidad" },
@@ -83,7 +83,6 @@ const es: Cv = {
           dates: "Feb 2026 – Jul 2026",
           bullets: [
             "Enruté más de 20,000 leads diarios en Salesforce y AWS para una operación de más de 500 agentes.",
-            "Alineé la estrategia de enrutamiento con los líderes de Ventas e Ingresos para priorizar las metas del negocio.",
           ],
         },
         {
@@ -153,7 +152,7 @@ const en: Cv = {
   location: "Dominican Republic",
   role: "Software Developer · Backend",
   summary:
-    "Backend developer (Python · FastAPI · PostgreSQL) who came to code through operations. Designed and led a WhatsApp automation platform now in production —API, web panel and Android app— and automated reporting that saves more than 13 hours a week. Three years supporting United States customers and teams, in English.",
+    "Backend developer (Python · FastAPI · PostgreSQL) building software that solves real business problems. Led the WhatsApp bot and web platform for Kan-M, a bakery in Santo Domingo, in production and used daily. Background in Sales Ops and Workforce Analytics: every build starts from the business process, not the code. Advanced English; open to backend roles and freelance projects.",
   headings: { summary: "Profile", education: "Education", experience: "Experience", projects: "Projects", skills: "Skills & Languages" },
   education: [
     { org: "Instituto Tecnológico de las Américas (ITLA)", degree: "Associate Degree in Software Development, Backend focus", dates: "2023 – Present" },
@@ -186,7 +185,6 @@ const en: Cv = {
           dates: "Feb 2026 – Jul 2026",
           bullets: [
             "Routed 20,000+ leads a day through Salesforce and AWS for an operation of 500+ agents.",
-            "Aligned routing strategy with Sales and Revenue leadership to prioritize business goals.",
           ],
         },
         {
