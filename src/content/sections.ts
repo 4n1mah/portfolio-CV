@@ -19,6 +19,27 @@ export const profile = {
 
 const REPO = "https://github.com/4n1mah";
 
+export interface ProjectMedia {
+  kind: "image" | "video";
+  src: string;
+  /** Lo que se ve antes de pulsar play. Sin esto el navegador no tendría nada que mostrar,
+   *  porque el video no se descarga hasta que alguien lo pide. */
+  poster?: string;
+  caption: string;
+}
+
+// Las rutas viven aquí una sola vez; cada idioma solo pone su pie de foto.
+// Los originales pesados están en /Videos, fuera de git; esto son las copias optimizadas.
+const shots = {
+  kanInicio: { kind: "image", src: "/projects/kan-web-inicio.webp" },
+  kanMenu: { kind: "image", src: "/projects/kan-web-menu.webp" },
+  kanEmpanadoteca: { kind: "image", src: "/projects/kan-web-empanadoteca.webp" },
+  kanDemo: { kind: "video", src: "/projects/kan-web-demo.mp4", poster: "/projects/kan-web-demo.webp" },
+  botGasto: { kind: "video", src: "/projects/finance-bot-gasto.mp4", poster: "/projects/finance-bot-gasto.webp" },
+  botPagoFijo: { kind: "video", src: "/projects/finance-bot-pago-fijo.mp4", poster: "/projects/finance-bot-pago-fijo.webp" },
+  botConsulta: { kind: "video", src: "/projects/finance-bot-consulta.mp4", poster: "/projects/finance-bot-consulta.webp" },
+} as const;
+
 interface Project {
   title: string;
   category: string;
@@ -27,6 +48,8 @@ interface Project {
   tags: string[];
   result: string;
   links: { label: string; href: string }[];
+  /** Fotos y videos del proyecto. Sin esto, la tarjeta muestra el cuadro de color con la inicial. */
+  media?: ProjectMedia[];
 }
 
 interface StandText {
@@ -80,6 +103,13 @@ const es = {
     findMe: "Encuéntrame en",
     underConstruction: "En construcción",
     whatsComing: "Lo que viene",
+    gallery: {
+      open: "Ver fotos y video",
+      close: "Cerrar",
+      previous: "Anterior",
+      next: "Siguiente",
+      counter: "{i} de {n}",
+    },
     headings: {
       story: "Mi historia",
       values: "Lo que me mueve",
@@ -121,7 +151,7 @@ const es = {
   portfolio: {
     title: "Portafolio",
     kicker: "Proyectos · Casos · Resultados",
-    preview: ["Kan-M: sitio web y panel", "Kan-M: bot de WhatsApp", "Bot de finanzas", "Tracker de SLA"],
+    preview: ["Kan-M: sitio web y panel", "Bot de finanzas", "Kan-M: bot de WhatsApp", "Tracker de SLA"],
     projects: [
       {
         title: "Kan-M — Sitio web y panel administrativo",
@@ -135,16 +165,12 @@ const es = {
           { label: "Ver sitio", href: "https://kanmreposteriaycatering.com/" },
           { label: "Repositorio", href: `${REPO}/kan-m-web` },
         ],
-      },
-      {
-        title: "Kan-M — Bot de WhatsApp",
-        category: "Backend · IA · Proyecto para cliente",
-        color: "#4f6b62",
-        description:
-          "Chatbot de atención al cliente que resuelve lo repetitivo (horario, ubicación, delivery, preguntas frecuentes y datos para cotizaciones) y escala a una persona lo que requiere criterio. Combina respuestas fijas con una capa de IA y convive con la app de WhatsApp Business en el mismo número.",
-        tags: ["Python", "FastAPI", "PostgreSQL", "Gemini API", "WhatsApp Cloud API", "Railway"],
-        result: "Líder técnico y arquitecto · 100% de casos de prueba cubiertos antes del despliegue",
-        links: [{ label: "Repositorio", href: `${REPO}/Kan-m-bot` }],
+        media: [
+          { ...shots.kanInicio, caption: "La portada: pasteles, catering y eventos" },
+          { ...shots.kanMenu, caption: "El menú, por categorías" },
+          { ...shots.kanEmpanadoteca, caption: "Empanadoteca, la marca hermana, dentro del mismo sitio" },
+          { ...shots.kanDemo, caption: "Recorrido: catálogo, carrito y cotización de un evento" },
+        ],
       },
       {
         title: "Finance Bot",
@@ -155,6 +181,21 @@ const es = {
         tags: ["Python", "FastAPI", "Groq (Llama 3.3)", "SQLAlchemy", "Pydantic", "pytest"],
         result: "Desplegado en producción en Railway",
         links: [{ label: "Repositorio", href: `${REPO}/finance-bot` }],
+        media: [
+          { ...shots.botGasto, caption: "Registrar un gasto y pedir el desglose del mes" },
+          { ...shots.botPagoFijo, caption: "Un pago fijo, con su próxima fecha calculada" },
+          { ...shots.botConsulta, caption: "Un gasto y, de paso, cuánto llevo en esa categoría" },
+        ],
+      },
+      {
+        title: "Kan-M — Bot de WhatsApp",
+        category: "Backend · IA · Proyecto para cliente",
+        color: "#4f6b62",
+        description:
+          "Chatbot de atención al cliente que resuelve lo repetitivo (horario, ubicación, delivery, preguntas frecuentes y datos para cotizaciones) y escala a una persona lo que requiere criterio. Combina respuestas fijas con una capa de IA y convive con la app de WhatsApp Business en el mismo número.",
+        tags: ["Python", "FastAPI", "PostgreSQL", "Gemini API", "WhatsApp Cloud API", "Railway"],
+        result: "Líder técnico y arquitecto · 100% de casos de prueba cubiertos antes del despliegue",
+        links: [{ label: "Repositorio", href: `${REPO}/Kan-m-bot` }],
       },
       {
         title: "Tracker automatizado de SLA",
@@ -392,6 +433,13 @@ const en: Content = {
     findMe: "Find me on",
     underConstruction: "Under construction",
     whatsComing: "What's coming",
+    gallery: {
+      open: "See photos and video",
+      close: "Close",
+      previous: "Previous",
+      next: "Next",
+      counter: "{i} of {n}",
+    },
     headings: {
       story: "My story",
       values: "What drives me",
@@ -433,7 +481,7 @@ const en: Content = {
   portfolio: {
     title: "Portfolio",
     kicker: "Projects · Cases · Results",
-    preview: ["Kan-M: website & admin", "Kan-M: WhatsApp bot", "Finance bot", "SLA tracker"],
+    preview: ["Kan-M: website & admin", "Finance bot", "Kan-M: WhatsApp bot", "SLA tracker"],
     projects: [
       {
         title: "Kan-M — Website & admin panel",
@@ -447,16 +495,12 @@ const en: Content = {
           { label: "Visit site", href: "https://kanmreposteriaycatering.com/" },
           { label: "Repository", href: `${REPO}/kan-m-web` },
         ],
-      },
-      {
-        title: "Kan-M — WhatsApp bot",
-        category: "Backend · AI · Client project",
-        color: "#4f6b62",
-        description:
-          "Customer service chatbot that handles the repetitive work (hours, location, delivery, FAQs and quote details) and escalates anything that needs judgment to a person. It combines fixed answers with an AI layer and runs alongside the WhatsApp Business app on the same number.",
-        tags: ["Python", "FastAPI", "PostgreSQL", "Gemini API", "WhatsApp Cloud API", "Railway"],
-        result: "Technical lead & architect · 100% test case coverage before deployment",
-        links: [{ label: "Repository", href: `${REPO}/Kan-m-bot` }],
+        media: [
+          { ...shots.kanInicio, caption: "The landing page: cakes, catering and events" },
+          { ...shots.kanMenu, caption: "The menu, by category" },
+          { ...shots.kanEmpanadoteca, caption: "Empanadoteca, the sister brand, inside the same site" },
+          { ...shots.kanDemo, caption: "Walkthrough: catalog, cart and an event quote" },
+        ],
       },
       {
         title: "Finance Bot",
@@ -467,6 +511,21 @@ const en: Content = {
         tags: ["Python", "FastAPI", "Groq (Llama 3.3)", "SQLAlchemy", "Pydantic", "pytest"],
         result: "Deployed to production on Railway",
         links: [{ label: "Repository", href: `${REPO}/finance-bot` }],
+        media: [
+          { ...shots.botGasto, caption: "Logging an expense and asking for the month's breakdown" },
+          { ...shots.botPagoFijo, caption: "A recurring payment, with its next date worked out" },
+          { ...shots.botConsulta, caption: "An expense and, while at it, how much that category is at" },
+        ],
+      },
+      {
+        title: "Kan-M — WhatsApp bot",
+        category: "Backend · AI · Client project",
+        color: "#4f6b62",
+        description:
+          "Customer service chatbot that handles the repetitive work (hours, location, delivery, FAQs and quote details) and escalates anything that needs judgment to a person. It combines fixed answers with an AI layer and runs alongside the WhatsApp Business app on the same number.",
+        tags: ["Python", "FastAPI", "PostgreSQL", "Gemini API", "WhatsApp Cloud API", "Railway"],
+        result: "Technical lead & architect · 100% test case coverage before deployment",
+        links: [{ label: "Repository", href: `${REPO}/Kan-m-bot` }],
       },
       {
         title: "Automated SLA tracker",

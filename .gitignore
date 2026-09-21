@@ -45,3 +45,5 @@ next-env.d.ts
 
 # full-size generated art (optimized copies live in public/lobby)
 /art/
+# originales pesados de video y capturas (las copias optimizadas viven en public/projects)
+/Videos/

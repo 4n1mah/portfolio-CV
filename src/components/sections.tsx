@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { profile, type Content } from "@/content/sections";
+import { profile, type Content, type ProjectMedia } from "@/content/sections";
 import { fetchStats, type Stats } from "@/lib/visits";
 import { isFeature, lobbyStore, useContent, useLobby, type FeatureId, type SpotId, type StandId } from "@/lobby/store";
+import MediaViewer from "./MediaViewer";
 import styles from "./sections.module.css";
 
 function About({ c }: { c: Content }) {
@@ -51,13 +52,32 @@ function About({ c }: { c: Content }) {
 }
 
 function Portfolio({ c }: { c: Content }) {
+  // Qué proyecto tiene la galería abierta; null cuando no hay ninguna.
+  const [open, setOpen] = useState<ProjectMedia[] | null>(null);
+
   return (
     <div className={styles.projects}>
       {c.portfolio.projects.map((p) => (
         <article key={p.title} className={styles.project}>
-          <div className={styles.thumb} style={{ background: p.color }} aria-hidden>
-            <span>{p.title.charAt(0)}</span>
-          </div>
+          {p.media ? (
+            <button
+              className={styles.thumbButton}
+              onClick={() => setOpen(p.media!)}
+              aria-label={`${p.title} — ${c.ui.gallery.open}`}
+              title={c.ui.gallery.open}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element -- miniatura de tamaño fijo, sin necesidad de recortes por tamaño */}
+              <img src={p.media[0].poster ?? p.media[0].src} alt="" />
+              <span className={styles.thumbPlay} aria-hidden>
+                {p.media.some((m) => m.kind === "video") ? "▶" : "⤢"}
+              </span>
+              <span className={styles.thumbBadge}>{p.media.length}</span>
+            </button>
+          ) : (
+            <div className={styles.thumb} style={{ background: p.color }} aria-hidden>
+              <span>{p.title.charAt(0)}</span>
+            </div>
+          )}
           <div>
             <span className={styles.meta}>{p.category}</span>
             <h3 className={styles.projectTitle}>{p.title}</h3>
@@ -80,6 +100,7 @@ function Portfolio({ c }: { c: Content }) {
           </div>
         </article>
       ))}
+      {open && <MediaViewer items={open} onClose={() => setOpen(null)} />}
     </div>
   );
 }
