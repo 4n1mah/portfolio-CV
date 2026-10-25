@@ -238,10 +238,10 @@ const es = {
         company: "Data Vimenca",
         period: "Sep 2026 — Actualidad",
         description:
-          "Monitoreo en tiempo real de la operación y codificación, vigilando que las métricas del día se cumplan mientras suceden.",
+          "Monitoreo en tiempo real de la operación y codificación en el sistema de WFM, vigilando que las métricas del día se cumplan mientras suceden.",
         achievements: [
           "Superviso el desempeño de la operación en vivo y coordino los ajustes necesarios cuando las métricas se desvían",
-          "Me encargo de la codificación de la operación",
+          "Codifico en el sistema de WFM las actividades y excepciones de los agentes, para que los horarios reflejen lo que realmente pasa en la operación",
         ],
       },
       {
@@ -579,10 +579,10 @@ const en: Content = {
         company: "Data Vimenca",
         period: "Sep 2026 — Present",
         description:
-          "Real-time monitoring of the operation plus coding, keeping the day's metrics on target as they happen.",
+          "Real-time monitoring of the operation and activity coding in the WFM system, keeping the day's metrics on target as they happen.",
         achievements: [
           "Track live operational performance and coordinate adjustments when metrics drift off target",
-          "Own the coding side of the operation",
+          "Code agent activities and exceptions in the WFM system so schedules reflect what is actually happening on the floor",
         ],
       },
       {
