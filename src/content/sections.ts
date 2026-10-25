@@ -231,8 +231,19 @@ const es = {
   experience: {
     title: "Experiencias",
     kicker: "Trayectoria · Colaboraciones · Logros",
-    preview: ["Proyecto Kan-M", "National Debt Relief", "Alorica · Verizon", "Educación"],
+    preview: ["Data Vimenca", "Proyecto Kan-M", "National Debt Relief", "Alorica · Verizon", "Educación"],
     timeline: [
+      {
+        role: "Analista de Tiempo Real (RTA)",
+        company: "Data Vimenca",
+        period: "Sep 2026 — Actualidad",
+        description:
+          "Monitoreo en tiempo real de la operación y codificación, vigilando que las métricas del día se cumplan mientras suceden.",
+        achievements: [
+          "Superviso el desempeño de la operación en vivo y coordino los ajustes necesarios cuando las métricas se desvían",
+          "Me encargo de la codificación de la operación",
+        ],
+      },
       {
         role: "Líder Técnico y Arquitecto",
         company: "Kan-M Repostería y Catering · Proyecto para cliente",
@@ -561,8 +572,19 @@ const en: Content = {
   experience: {
     title: "Experience",
     kicker: "Career · Collaborations · Achievements",
-    preview: ["Kan-M project", "National Debt Relief", "Alorica · Verizon", "Education"],
+    preview: ["Data Vimenca", "Kan-M project", "National Debt Relief", "Alorica · Verizon", "Education"],
     timeline: [
+      {
+        role: "Real-Time Analyst (RTA)",
+        company: "Data Vimenca",
+        period: "Sep 2026 — Present",
+        description:
+          "Real-time monitoring of the operation plus coding, keeping the day's metrics on target as they happen.",
+        achievements: [
+          "Track live operational performance and coordinate adjustments when metrics drift off target",
+          "Own the coding side of the operation",
+        ],
+      },
       {
         role: "Technical Lead & Architect",
         company: "Kan-M Repostería y Catering · Client project",
