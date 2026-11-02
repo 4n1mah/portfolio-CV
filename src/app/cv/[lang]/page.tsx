@@ -67,18 +67,33 @@ export default async function CvPage({ params }: PageProps<"/cv/[lang]">) {
         </section>
 
         <section>
+          <h2 className={serif.className}>{c.headings.education}</h2>
+          {c.education.map((e) => (
+            <div key={e.org} className={styles.entry}>
+              <div className={styles.line}>
+                <strong className={styles.org}>{e.org}</strong>
+                <span className={styles.dates}>{e.location}</span>
+              </div>
+              <div className={styles.line}>
+                <span className={styles.title}>{e.degree}</span>
+                <span className={styles.dates}>{e.dates}</span>
+              </div>
+            </div>
+          ))}
+        </section>
+        <section>
           <h2 className={serif.className}>{c.headings.experience}</h2>
           {c.experience.map((job) => (
             <div key={job.org} className={styles.entry}>
               <div className={styles.line}>
                 <strong className={styles.org}>{job.org}</strong>
-                <span className={styles.dates}>{job.dates}</span>
+                <span className={styles.dates}>{job.location}</span>
               </div>
               {job.roles.map((role) => (
                 <div key={role.title} className={styles.role2}>
                   <div className={styles.line}>
                     <span className={styles.title}>{role.title}</span>
-                    {role.dates && <span className={styles.dates}>{role.dates}</span>}
+                    <span className={styles.dates}>{role.dates}</span>
                   </div>
                   <ul>
                     {role.bullets.map((b) => (
@@ -127,18 +142,6 @@ export default async function CvPage({ params }: PageProps<"/cv/[lang]">) {
           </dl>
         </section>
 
-        <section>
-          <h2 className={serif.className}>{c.headings.education}</h2>
-          {c.education.map((e) => (
-            <div key={e.org} className={`${styles.line} ${styles.study}`}>
-              <span>
-                <strong className={styles.org}>{e.org}</strong>
-                <span className={styles.stack}>{e.degree}</span>
-              </span>
-              <span className={styles.dates}>{e.dates}</span>
-            </div>
-          ))}
-        </section>
       </main>
     </div>
   );

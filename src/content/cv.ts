@@ -11,8 +11,8 @@ export interface CvRole {
 
 export interface CvEntry {
   org: string;
-  /** Right side of the organization line: dates when there is a single role. */
-  dates?: string;
+  /** Right side of the organization line, Harvard style: "City, Country". */
+  location: string;
   roles: CvRole[];
 }
 
@@ -27,7 +27,7 @@ export interface Cv {
   /** The three lines a recruiter reads before deciding to keep reading. */
   summary: string;
   headings: { summary: string; education: string; experience: string; projects: string; skills: string };
-  education: { org: string; degree: string; dates: string }[];
+  education: { org: string; location: string; degree: string; dates: string }[];
   experience: CvEntry[];
   projects: { name: string; stack: string; link?: { label: string; href: string }; bullets: string[] }[];
   skills: { label: string; items: string }[];
@@ -48,23 +48,23 @@ const es: Cv = {
   download: "Descargar PDF",
   file: "/downloads/CV-Sadiel-Rojas-Padilla-ES.pdf",
   location: "República Dominicana",
-  role: "Desarrollador de Software · Backend",
+  role: "Desarrollador de Software",
   summary:
-    "Desarrollador backend (Python · FastAPI · PostgreSQL) que construye software para resolver problemas reales de negocio. Lideré el bot de WhatsApp y la plataforma web de Kan-M, una repostería en Santo Domingo, en producción y en uso diario. Vengo de operaciones de ventas y Workforce Management: parto del proceso de negocio, no del código. Inglés avanzado; abierto a roles backend y proyectos freelance.",
+    "Desarrollador de software que lleva productos de la arquitectura al despliegue: servicios en Python y FastAPI, interfaces en Next.js y TypeScript sobre PostgreSQL. Construí la plataforma completa de Kan-M —bot de WhatsApp, sitio, panel y app Android—, hoy en uso diario. Vengo de operaciones: parto del proceso de negocio, no del código. Inglés avanzado.",
   headings: { summary: "Perfil", education: "Educación", experience: "Experiencia", projects: "Proyectos", skills: "Habilidades e idiomas" },
   education: [
-    { org: "Instituto Tecnológico de las Américas (ITLA)", degree: "Tecnólogo en Desarrollo de Software, enfoque Backend", dates: "2023 – Actualidad" },
-    { org: "INFOTEP", degree: "Técnico en Mecatrónica", dates: "2022 – 2023" },
-    { org: "Centro de Tecnología Universal (CENTU)", degree: "Técnico en Informática", dates: "2018 – 2019" },
+    { org: "Instituto Tecnológico de las Américas (ITLA)", location: "Santo Domingo, R.D.", degree: "Tecnólogo en Desarrollo de Software", dates: "2023 – Actualidad" },
+    { org: "INFOTEP", location: "Santo Domingo, R.D.", degree: "Técnico en Mecatrónica", dates: "2022 – 2023" },
+    { org: "Centro de Tecnología Universal (CENTU)", location: "Santo Domingo, R.D.", degree: "Técnico en Informática", dates: "2018 – 2019" },
   ],
   experience: [
     {
       org: "Data Vimenca",
-      dates: "Sep 2026 – Actualidad",
+      location: "Santo Domingo, R.D.",
       roles: [
         {
           title: "Analista de Tiempo Real (Workforce Management)",
-          dates: "",
+          dates: "Sep 2026 – Actualidad",
           bullets: [
             "Monitoreo la operación en vivo y coordino los ajustes cuando las métricas del día se desvían.",
             "Codifico actividades y excepciones de agentes en el sistema de WFM para que los horarios reflejen la operación real.",
@@ -74,11 +74,11 @@ const es: Cv = {
     },
     {
       org: "Kan-M Repostería y Catering (proyecto para cliente)",
-      dates: "Mar 2026 – Actualidad",
+      location: "Santo Domingo, R.D.",
       roles: [
         {
           title: "Líder Técnico y Arquitecto",
-          dates: "",
+          dates: "Mar 2026 – Actualidad",
           bullets: [
             "Diseñé y lideré la plataforma completa: API en FastAPI, panel en Next.js y app Android sobre PostgreSQL.",
             "Desarrollé el chatbot (Gemini, WhatsApp Cloud API): resuelve pedidos y cotizaciones y escala el resto.",
@@ -90,7 +90,7 @@ const es: Cv = {
     },
     {
       org: "National Debt Relief / Broadway Support Services",
-      dates: "May 2025 – Jul 2026",
+      location: "Santo Domingo, R.D.",
       roles: [
         {
           title: "Analista de Enrutamiento de Leads",
@@ -119,11 +119,11 @@ const es: Cv = {
     },
     {
       org: "Alorica · Cuenta Verizon",
-      dates: "Ene 2023 – May 2025",
+      location: "Santo Domingo, R.D.",
       roles: [
         {
           title: "Coach de Soporte",
-          dates: "",
+          dates: "Ene 2023 – May 2025",
           bullets: [
             "Brindé soporte técnico y coaching en inglés a agentes de primera línea para clientes de Verizon en EE. UU.",
             "Automaticé en Slack el envío de métricas individuales y los dashboards de un equipo de 15 agentes.",
@@ -149,11 +149,11 @@ const es: Cv = {
     },
   ],
   skills: [
-    { label: "Backend", items: "Python, FastAPI, Pydantic, Next.js, TypeScript, JavaScript, Git" },
+    { label: "Lenguajes y frameworks", items: "Python, FastAPI, Pydantic, TypeScript, JavaScript, React, Next.js, Git" },
     { label: "Bases de datos", items: "SQL, PostgreSQL, SQLAlchemy, Prisma, modelado de datos" },
     { label: "Integraciones e IA", items: "APIs REST, WhatsApp Business API, Gemini API, Groq, Firebase" },
     { label: "Pruebas y despliegue", items: "pytest, Vitest, Railway, Vercel" },
-    { label: "Datos", items: "Pandas, NumPy, Excel avanzado (Power Query, Power Pivot), Tableau, Sigma Computing, Salesforce, AWS" },
+    { label: "Datos", items: "Pandas, NumPy, Excel avanzado (Power Query, Power Pivot), Salesforce, AWS" },
     { label: "Idiomas", items: "Español (nativo), inglés (avanzado)" },
   ],
 };
@@ -164,23 +164,23 @@ const en: Cv = {
   download: "Download PDF",
   file: "/downloads/CV-Sadiel-Rojas-Padilla-EN.pdf",
   location: "Dominican Republic",
-  role: "Software Developer · Backend",
+  role: "Software Developer",
   summary:
-    "Backend developer (Python · FastAPI · PostgreSQL) building software that solves real business problems. Led the WhatsApp bot and web platform for Kan-M, a bakery in Santo Domingo, in production and used daily. Background in Sales Ops and Workforce Analytics: every build starts from the business process, not the code. Advanced English; open to backend roles and freelance projects.",
+    "Software developer who takes products from architecture to deployment: Python and FastAPI services, Next.js and TypeScript interfaces over PostgreSQL. Built the whole Kan-M platform — WhatsApp bot, site, admin panel and Android app — in daily use today. I start from the business process, not the code. Advanced English.",
   headings: { summary: "Profile", education: "Education", experience: "Experience", projects: "Projects", skills: "Skills & Languages" },
   education: [
-    { org: "Instituto Tecnológico de las Américas (ITLA)", degree: "Associate Degree in Software Development, Backend focus", dates: "2023 – Present" },
-    { org: "INFOTEP", degree: "Mechatronics Technician", dates: "2022 – 2023" },
-    { org: "Centro de Tecnología Universal (CENTU)", degree: "IT Technician", dates: "2018 – 2019" },
+    { org: "Instituto Tecnológico de las Américas (ITLA)", location: "Santo Domingo, R.D.", degree: "Associate Degree in Software Development", dates: "2023 – Present" },
+    { org: "INFOTEP", location: "Santo Domingo, R.D.", degree: "Mechatronics Technician", dates: "2022 – 2023" },
+    { org: "Centro de Tecnología Universal (CENTU)", location: "Santo Domingo, R.D.", degree: "IT Technician", dates: "2018 – 2019" },
   ],
   experience: [
     {
       org: "Data Vimenca",
-      dates: "Sep 2026 – Present",
+      location: "Santo Domingo, R.D.",
       roles: [
         {
           title: "Real-Time Analyst (Workforce Management)",
-          dates: "",
+          dates: "Sep 2026 – Present",
           bullets: [
             "Monitor the operation live and coordinate adjustments when the day's metrics drift off target.",
             "Code agent activities and exceptions in the WFM system so schedules reflect the real operation.",
@@ -190,11 +190,11 @@ const en: Cv = {
     },
     {
       org: "Kan-M Repostería y Catering (client project)",
-      dates: "Mar 2026 – Present",
+      location: "Santo Domingo, R.D.",
       roles: [
         {
           title: "Technical Lead & Architect",
-          dates: "",
+          dates: "Mar 2026 – Present",
           bullets: [
             "Designed and led the whole platform: FastAPI backend, Next.js panel and Android app over PostgreSQL.",
             "Built the support chatbot (Gemini, WhatsApp Cloud API): handles orders and quotes, escalates the rest.",
@@ -206,7 +206,7 @@ const en: Cv = {
     },
     {
       org: "National Debt Relief / Broadway Support Services",
-      dates: "May 2025 – Jul 2026",
+      location: "Santo Domingo, R.D.",
       roles: [
         {
           title: "Lead Routing Analyst",
@@ -235,11 +235,11 @@ const en: Cv = {
     },
     {
       org: "Alorica · Verizon Account",
-      dates: "Jan 2023 – May 2025",
+      location: "Santo Domingo, R.D.",
       roles: [
         {
           title: "Support Coach",
-          dates: "",
+          dates: "Jan 2023 – May 2025",
           bullets: [
             "Supported and coached front-line agents in English for Verizon customers in the U.S.",
             "Automated the Slack delivery of individual metrics and the Google Sheets dashboards for 15 agents.",
@@ -263,11 +263,11 @@ const en: Cv = {
     },
   ],
   skills: [
-    { label: "Backend", items: "Python, FastAPI, Pydantic, Next.js, TypeScript, JavaScript, Git" },
+    { label: "Languages & frameworks", items: "Python, FastAPI, Pydantic, TypeScript, JavaScript, React, Next.js, Git" },
     { label: "Databases", items: "SQL, PostgreSQL, SQLAlchemy, Prisma, data modeling" },
     { label: "Integrations & AI", items: "REST APIs, WhatsApp Business API, Gemini API, Groq, Firebase" },
     { label: "Testing & deployment", items: "pytest, Vitest, Railway, Vercel" },
-    { label: "Data", items: "Pandas, NumPy, advanced Excel (Power Query, Power Pivot), Tableau, Sigma Computing, Salesforce, AWS" },
+    { label: "Data", items: "Pandas, NumPy, advanced Excel (Power Query, Power Pivot), Salesforce, AWS" },
     { label: "Languages", items: "Spanish (native), English (advanced)" },
   ],
 };
