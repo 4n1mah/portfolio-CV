@@ -59,6 +59,20 @@ const es: Cv = {
   ],
   experience: [
     {
+      org: "Data Vimenca",
+      dates: "Sep 2026 – Actualidad",
+      roles: [
+        {
+          title: "Analista de Tiempo Real (Workforce Management)",
+          dates: "",
+          bullets: [
+            "Monitoreo la operación en vivo y coordino los ajustes cuando las métricas del día se desvían.",
+            "Codifico actividades y excepciones de agentes en el sistema de WFM para que los horarios reflejen la operación real.",
+          ],
+        },
+      ],
+    },
+    {
       org: "Kan-M Repostería y Catering (proyecto para cliente)",
       dates: "Mar 2026 – Actualidad",
       roles: [
@@ -160,6 +174,20 @@ const en: Cv = {
     { org: "Centro de Tecnología Universal (CENTU)", degree: "IT Technician", dates: "2018 – 2019" },
   ],
   experience: [
+    {
+      org: "Data Vimenca",
+      dates: "Sep 2026 – Present",
+      roles: [
+        {
+          title: "Real-Time Analyst (Workforce Management)",
+          dates: "",
+          bullets: [
+            "Monitor the operation live and coordinate adjustments when the day's metrics drift off target.",
+            "Code agent activities and exceptions in the WFM system so schedules reflect the real operation.",
+          ],
+        },
+      ],
+    },
     {
       org: "Kan-M Repostería y Catering (client project)",
       dates: "Mar 2026 – Present",

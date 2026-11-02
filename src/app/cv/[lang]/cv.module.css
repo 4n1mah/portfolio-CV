@@ -48,7 +48,7 @@
   background: #fff;
   color: var(--ink);
   font-size: 10pt;
-  line-height: 1.3;
+  line-height: 1.18;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
@@ -106,7 +106,7 @@
 /* ---------- sections ---------- */
 
 .page section {
-  margin-top: 8pt;
+  margin-top: 6pt;
 }
 
 .page h2 {
